@@ -1,73 +1,41 @@
-(function() {
-	'use strict';
+// to get current year
+function getYear() {
+    var currentDate = new Date();
+    var currentYear = currentDate.getFullYear();
+    document.querySelector("#displayYear").innerHTML = currentYear;
+}
 
-	var tinyslider = function() {
-		var el = document.querySelectorAll('.testimonial-slider');
+getYear();
 
-		if (el.length > 0) {
-			var slider = tns({
-				container: '.testimonial-slider',
-				items: 1,
-				axis: "horizontal",
-				controlsContainer: "#testimonial-nav",
-				swipeAngle: false,
-				speed: 700,
-				nav: true,
-				controls: true,
-				autoplay: true,
-				autoplayHoverPause: true,
-				autoplayTimeout: 3500,
-				autoplayButtonOutput: false
-			});
-		}
-	};
-	tinyslider();
+// client section owl carousel
+$(".client_owl-carousel").owlCarousel({
+    loop: true,
+    margin: 20,
+    dots: false,
+    nav: true,
+    navText: [],
+    autoplay: true,
+    autoplayHoverPause: true,
+    navText: [
+        '<i class="fa fa-angle-left" aria-hidden="true"></i>',
+        '<i class="fa fa-angle-right" aria-hidden="true"></i>'
+    ],
+    responsive: {
+        0: {
+            items: 1
+        },
+        768: {
+            items: 2
+        }
+    }
+});
 
-	
+/** google_map js **/
 
-
-	var sitePlusMinus = function() {
-
-		var value,
-    		quantity = document.getElementsByClassName('quantity-container');
-
-		function createBindings(quantityContainer) {
-	      var quantityAmount = quantityContainer.getElementsByClassName('quantity-amount')[0];
-	      var increase = quantityContainer.getElementsByClassName('increase')[0];
-	      var decrease = quantityContainer.getElementsByClassName('decrease')[0];
-	      increase.addEventListener('click', function (e) { increaseValue(e, quantityAmount); });
-	      decrease.addEventListener('click', function (e) { decreaseValue(e, quantityAmount); });
-	    }
-
-	    function init() {
-	        for (var i = 0; i < quantity.length; i++ ) {
-						createBindings(quantity[i]);
-	        }
-	    };
-
-	    function increaseValue(event, quantityAmount) {
-	        value = parseInt(quantityAmount.value, 10);
-
-	        console.log(quantityAmount, quantityAmount.value);
-
-	        value = isNaN(value) ? 0 : value;
-	        value++;
-	        quantityAmount.value = value;
-	    }
-
-	    function decreaseValue(event, quantityAmount) {
-	        value = parseInt(quantityAmount.value, 10);
-
-	        value = isNaN(value) ? 0 : value;
-	        if (value > 0) value--;
-
-	        quantityAmount.value = value;
-	    }
-	    
-	    init();
-		
-	};
-	sitePlusMinus();
-
-
-})()
+function myMap() {
+    var mapProp = {
+        center: new google.maps.LatLng(40.712775, -74.005973),
+        zoom: 18,
+    };
+    var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+}
