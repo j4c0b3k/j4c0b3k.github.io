@@ -1,445 +1,917 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethereal</title>
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shorthandcss@1.1.1/dist/shorthand.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:200,300,400,500,600,700,800,900&display=swap" />
-    <link rel="stylesheet" type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" />
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="chat-tag" content="3950863804">
+<title>howlora — out of sight, not out of mind.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #000000;
+    --graphite: #0a0a0a;
+    --line: #111111;
+    --line-2: #1a1a1a;
+    --text: #b8b8b8;
+    --text-dim: #5a5a5a;
+    --text-white: #f5f5f5;
+    --accent: #00ff9c;
+    --danger: #ff3b3b;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --header-h: 78px;
+  }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    cursor: none;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none; z-index: 1;
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0;
+    background: radial-gradient(ellipse at top, rgba(255,255,255,0.025), transparent 60%);
+    pointer-events: none; z-index: 1;
+  }
+
+  #cursor-dot {
+    position: fixed; width: 6px; height: 6px;
+    background: var(--text-white); border-radius: 50%;
+    pointer-events: none; z-index: 10000;
+    transform: translate(-50%, -50%); mix-blend-mode: difference;
+  }
+  #cursor-glow {
+    position: fixed; width: 480px; height: 480px;
+    border-radius: 50%; pointer-events: none; z-index: 2;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255,255,255,0.06), rgba(255,255,255,0) 60%);
+  }
+  a, button, input { cursor: none; }
+
+  #boot {
+    position: fixed; inset: 0; background: #000; z-index: 99999;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 8vh 10vw;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--text); transition: opacity .8s ease;
+  }
+  #boot .line { opacity: 0; transform: translateY(4px); }
+  #boot .bar { margin-top: 28px; width: 280px; height: 1px; background: #151515; overflow: hidden; position: relative; }
+  #boot .bar > i { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: var(--text-white); }
+  #boot.done { opacity: 0; pointer-events: none; }
+
+  header.site {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;
+    background: rgba(0,0,0,0.75);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    padding: 22px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: var(--header-h);
+  }
+  header.site .brand { font-family: var(--sans); font-weight: 500; font-size: 17px; letter-spacing: -0.02em; color: var(--text-white); text-decoration: none; }
+  header.site .brand .dot { color: var(--text-dim); }
+  header.site nav { display: flex; gap: 36px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); }
+  header.site nav a { color: var(--text-dim); text-decoration: none; transition: color .3s; }
+  header.site nav a:hover { color: var(--text-white); }
+
+  .auth { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; }
+  .auth input {
+    background: transparent; border: 1px solid var(--line-2);
+    color: var(--text-white); padding: 7px 10px;
+    font-family: var(--mono); font-size: 11px; width: 110px;
+    letter-spacing: 0.08em; outline: none; transition: border-color .25s;
+  }
+  .auth input:focus { border-color: #2a2a2a; }
+  .auth button {
+    background: transparent; border: 1px solid var(--line-2);
+    color: var(--text-white); padding: 7px 12px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase; transition: all .25s;
+  }
+  .auth button:hover { border-color: var(--text-white); }
+  .auth.shake { animation: shake .4s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); }
+    40%,80% { transform: translateX(6px); }
+  }
+  .auth .session-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 14px; border: 1px solid #1a3a26;
+    background: rgba(0,255,156,0.04);
+    color: var(--text-white);
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  }
+  .auth .session-pill .led {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent), 0 0 18px rgba(0,255,156,0.45);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+  main { padding-top: var(--header-h); position: relative; z-index: 3; }
+
+  section { padding: 160px 10%; border-bottom: 1px solid var(--line); position: relative; }
+
+  .hero { min-height: calc(100vh - var(--header-h)); display: flex; flex-direction: column; justify-content: center; padding: 120px 10%; }
+  .hero .meta-top { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 60px; display: flex; justify-content: space-between; }
+  .hero h1 { font-family: var(--sans); font-weight: 300; font-size: clamp(72px, 14vw, 220px); line-height: 0.92; letter-spacing: -0.05em; color: var(--text-white); margin-bottom: 40px; position: relative; display: inline-block; }
+  .hero h1 .dot { color: var(--text-dim); }
+  .hero h1.glitch::before, .hero h1.glitch::after {
+    content: "howlora."; position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; pointer-events: none;
+  }
+  .hero h1.glitch::before { color: #ff003c; transform: translate(-2px, 0); mix-blend-mode: screen; clip-path: inset(0 0 60% 0); }
+  .hero h1.glitch::after { color: #00e0ff; transform: translate(2px, 0); mix-blend-mode: screen; clip-path: inset(60% 0 0 0); }
+  .hero .tagline { font-family: var(--sans); font-weight: 300; font-size: 20px; color: var(--text); letter-spacing: -0.01em; max-width: 520px; }
+  .hero .meta-bottom { margin-top: 120px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); }
+
+  .sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 80px; display: flex; align-items: center; gap: 16px; }
+  .sec-label::before { content: ""; width: 24px; height: 1px; background: var(--text-dim); }
+
+  .manifesto .grid { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; }
+  .manifesto .left { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 0.2em; text-transform: uppercase; line-height: 2; }
+  .manifesto .left .num { color: var(--text-white); font-size: 14px; display: block; margin-bottom: 18px; }
+  .manifesto p { font-family: var(--sans); font-weight: 300; font-size: 2.5rem; line-height: 1.5; letter-spacing: -0.02em; color: #e5e5e5; max-width: 800px; }
+  .manifesto p + p { margin-top: 48px; }
+  .manifesto .hl { color: var(--text-white); font-weight: 400; transition: text-shadow .4s ease; }
+  .manifesto .hl:hover { text-shadow: 0 0 18px rgba(255,255,255,0.55), 0 0 1px rgba(255,255,255,0.9); }
+
+  .archives .list { border-top: 1px solid var(--line-2); }
+  .archive {
+    display: grid; grid-template-columns: 80px 1fr 200px 140px;
+    gap: 40px; align-items: center;
+    padding: 38px 0; border-bottom: 1px solid var(--line-2);
+    transition: background .35s, padding .35s; cursor: none;
+  }
+  .archive:hover { padding-left: 24px; background: rgba(255,255,255,0.012); }
+  .archive .idx, .archive .meta, .archive .status {
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .archive .name { font-family: var(--sans); font-weight: 300; font-size: 36px; letter-spacing: -0.02em; color: var(--text-white); }
+  .archive .status { text-align: right; color: var(--text); }
+  body.owner .archive .status { color: var(--accent); }
+  body.owner .archive .status::before { content: "● "; }
+
+  /* TERMINAL */
+  .terminal .box {
+    border: 1px solid #1f1f1f;
+    background: #030303;
+    max-width: 900px;
+    font-family: var(--mono);
+    box-shadow: 0 0 60px rgba(0,255,156,0.04);
+  }
+  .terminal .bar-top {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #1f1f1f;
+    background: #060606;
+  }
+  .terminal .bar-top .dot-r,
+  .terminal .bar-top .dot-y,
+  .terminal .bar-top .dot-g {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .terminal .bar-top .dot-r { background: #3a1414; border: 1px solid #5a1f1f; }
+  .terminal .bar-top .dot-y { background: #3a3214; border: 1px solid #5a4f1f; }
+  .terminal .bar-top .dot-g { background: #14361f; border: 1px solid #1f5a32; }
+  .terminal .bar-top .title { margin-left: 14px; font-size: 11px; color: var(--text-dim); letter-spacing: 0.2em; text-transform: uppercase; }
+  .terminal .body {
+    padding: 28px 24px;
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+    line-height: 1.8;
+    min-height: 220px;
+  }
+  .terminal .body .log { color: var(--text); }
+  .terminal .body .log .ok { color: var(--accent); }
+  .terminal .body .log .err { color: var(--danger); }
+  .terminal .input-line { display: flex; align-items: center; }
+  .terminal .input-line .prefix {
+    color: var(--accent);
+    white-space: nowrap;
+    margin-right: 10px;
+  }
+  .terminal .input-line .prefix .at { color: var(--text-dim); }
+  .terminal .input-line .prefix .path { color: #4d8aff; }
+  .terminal .input-line input {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-family: var(--mono); font-size: 14px;
+    color: var(--text-white); caret-color: var(--accent);
+    padding: 4px 0;
+  }
+  .terminal .input-line input::placeholder { color: #2c2c2c; }
+  .terminal .actions {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 12px 18px;
+    border-top: 1px solid #1f1f1f;
+    background: #050505;
+  }
+  .terminal .execute {
+    background: transparent;
+    border: 1px solid #1f5a32;
+    color: var(--accent);
+    padding: 8px 18px;
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    transition: all .25s;
+  }
+  .terminal .execute:hover {
+    background: rgba(0,255,156,0.08);
+    box-shadow: 0 0 14px rgba(0,255,156,0.3);
+    color: var(--text-white);
+  }
+  .terminal .execute.sent { animation: blink .25s 3; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+  footer { padding: 80px 10% 60px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); }
+
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(10px);
+    z-index: 20000; display: none;
+    align-items: center; justify-content: center;
+    padding: 40px;
+  }
+  .modal-bg.show { display: flex; }
+  .modal-bg .panel.denied {
+    border: 1px solid #2a0808; background: #060000;
+    padding: 60px 80px; text-align: center; max-width: 480px;
+  }
+  .modal-bg .panel.denied h3 { font-family: var(--mono); font-size: 11px; color: var(--danger); letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 18px; }
+  .modal-bg .panel.denied p { font-family: var(--sans); font-weight: 300; font-size: 28px; color: var(--text-white); letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 32px; }
+  .modal-bg .panel.denied button { background: transparent; color: var(--text); border: 1px solid var(--line-2); padding: 12px 28px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; }
+  .modal-bg .panel.denied button:hover { border-color: var(--text-white); color: var(--text-white); }
+
+  .modal-bg .panel.unlocked {
+    border: 1px solid #1a3a26; background: #030503;
+    width: min(880px, 100%);
+    max-height: 86vh; overflow-y: auto;
+    padding: 0;
+    box-shadow: 0 0 80px rgba(0,255,156,0.08);
+  }
+  .panel.unlocked .uhead {
+    padding: 28px 40px;
+    border-bottom: 1px solid #0e2118;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .panel.unlocked .uhead .clr { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); }
+  .panel.unlocked .uhead .close { background: transparent; border: 1px solid var(--line-2); color: var(--text); padding: 6px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; }
+  .panel.unlocked .ubody { padding: 40px; }
+  .panel.unlocked .ubody h2 { font-family: var(--sans); font-weight: 300; font-size: 48px; letter-spacing: -0.04em; color: var(--text-white); margin-bottom: 20px; }
+  .panel.unlocked .ubody .client { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 24px; }
+  .panel.unlocked .ubody .desc { font-family: var(--sans); font-weight: 300; font-size: 18px; line-height: 1.6; color: var(--text); margin-bottom: 32px; max-width: 720px; }
+  .panel.unlocked .ubody .analyze {
+    background: transparent; border: 1px solid #1f5a32; color: var(--accent);
+    padding: 12px 24px; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.3em; text-transform: uppercase; transition: all .25s;
+  }
+  .panel.unlocked .ubody .analyze:hover { background: rgba(0,255,156,0.08); box-shadow: 0 0 14px rgba(0,255,156,0.3); }
+  .panel.unlocked .analysis { display: none; margin-top: 36px; padding-top: 32px; border-top: 1px solid #0e2118; }
+  .panel.unlocked .analysis.show { display: block; }
+  .panel.unlocked .metrics {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: #0e2118; border: 1px solid #0e2118; margin-bottom: 24px;
+  }
+  .panel.unlocked .metrics .m { background: #030503; padding: 22px; }
+  .panel.unlocked .metrics .m .l { font-family: var(--mono); font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+  .panel.unlocked .metrics .m .v { font-family: var(--sans); font-weight: 300; font-size: 22px; color: var(--text-white); letter-spacing: -0.02em; }
+  .panel.unlocked .metrics .m .v .accent { color: var(--accent); font-family: var(--mono); font-size: 11px; margin-left: 8px; }
+  .panel.unlocked canvas.mini { width: 100%; height: 160px; display: block; border: 1px solid #0e2118; background: #020402; }
+
+  .toast {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.96);
+    background: rgba(5,5,5,0.95);
+    border: 1px solid #1a3a26;
+    padding: 32px 56px; z-index: 30000;
+    font-family: var(--sans); font-weight: 300;
+    font-size: 22px; color: var(--text-white);
+    letter-spacing: -0.01em; opacity: 0; pointer-events: none;
+    transition: opacity .5s ease, transform .5s ease;
+    box-shadow: 0 0 60px rgba(0,255,156,0.12);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .toast .glow { color: var(--accent); margin-right: 10px; }
+
+  .hidden-dashboard { display: none; opacity: 0; transition: opacity .8s ease; }
+  .hidden-dashboard.visible { display: block; opacity: 1; }
+  .dash .head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; padding-bottom: 30px; border-bottom: 1px solid var(--line-2); }
+  .dash .head h2 { font-family: var(--sans); font-weight: 300; font-size: 56px; letter-spacing: -0.04em; color: var(--text-white); }
+  .dash .head .sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-2); border: 1px solid var(--line-2); margin-bottom: 60px; }
+  .stat { background: #050505; padding: 32px; }
+  .stat .label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+  .stat .val { font-family: var(--sans); font-weight: 300; font-size: 36px; letter-spacing: -0.03em; color: var(--text-white); transition: opacity .35s ease; }
+  .stat .delta { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 8px; }
+
+  .chart-wrap { border: 1px solid var(--line-2); background: #030303; padding: 40px; }
+  .chart-wrap .ch-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .chart-wrap .ch-head .t { font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); }
+  .chart-wrap .ch-head .v { font-family: var(--sans); font-weight: 300; font-size: 14px; color: var(--accent); transition: opacity .35s ease; }
+  .filters { display: flex; gap: 8px; margin-bottom: 18px; }
+  .filters button {
+    background: transparent; border: 1px solid var(--line-2);
+    color: var(--text-dim);
+    padding: 8px 14px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    transition: all .25s;
+  }
+  .filters button:hover { color: var(--text-white); border-color: #2a2a2a; }
+  .filters button.active {
+    color: var(--accent); border-color: #1f5a32;
+    background: rgba(0,255,156,0.05);
+    box-shadow: 0 0 12px rgba(0,255,156,0.18);
+  }
+  #chart { width: 100%; height: 320px; display: block; }
+
+  @media (max-width: 900px) {
+    :root { --header-h: 64px; }
+    header.site { padding: 16px 22px; }
+    header.site nav { display: none; }
+    .auth input { width: 80px; }
+    section { padding: 100px 6%; }
+    .hero { padding: 80px 6%; }
+    .manifesto .grid { grid-template-columns: 1fr; gap: 40px; }
+    .manifesto p { font-size: 1.5rem; }
+    .archive { grid-template-columns: 40px 1fr; }
+    .archive .meta, .archive .status { display: none; }
+    .archive .name { font-size: 22px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .dash .head h2 { font-size: 34px; }
+    .panel.unlocked .metrics { grid-template-columns: 1fr; }
+    .panel.unlocked .ubody h2 { font-size: 32px; }
+  }
+</style>
 </head>
+<body>
 
-<body class="bg-black muli">
-    <nav class="w-100pc flex flex-column md-flex-row md-px-10 py-5 bg-black">
-        <div class="flex justify-between">
-            <a href="#" class="flex items-center p-2 mr-4 no-underline">
-                <img class="max-h-l2 w-auto" src="assets/images/logo.png" />
-            </a>
-            <a data-toggle="toggle-nav" data-target="#nav-items" href="#"
-                class="flex items-center ml-auto md-hidden indigo-lighter opacity-50 hover-opacity-100 ease-300 p-1 m-3">
-                <i data-feather="menu"></i>
-            </a>
+<div id="cursor-glow"></div>
+<div id="cursor-dot"></div>
+
+<div id="boot">
+  <div class="line">&gt; initializing secure channel...</div>
+  <div class="line">&gt; handshake [SHA-512] : ok</div>
+  <div class="line">&gt; verifying client signature...</div>
+  <div class="line">&gt; node://howlora.sec | latency 4ms</div>
+  <div class="line">&gt; loading encrypted manifest...</div>
+  <div class="line">&gt; cipher suite TLS_AES_256_GCM_SHA384</div>
+  <div class="line">&gt; perimeter clear. no observers detected.</div>
+  <div class="line">&gt; access granted.</div>
+  <div class="bar"><i></i></div>
+</div>
+
+<header class="site">
+  <a href="#" class="brand">howlora<span class="dot">.</span></a>
+  <nav>
+    <a href="#manifesto">Manifesto</a>
+    <a href="#archives">Archives</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="auth" id="auth">
+    <input id="user" type="text" placeholder="username" autocomplete="off" spellcheck="false" />
+    <input id="pass" type="password" placeholder="••••••••" autocomplete="off" />
+    <button id="login">Enter</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="meta-top">
+      <span>// node 04 — encrypted</span>
+      <span id="clock">00:00:00 UTC</span>
+    </div>
+    <h1 id="logo" class="">howlora<span class="dot">.</span></h1>
+    <p class="tagline">out of sight, not out of mind.</p>
+    <div class="meta-bottom">
+      <span>Est. cycle 2019</span>
+      <span>Cybersecurity · Software Architecture</span>
+      <span>Selective engagements only</span>
+    </div>
+  </section>
+
+  <section class="manifesto" id="manifesto">
+    <div class="sec-label">01 — Manifesto</div>
+    <div class="grid">
+      <div class="left">
+        <span class="num">01</span>
+        Doctrine<br>Engineering<br>Silence<br>Continuity
+      </div>
+      <div>
+        <p>We build systems with <span class="hl">absolute</span> intent. No noise, no spectacle — only architecture that holds under pressure no adversary expects to apply.</p>
+        <p>Our work is the <span class="hl">final layer</span> between your operation and the threat it does not yet understand. We engineer <span class="hl">unbreakable resilience</span> into the places no one else thinks to look.</p>
+        <p>You will not see us. You will only see what continues to function — quietly, indefinitely, without compromise.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="archives" id="archives">
+    <div class="sec-label">02 — Encrypted Archives</div>
+    <div class="list">
+      <div class="archive" data-key="obsidian">
+        <span class="idx">// 01</span>
+        <span class="name">OBSIDIAN</span>
+        <span class="meta">Sovereign infrastructure</span>
+        <span class="status">Classified</span>
+      </div>
+      <div class="archive" data-key="aegis">
+        <span class="idx">// 02</span>
+        <span class="name">AEGIS PROTOCOL</span>
+        <span class="meta">Zero-trust mesh</span>
+        <span class="status">Classified</span>
+      </div>
+      <div class="archive" data-key="vanguard">
+        <span class="idx">// 03</span>
+        <span class="name">SILENT VANGUARD</span>
+        <span class="meta">Adversary simulation</span>
+        <span class="status">Classified</span>
+      </div>
+      <div class="archive" data-key="nexus">
+        <span class="idx">// 04</span>
+        <span class="name">NEXUS DEPLOYMENT</span>
+        <span class="meta">Distributed runtime</span>
+        <span class="status">Classified</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="terminal" id="contact">
+    <div class="sec-label">03 — Secure Channel</div>
+    <div class="box">
+      <div class="bar-top">
+        <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
+        <span class="title">root@howlora — /secure/channel — bash</span>
+      </div>
+      <div class="body" id="termBody">
+        <div class="log">Last login: <span class="ok">authenticated</span> on tty/howlora</div>
+        <div class="log">Type your message and press <span class="ok">[EXECUTE]</span> to transmit.</div>
+        <div class="log">&nbsp;</div>
+        <div class="input-line">
+          <span class="prefix"><span class="at">root</span>@howlora:<span class="path">~</span>#&nbsp;</span>
+          <input id="term" type="text" placeholder="send a transmission..." autocomplete="off" spellcheck="false" />
         </div>
-        <div id="nav-items" class="hidden flex sm-w-100pc flex-column md-flex md-flex-row md-justify-end items-center">
-            <a href="#home" class="fs-s1 mx-3 py-3 indigo no-underline hover-underline">Home</a>
-            <a href="#features" class="fs-s1 mx-3 py-3 indigo no-underline hover-underline">Features</a>
-            <a href="#pricing" class="fs-s1 mx-3 py-3 indigo no-underline hover-underline">Pricing</a>
-            <a href="#blog" class="fs-s1 mx-3 py-3 indigo no-underline hover-underline">Blog</a>
-            <a href="register.html" class="button bg-white black fw-600 no-underline mx-5">Register</a>
-        </div>
-    </nav>
+      </div>
+      <div class="actions">
+        <button class="execute" id="execBtn">[ EXECUTE ]</button>
+      </div>
+    </div>
+  </section>
 
-    <!-- hero section -->
-    <section id="home" class="min-h-100vh flex justify-start items-center">
-        <div class="mx-5 md-mx-l5">
-            <div class="inline-block br-round bg-indigo-30 indigo-lightest p-2 fs-s2 mb-5">
-                <a href="Ethereal The Game.zip" download>Download</a>
-                 the game - Ethereal.
-            </div>
-            <div>
-                <h1 class="white fs-l3 lh-2 md-fs-xl1 md-lh-1 fw-900 ">Your favorite <br /> Multiplayer Shooter Game</h1>
+  <section class="dash hidden-dashboard" id="dashboard">
+    <div class="sec-label">04 — Owner Dashboard</div>
+    <div class="head">
+      <h2>Operational Overview</h2>
+      <div class="sub">● Live · Cycle 47</div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Current Cycle Revenue</div>
+        <div class="val" id="statRev">$3,784.58</div>
+        <div class="delta" id="statDelta">▲ +14.2%</div>
+      </div>
+      <div class="stat">
+        <div class="label">Active Contracts</div>
+        <div class="val">07</div>
+        <div class="delta">▲ +2</div>
+      </div>
+      <div class="stat">
+        <div class="label">Threat Events Blocked</div>
+        <div class="val">12,481</div>
+        <div class="delta">▲ +8.7%</div>
+      </div>
+      <div class="stat">
+        <div class="label">Uptime</div>
+        <div class="val">99.998%</div>
+        <div class="delta">▲ stable</div>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="ch-head">
+        <span class="t" id="chTitle">Revenue · This Month</span>
+        <span class="v" id="chValue">$3,784.58 · +14.2%</span>
+      </div>
+      <div class="filters" id="filters">
+        <button data-range="month" class="active">This Month</button>
+        <button data-range="q">Last 3 Months</button>
+        <button data-range="year">This Year</button>
+        <button data-range="life">Lifetime</button>
+      </div>
+      <canvas id="chart"></canvas>
+    </div>
+  </section>
+</main>
 
-                <div class="br-8 mt-10 inline-flex">
-                    <input type="text"
-                        class="input-lg half bw-0 fw-200 bg-indigo-lightest-10 white ph-indigo-lightest focus-white opacity-80 fs-s3 py-5 min-w-25vw br-r-0"
-                        placeholder="Email Address">
-                    <button
-                        class="button-lg bg-indigo-lightest-20 indigo-lightest focus-white fw-300 fs-s3 mr-0 br-l-0">Get
-                        Started</button>
-                </div>
-                <div class="white opacity-20 fs-s3 mt-3">1 week free trial</span>
-            </div>
-        </div>
-    </section>
+<footer>
+  <span>howlora © 2026</span>
+  <span>All transmissions encrypted</span>
+  <span>node 04 / sector 7</span>
+</footer>
 
-    <!-- features -->
-    <section id="features" class="p-10 md-p-l5">
-        <div class="flex flex-column md-flex-row mx-auto">
-            <div class="w-100pc md-w-40pc">
-                <div class="br-8 p-5 m-5">
-                    <div class="flex justify-center items-center bg-indigo-lightest-10 white w-l5 h-l5 br-round mb-5"><i
-                            data-feather="inbox" class="w-l5"></i></div>
-                    <h4 class="white fw-600 fs-m3 mb-5">Storage</h4>
-                    <div class="indigo-lightest fw-600 fs-m1 lh-3 opacity-50">With our advanced storage and safety disks you will never have to worry about getting your data stolen!</div>
-                    <a href="#"
-                        class="mt-5 button bg-indigo-lightest-10 fs-s3 white no-underline hover-opacity-100 hover-scale-up-1 ease-300">Read</a>
-                </div>
-            </div>
-            <div class="w-100pc md-w-40pc">
-                <div class="br-8 p-5 m-5">
-                    <div class="flex justify-center items-center bg-indigo-lightest-10 white w-l5 h-l5 br-round mb-5"><i
-                            data-feather="cpu" class="w-l5"></i></div>
-                    <h4 class="white fw-600 fs-m3 mb-5">System</h4>
-                    <div class="indigo-lightest fw-600 fs-m1 opacity-50">With our computers having the best processors you no longer have to worry about server getting down!</div>
-                    <a href="#"
-                        class="mt-5 button bg-indigo-lightest-10 fs-s3 white no-underline hover-opacity-100 hover-scale-up-1 ease-300">Read</a>
-                </div>
-            </div>
-            <div class="w-100pc md-w-40pc">
-                <div class="br-8 p-5 m-5">
-                    <div class="flex justify-center items-center bg-indigo-lightest-10 white w-l5 h-l5 br-round mb-5"><i
-                            data-feather="database" class="w-l5"></i></div>
-                    <h4 class="white fw-600 fs-m3 mb-5">Database</h4>
-                    <div class="indigo-lightest fw-600 fs-m1 opacity-50">With advanced database allowing you to hold a lot of information or data of game info you won't have to worry about losing your progress!</div>
-                    <a href="#"
-                        class="mt-5 button bg-indigo-lightest-10 fs-s3 white no-underline hover-opacity-100 hover-scale-up-1 ease-300">Read</a>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="modal-bg" id="modal">
+  <div class="panel denied" id="panelDenied">
+    <h3>// Access Denied</h3>
+    <p id="modalText">This archive is classified.</p>
+    <button id="modalClose">Acknowledge</button>
+  </div>
+  <div class="panel unlocked" id="panelUnlocked" style="display:none;">
+    <div class="uhead">
+      <span class="clr">● Clearance: Owner — Declassified</span>
+      <button class="close" id="unlockedClose">Close</button>
+    </div>
+    <div class="ubody">
+      <div class="client" id="uClient">Client · Confidential</div>
+      <h2 id="uName">OBSIDIAN</h2>
+      <p class="desc" id="uDesc"></p>
+      <button class="analyze" id="analyzeBtn">▸ Run Analysis</button>
+      <div class="analysis" id="analysis">
+        <div class="metrics" id="uMetrics"></div>
+        <canvas class="mini" id="miniChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <!-- slider -->
-    <section class="relative bg-indigo-lightest-10">
-        <div id="slider-1">
-            <div class="p-10 md-p-l10 flex justify-center items-center flex-column text-center">
-                <h2 class="white fs-l3 fw-900">Free</h2>
-                <p class="indigo-lightest fw-600 fs-m1 opacity-30 my-5">Yes, the game is free. Insane right? Wanna upgrade to Ethereal PLUS? </p>
-                <a href="#" class="button-md bg-indigo white fs-s3 br-4 black fw-600 no-underline m-5">BUY NOW</a>
-            </div>
-            <div class="p-10 md-p-l10 flex justify-center items-center flex-column text-center">
-                <h2 class="white fs-l3 fw-900">A Lot of Payment Methods</h2>
-                <p class="indigo-lightest fw-600 fs-m1 opacity-30 my-5">If you wish to support us we can take PayPal, Credit Card or even BitCoin! </p>
-                <a href="#" class="button-md bg-indigo white fs-s3 br-4 black fw-600 no-underline m-5">BUY NOW</a>
-            </div>
-            <div class="p-10 md-p-l10 flex justify-center items-center flex-column text-center">
-                <h2 class="white fs-l3 fw-900">We're Ethereal</h2>
-                <p class="indigo-lightest fw-600 fs-m1 opacity-30 my-5">The best user-friendly game at the moment. </p>
-                <a href="#" class="button-md bg-indigo white fs-s3 br-4 black fw-600 no-underline m-5">BUY NOW</a>
-            </div>
-        </div>
-        <ul class="absolute list-none w-100pc flex justify-between top-50pc">
-            <li><button
-                    class="prev ml-10 br-round border-indigo-lightest indigo-lightest  bg-transparent flex justify-center items-center p-2 focus-indigo-lighter outline-none"><i
-                        data-feather="chevron-left"></i></button></li>
-            <li><button
-                    class="next mr-10 br-round border-indigo-lightest indigo-lightest  bg-transparent flex justify-center items-center p-2  focus-indigo-lighter outline-none"><i
-                        data-feather="chevron-right"></i></button></li>
-        </ul>
-    </section>
+<div class="toast" id="toast"><span class="glow">●</span><span id="toastText">Welcome back, owner.</span></div>
 
-    <!-- big text -->
-    <section class="p-10 md-py-10">
-        <div class="w-100pc md-w-70pc mx-auto py-10">
-            <h2 class="white fs-l2 md-fs-xl1 fw-900 lh-2">
-                Unlike the majority of our competitors, we only pay for unshared bandwidth, so we are able to use all the line<span class="border-b bc-indigo bw-4"> all the time</span>, so we can provide to you a stable power. </h2>
-        </div>
-    </section>
+<script>
+const cursor = document.getElementById('cursor-dot');
+const glow = document.getElementById('cursor-glow');
+let mx = window.innerWidth/2, my = window.innerHeight/2;
+let gx = mx, gy = my;
+window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+function animateGlow(){ gx += (mx-gx)*0.12; gy += (my-gy)*0.12; glow.style.left = gx+'px'; glow.style.top = gy+'px'; requestAnimationFrame(animateGlow); }
+animateGlow();
 
-    <!-- product options -->
-    <section class="py-l10">
-        <div class="flex flex-column md-flex-row md-w-80pc mx-auto">
-            <div class="w-100pc md-w-50pc">
-                <div class="br-8 p-5 m-5 bg-indigo-lightest-10 pointer hover-scale-up-1 ease-300">
-                    <div class="inline-block bg-indigo indigo-lightest br-3 px-4 py-1 mb-10 fs-s4 uppercase">
-                        Szydnom z Podlasia</div>
-                    <div class="indigo-lightest fw-600 fs-m1">Ja jako doświadczony tester gier<span class="opacity-30"> jestem w stanie powiedzieć, że to jedna z lepszych gier tego roku.</span> </div>
-                    <a href="#" class="mt-10 button bg-black fs-s3 white no-underline">Read</a>
-                </div>
-            </div>
-            <div class="w-100pc md-w-50pc">
-                <div class="br-8 p-5 m-5 bg-indigo-lightest-10  pointer hover-scale-up-1 ease-300">
-                    <div class="inline-block bg-indigo indigo-lightest br-3 px-4 py-1 mb-10 fs-s4 uppercase">
-                        Jaskiniowiec</div>
-                    <div class="indigo-lightest fw-600 fs-m1">Ugag awugw umbu <span class="opacity-30"> gugu buuu gugu ruru.</span> </div>
-                    <a href="#" class="mt-10 button bg-black fs-s3 white no-underline">Read</a>
+const boot = document.getElementById('boot');
+const bootLines = boot.querySelectorAll('.line');
+const bar = boot.querySelector('.bar > i');
+let bIdx = 0;
+function showLine(){
+  if (bIdx >= bootLines.length) { fillBar(); return; }
+  const l = bootLines[bIdx];
+  l.style.transition = 'opacity .35s ease, transform .35s ease';
+  l.style.opacity = '1'; l.style.transform = 'translateY(0)';
+  bIdx++;
+  setTimeout(showLine, 420);
+}
+function fillBar(){
+  bar.style.transition = 'width 1.8s cubic-bezier(.2,.7,.2,1)';
+  bar.style.width = '100%';
+  setTimeout(() => { boot.classList.add('done'); setTimeout(()=>boot.remove(), 900); }, 2000);
+}
+setTimeout(showLine, 500);
 
-                </div>
-            </div>
-        </div>
-    </section>
+function tick(){
+  const d = new Date();
+  const t = d.toISOString().substr(11,8) + ' UTC';
+  const el = document.getElementById('clock');
+  if (el) el.textContent = t;
+}
+setInterval(tick, 1000); tick();
 
+const logo = document.getElementById('logo');
+logo.addEventListener('mouseenter', () => logo.classList.add('glitch'));
+logo.addEventListener('mouseleave', () => logo.classList.remove('glitch'));
 
-    <!-- pricing -->
-    <section id="pricing">
-        <div class="p-10 flex flex-wrap">
-            <div class="w-100pc md-w-50pc">
-                <div class="p-5">
-                    <h4 class="white fw-800 fs-l3 mb-5">Ethereal Pricing</h4>
-                    <div class="indigo-lightest fw-600 fs-m1 opacity-50">We're not taking a lot for such a good software. We - Ethereal team think that everyone can be allowed to have fun.</div>
-                    <h4 class="white fw-600 fs-m2 mt-10">Our sponsors.</h4>
-                    <div class="flex indigo-lightest opacity-50">
-                        <div class="w-25pc">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 177.78 100" fill="currentColor">
-                                <path
-                                    d="M63.87,44.07h3V56.2h-3Zm4.19,7.55c0-3,1.84-4.79,4.68-4.79s4.68,1.79,4.68,4.79-1.8,4.8-4.68,4.8S68.06,54.67,68.06,51.62Zm6.35,0c0-1.65-.65-2.62-1.67-2.62s-1.66,1-1.66,2.62.63,2.6,1.66,2.6S74.41,53.3,74.41,51.63Zm4.14,5.17h2.88a1.55,1.55,0,0,0,1.62.9c1.14,0,1.74-.62,1.74-1.52V54.49h-.06A2.84,2.84,0,0,1,82,56.13c-2.19,0-3.64-1.67-3.64-4.54s1.38-4.68,3.68-4.68a2.87,2.87,0,0,1,2.76,1.76h0V47h3V56.1c0,2.19-1.93,3.55-4.78,3.55C80.37,59.65,78.72,58.46,78.55,56.8Zm6.25-5.18c0-1.46-.67-2.38-1.73-2.38s-1.71.91-1.71,2.38.64,2.3,1.71,2.3S84.8,53.1,84.8,51.62Zm4.13,0c0-3,1.84-4.79,4.68-4.79s4.69,1.79,4.69,4.79-1.8,4.8-4.69,4.8S88.93,54.67,88.93,51.62Zm6.35,0c0-1.65-.65-2.62-1.67-2.62S92,50,92,51.63s.63,2.6,1.65,2.6S95.28,53.3,95.28,51.63Zm4.16-6.79A1.53,1.53,0,1,1,101,46.31,1.46,1.46,0,0,1,99.44,44.84Zm0,2.2h3V56.2h-3Zm13.89,4.59c0,3-1.33,4.71-3.61,4.71a2.86,2.86,0,0,1-2.8-1.7h-.06v4.52h-3V47h3v1.64h.06a2.87,2.87,0,0,1,2.78-1.77C112,46.91,113.37,48.63,113.37,51.63Zm-3,0c0-1.46-.67-2.39-1.72-2.39s-1.72.94-1.73,2.39.68,2.38,1.73,2.38S110.33,53.08,110.33,51.63Zm8.15-4.8c2.49,0,4,1.18,4.07,3.07h-2.73c0-.65-.54-1.06-1.37-1.06s-1.2.32-1.2.79.33.62,1,.76l1.92.39c1.83.39,2.61,1.13,2.61,2.52,0,1.9-1.73,3.12-4.28,3.12s-4.22-1.22-4.35-3.09h2.89c.09.68.63,1.08,1.51,1.08s1.28-.29,1.28-.77-.28-.58-1-.73l-1.73-.37c-1.79-.37-2.73-1.32-2.73-2.72C114.39,48,116,46.83,118.48,46.83Zm14.31,9.37H129.9V54.47h-.06a2.61,2.61,0,0,1-2.66,1.91,3.19,3.19,0,0,1-3.36-3.45V47h3v5.24c0,1.09.56,1.67,1.49,1.67a1.53,1.53,0,0,0,1.52-1.73V47h3ZM134.24,47h2.9v1.77h.06a2.66,2.66,0,0,1,2.61-1.94,2.39,2.39,0,0,1,2.55,2h.06a2.82,2.82,0,0,1,2.82-2,2.91,2.91,0,0,1,3,3.12V56.2h-3V50.75c0-1-.45-1.46-1.29-1.46a1.31,1.31,0,0,0-1.31,1.48V56.2h-2.85V50.71c0-.92-.45-1.42-1.27-1.42a1.34,1.34,0,0,0-1.33,1.5V56.2h-3Z" />
-                                <path
-                                    d="M55.48,44.62a13.25,13.25,0,0,0-2-3.22A13.53,13.53,0,1,0,34.8,60.72,13.09,13.09,0,0,0,38,62.55a13.39,13.39,0,0,0,5.07,1A13.56,13.56,0,0,0,56.6,50,13.39,13.39,0,0,0,55.48,44.62ZM43.06,39.19a10.71,10.71,0,0,1,4.52,1h0a4.39,4.39,0,0,1-1.08.31,5.73,5.73,0,0,0-4.85,4.85A3,3,0,0,1,38.94,48a5.73,5.73,0,0,0-4.85,4.85,2.91,2.91,0,0,1-.79,1.74h0a10.8,10.8,0,0,1,9.77-15.42ZM34.79,57c.12-.11.24-.21.36-.33a5.48,5.48,0,0,0,1.62-3.23,2.92,2.92,0,0,1,.87-1.82,2.83,2.83,0,0,1,1.81-.86,5.73,5.73,0,0,0,4.85-4.85A2.92,2.92,0,0,1,45.17,44,2.87,2.87,0,0,1,47,43.17a5.48,5.48,0,0,0,3-1.43,10.51,10.51,0,0,1,2.36,2.78.86.86,0,0,1-.13.14,2.87,2.87,0,0,1-1.81.88,5.71,5.71,0,0,0-4.85,4.85,3,3,0,0,1-2.69,2.68A5.76,5.76,0,0,0,38,57.92a3.14,3.14,0,0,1-.49,1.37A10.89,10.89,0,0,1,34.79,57Zm8.27,3.86a10.84,10.84,0,0,1-3-.42,5.78,5.78,0,0,0,.64-2,3,3,0,0,1,2.68-2.68,5.73,5.73,0,0,0,4.86-4.85,3,3,0,0,1,2.68-2.68,5.71,5.71,0,0,0,2.56-1A10.82,10.82,0,0,1,43.06,60.81Z" />
-                                </svg>
-                        </div>
-                        <div class="w-25pc">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 177.78 100" fill="currentColor">
-                                <path
-                                    d="M46.23,41.39h2V55.31h6v2h-8Zm14.23,0a6,6,0,1,1-6,6A6,6,0,0,1,60.46,41.39Zm0,10a4,4,0,1,0-4-4A4,4,0,0,0,60.46,51.37Zm-4,3.94h8v2h-8Zm25.6,2h-2V55.9a7.69,7.69,0,0,1-4.4,1.39,8,8,0,1,1,6-13.23l-1.47,1.31a6,6,0,1,0-4.46,10,5.77,5.77,0,0,0,4.38-2H74.71v-2l7.37,0Zm7.36-15.9a6,6,0,1,1-6,6A6,6,0,0,1,89.44,41.39Zm0,10a4,4,0,1,0-4-4A4,4,0,0,0,89.44,51.37Zm-4,3.94h8v2h-8ZM97.55,41.39h2v15.9h-2Zm4.77,0,2,0a1.47,1.47,0,0,1,.31,0,6,6,0,1,1,0,11.93h-.31v4h-2Zm2,2v7.91h.31a4,4,0,1,0,0-7.93A1.47,1.47,0,0,0,104.31,43.44Zm14.41-.85-1.48,1.17a1.94,1.94,0,0,0-3.33,1.13V45c0,.88.61,1.47,1.8,1.55,4.58.28,6.68,2.43,6.68,5.27V52a5.9,5.9,0,0,1-10.17,3.42l1.53-1.18a3.6,3.6,0,0,0,2.8,1.14A3.74,3.74,0,0,0,120.48,52v-.14c0-2.67-2.62-3.16-4.89-3.38-2.1-.2-3.61-1.51-3.61-3.4V45a3.85,3.85,0,0,1,3.93-3.56A3.74,3.74,0,0,1,118.72,42.59Zm11.5,12.72c2.49,0,4.46-2.69,4.46-6v-8h2l0,8c0,4.4-2.88,7.95-6.42,7.95s-6.42-3.55-6.42-7.95v-8h2v8C125.77,52.62,127.74,55.31,130.22,55.31Zm21.81,2h-2V47.36l-4.61,6-4.61-6v9.93h-2V41.39l6.6,8.69,6.6-8.69Z" />
-                                <path
-                                    d="M36.63,39a5.44,5.44,0,0,0-10.88,0V55.45l4.48,3.21v7.82h1.92V58.66l4.48-3.21Zm-1.92,9.2-2.56,2.56v-2.4l2.56-2.56Zm-7-2.4,2.56,2.56v2.4l-2.56-2.56Zm7-2.72-3.52,3.52L27.67,43v-2.4l3.52,3.52,3.52-3.52Zm-3.52-7.6a3.54,3.54,0,0,1,3.4,2.61l-3.4,3.39-3.4-3.39A3.54,3.54,0,0,1,31.19,35.44Zm-3.52,19V50.88l2.56,2.56V56.3Zm4.48,1.83V53.44l2.56-2.56v3.59Z" />
-                                </svg>
-                        </div>
-                        <div class="w-25pc">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 177.78 100" fill="currentColor">
-                                <path
-                                    d="M67.88,57.39a2.65,2.65,0,0,1-1.67-.48,1.56,1.56,0,0,1-.63-1.31V46.33a.26.26,0,0,1,.29-.29h1.68c.19,0,.28.1.28.29v8.55c0,.38.17.57.52.57a1.44,1.44,0,0,0,.44-.05c.2,0,.31.06.32.24l.15,1.25a.26.26,0,0,1-.24.31A3.77,3.77,0,0,1,67.88,57.39Z" />
-                                <path
-                                    d="M77.33,56.32a4.71,4.71,0,0,1-6,0,4,4,0,0,1,0-5.63,4.73,4.73,0,0,1,6,0,4.06,4.06,0,0,1,0,5.62ZM72.91,55a2.13,2.13,0,0,0,2.86,0,2.24,2.24,0,0,0,0-2.94,2.13,2.13,0,0,0-2.86,0,2.24,2.24,0,0,0,0,2.94Z" />
-                                <path
-                                    d="M87.71,49.87c.19,0,.28.1.28.29v7.17a3.26,3.26,0,0,1-1.11,2.57,4.2,4.2,0,0,1-2.91,1,4.68,4.68,0,0,1-2.71-.75,3,3,0,0,1-1.31-2c0-.2,0-.29.27-.29H81.9a.37.37,0,0,1,.33.23,1.31,1.31,0,0,0,.61.71,2.34,2.34,0,0,0,1.12.26,1.77,1.77,0,0,0,1.29-.46,1.7,1.7,0,0,0,.47-1.25v-.63a3.35,3.35,0,0,1-2.08.65,3.88,3.88,0,0,1-2.84-1.09,4,4,0,0,1,0-5.56,3.91,3.91,0,0,1,2.84-1.08,3.36,3.36,0,0,1,2.13.69v-.16a.26.26,0,0,1,.28-.29Zm-3.88,5.72A1.76,1.76,0,0,0,85.2,55a2.45,2.45,0,0,0,0-3,1.75,1.75,0,0,0-1.36-.58,1.8,1.8,0,0,0-1.39.59,2.12,2.12,0,0,0-.54,1.5A2.16,2.16,0,0,0,82.44,55,1.81,1.81,0,0,0,83.83,55.59Z" />
-                                <path
-                                    d="M96.62,56.32a4.73,4.73,0,0,1-6,0,4.07,4.07,0,0,1,0-5.63,4.74,4.74,0,0,1,6,0,4.06,4.06,0,0,1,0,5.62ZM92.19,55a2,2,0,0,0,1.44.55A2,2,0,0,0,95.06,55a2.27,2.27,0,0,0,0-2.94,2,2,0,0,0-1.43-.55,2,2,0,0,0-1.44.55,2.27,2.27,0,0,0,0,2.94Z" />
-                                <path
-                                    d="M101.36,48.17a1.45,1.45,0,0,1-1.91,0,1.21,1.21,0,0,1,0-1.76,1.48,1.48,0,0,1,1.91,0,1.21,1.21,0,0,1,0,1.76Zm.21,9.22a2.69,2.69,0,0,1-1.67-.48,1.58,1.58,0,0,1-.62-1.31V50.16a.26.26,0,0,1,.29-.29h1.68c.19,0,.28.1.28.29v4.72q0,.57.51.57a1.55,1.55,0,0,0,.45-.05c.2,0,.31.06.32.24l.15,1.25a.26.26,0,0,1-.24.31A3.79,3.79,0,0,1,101.57,57.39Z" />
-                                <path
-                                    d="M109.14,49.63A3.92,3.92,0,0,1,112,50.71a4.1,4.1,0,0,1,0,5.59,3.89,3.89,0,0,1-2.86,1.09,3.44,3.44,0,0,1-2.09-.65v3.61c0,.19-.1.28-.29.28h-1.68a.24.24,0,0,1-.28-.28v-8.2a.52.52,0,0,0-.59-.59l-.33,0q-.33,0-.33-.24V50.14a.32.32,0,0,1,.23-.33,3,3,0,0,1,1.08-.18,1.85,1.85,0,0,1,1.81,1A3.37,3.37,0,0,1,109.14,49.63ZM107.58,55a1.91,1.91,0,0,0,2.76,0,2.16,2.16,0,0,0,.55-1.53,2.13,2.13,0,0,0-.55-1.53,1.91,1.91,0,0,0-2.76,0,2.21,2.21,0,0,0-.53,1.53A2.24,2.24,0,0,0,107.58,55Z" />
-                                <path
-                                    d="M117.82,57.39a4.82,4.82,0,0,1-2.57-.62A2.44,2.44,0,0,1,114.09,55c0-.2.07-.3.29-.3h1.47a.38.38,0,0,1,.33.22c.21.54.76.81,1.64.81a1.87,1.87,0,0,0,.89-.18.58.58,0,0,0,.34-.49c0-.26-.16-.44-.48-.56a5.41,5.41,0,0,0-1.17-.25A11.12,11.12,0,0,1,116,54a2.3,2.3,0,0,1-1.17-.67,2.14,2.14,0,0,1,.43-3.1,4.12,4.12,0,0,1,2.42-.64,4.42,4.42,0,0,1,2.36.59,2.23,2.23,0,0,1,1.1,1.57q0,.3-.27.3h-1.48a.31.31,0,0,1-.3-.18,1,1,0,0,0-.52-.53,1.76,1.76,0,0,0-.86-.2,1.74,1.74,0,0,0-.85.17.5.5,0,0,0-.32.46.64.64,0,0,0,.48.59,5.42,5.42,0,0,0,1.19.3,13.08,13.08,0,0,1,1.39.26,2.3,2.3,0,0,1,1.17.67,1.89,1.89,0,0,1,.49,1.37,2,2,0,0,1-.93,1.74A4.37,4.37,0,0,1,117.82,57.39Z" />
-                                <path
-                                    d="M131.83,56.89a.27.27,0,0,1-.23.31,3.86,3.86,0,0,1-1.13.19,2.22,2.22,0,0,1-2-.87,3.62,3.62,0,0,1-2.55.87,3.1,3.1,0,0,1-2.34-.91,3.28,3.28,0,0,1-.89-2.41V50.16c0-.19.09-.29.28-.29h1.68c.19,0,.28.1.28.29v3.61a1.77,1.77,0,0,0,.43,1.23,1.5,1.5,0,0,0,1.15.47,1.66,1.66,0,0,0,1.2-.44,1.6,1.6,0,0,0,.45-1.19V50.16c0-.19.09-.29.28-.29h1.7c.19,0,.28.1.28.29v4.71c0,.39.17.58.5.58a1.58,1.58,0,0,0,.46-.05.26.26,0,0,1,.33.24Z" />
-                                <path
-                                    d="M147.72,56.89a.25.25,0,0,1-.23.31,3.88,3.88,0,0,1-1.15.19,2.67,2.67,0,0,1-1.67-.48A1.56,1.56,0,0,1,144,55.6V53.25a1.77,1.77,0,0,0-.42-1.23,1.42,1.42,0,0,0-1.12-.47,1.25,1.25,0,0,0-1,.44,1.78,1.78,0,0,0-.38,1.18v3.69c0,.19-.09.29-.28.29h-1.69a.26.26,0,0,1-.29-.29V53.25a1.85,1.85,0,0,0-.39-1.23,1.3,1.3,0,0,0-1-.47,1.45,1.45,0,0,0-1.1.44,1.65,1.65,0,0,0-.41,1.18v3.69a.26.26,0,0,1-.29.29H134c-.19,0-.28-.1-.28-.29V52.15a.52.52,0,0,0-.59-.59l-.33,0q-.33,0-.33-.24V50.14a.32.32,0,0,1,.23-.33,3,3,0,0,1,1.08-.18,1.88,1.88,0,0,1,1.78.92,3.38,3.38,0,0,1,2.54-.92,2.87,2.87,0,0,1,2.37,1.06,3.3,3.3,0,0,1,2.62-1.06,3.16,3.16,0,0,1,2.37.91,3.26,3.26,0,0,1,.89,2.41v1.93c0,.38.17.57.49.57a1.5,1.5,0,0,0,.46-.05q.31,0,.33.24Z" />
-                                <path
-                                    d="M30.46,48.57a13.69,13.69,0,0,1,26.57,0h-1.2a9.69,9.69,0,0,0-5.67,1.73,2.86,2.86,0,0,1-.3.19h-.14a2.86,2.86,0,0,1-.3-.19,10.17,10.17,0,0,0-11.35,0,2.86,2.86,0,0,1-.3.19h-.14a2.86,2.86,0,0,1-.3-.19,9.69,9.69,0,0,0-5.67-1.73Zm23.21,6.27a3.37,3.37,0,0,1,2.16-.71h1.61V50.92H55.83A6.38,6.38,0,0,0,52,52.14a3.64,3.64,0,0,1-4.32,0,6.8,6.8,0,0,0-7.77,0,3.64,3.64,0,0,1-4.32,0,6.38,6.38,0,0,0-3.88-1.22H30.05v3.21h1.61a3.37,3.37,0,0,1,2.16.71,6.78,6.78,0,0,0,7.76,0,3.39,3.39,0,0,1,2.16-.71,3.35,3.35,0,0,1,2.16.71,6.8,6.8,0,0,0,7.77,0Zm0,5.74a3.37,3.37,0,0,1,2.16-.71h1.61V56.66H55.83A6.38,6.38,0,0,0,52,57.88a3.64,3.64,0,0,1-4.32,0,6.8,6.8,0,0,0-7.77,0,3.64,3.64,0,0,1-4.32,0,6.38,6.38,0,0,0-3.88-1.22H30.05v3.21h1.61a3.37,3.37,0,0,1,2.16.71,6.78,6.78,0,0,0,7.76,0,3.39,3.39,0,0,1,2.16-.71,3.35,3.35,0,0,1,2.16.71,6.8,6.8,0,0,0,7.77,0Z" />
-                                </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="w-100pc md-w-25pc">
-                <div class="m-3 p-5 br-8 bg-indigo-lightest-10 overflow-hidden">
-                    <div class="p-3">
-                        <h3 class="indigo">Free</h3>
-                        <div class="white flex items-center">$<span class="fs-l5 lh-1">0</span>/mo</div>
-                    </div>
-                    <div class="p-3 indigo-lightest fw-400 fs-s1 lh-5">
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50">You have the game.</span>
-                        </div>
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50">Can join and create lobbys.</span></div>
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50">Have to wait in queue of 5k people.</span></div>
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50">24x7 support</span></div>
-                        <div>
-                            <i class="h-3" stroke-width="4" data-feather="x"></i>
-                            <span class="opacity-50">coloured nickname</span></div>
-                    </div>
-                    <div class="p-3">
-                        <button class="button full bg-black white  hover-opacity-100 hover-scale-up-1 ease-300">SIGN
-                            UP</button>
-                    </div>
-                </div>
-            </div>
-            <div class="w-100pc md-w-25pc">
-                <div class="m-3 p-5 br-8 bg-white overflow-hidden">
-                    <div class="p-3">
-                        <h3 class="indigo">Ethereal Plus</h3>
-                        <div class="black flex items-center">$<span class="fs-l5 lh-1">5</span>/mo</div>
-                    </div>
-                    <div class="p-3 black fw-400 fs-s1 lh-5">
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50"> You have the game + extra content from creator.</span></div>
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50">You can join and create your own server.</span></div>
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50">You will join the game no matter what.</span></div>
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50">24x7 support</span></div>
-                        <div>
-                            <i class="h-3 indigo" stroke-width="4" data-feather="check"></i>
-                            <span class="opacity-50">coloured nickname to show off</span></div>
-                    </div>
-                    <div class="p-3">
-                        <button class="button full bg-indigo white hover-opacity-100 hover-scale-up-1 ease-300">SIGN
-                            UP</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+let ownerSession = false;
 
-    <!-- testimonials -->
-    <section class="p-10 md-p-l5">
-        <div id="slider-2">
-            <div class="px-3">
-                <div class="p-8 br-8 bg-indigo-lightest-10 relative">
-                    <span class="fs-l5 lh-1 white opacity-10 absolute top-0 z--1">&#10077;</span>
-                    <p class="fw-600 fs-m1 indigo-lightest opacity-80 italic ls-wider">Experience with them is awesome. Fast communication and very small price! </p>
-                    <div class="flex items-center my-5">
-                        <div class="block br-round border bc-black bw-4 w-l3 h-l3"><img class="br-round"
-                                src="https://randomuser.me/api/portraits/women/46.jpg" alt=""></div>
-                        <div class="ml-4 fs-s1">
-                            <div class="indigo-lightest">Klaudia</div>
-                            <div class="indigo-lightest opacity-20">Fashionista</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-3">
-                <div class="p-8 br-8 bg-indigo-lightest-10 relative">
-                    <span class="fs-l5 lh-1 white opacity-10 absolute top-0 z--1">&#10077;</span>
-                    <p class="fw-600 fs-m1 indigo-lightest opacity-80 italic ls-wider">I bought Ethereal to play with my friends! Now I have no friends! </p>
-                    <div class="flex items-center my-5">
-                        <div class="block br-round border bc-black bw-4 w-l3 h-l3"><img class="br-round"
-                                src="https://randomuser.me/api/portraits/men/16.jpg" alt=""></div>
-                        <div class="ml-4 fs-s1">
-                            <div class="indigo-lightest">Jamal</div>
-                            <div class="indigo-lightest opacity-20">Bike Stealer</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-3">
-                <div class="p-8 br-8 bg-indigo-lightest-10 relative">
-                    <span class="fs-l5 lh-1 white opacity-10 absolute top-0 z--1">&#10077;</span>
-                    <p class="fw-600 fs-m1 indigo-lightest opacity-80 italic ls-wider">I was bored so I looked up on Google "The best Game right now". That popped up and I can say Google knows what's up! </p>
-                    <div class="flex items-center my-5">
-                        <div class="block br-round border bc-black bw-4 w-l3 h-l3"><img class="br-round"
-                                src="https://randomuser.me/api/portraits/women/49.jpg" alt=""></div>
-                        <div class="ml-4 fs-s1">
-                            <div class="indigo-lightest">Vickie Rodriguez</div>
-                            <div class="indigo-lightest opacity-20">CEO of Asos.com</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-3">
-                <div class="p-8 br-8 bg-indigo-lightest-10 relative">
-                    <span class="fs-l5 lh-1 white opacity-10 absolute top-0 z--1">&#10077;</span>
-                    <p class="fw-600 fs-m1 indigo-lightest opacity-80 italic ls-wider">Kaktus ma fajną żaluzję - polecam bardzo kawałki krówki w tej wodzie. </p>
-                    <div class="flex items-center my-5">
-                        <div class="block br-round border bc-black bw-4 w-l3 h-l3"><img class="br-round"
-                                src="https://scontent-frx5-1.xx.fbcdn.net/v/t1.15752-9/281531136_3129484867299452_3739242448183450720_n.jpg?stp=dst-jpg_p1080x2048&_nc_cat=100&ccb=1-7&_nc_sid=ae9488&_nc_ohc=8LqPHVxISwsAX-5RuzQ&_nc_oc=AQm0g_V_zAu-eD6nhNiFqHiVTI7DDIHScKBwGkIaW3JBlAfHv4JhwThYbB35uBseNXQ&_nc_ht=scontent-frx5-1.xx&oh=03_AVJhRtd2xWfYQRfNmQGULGAe0eewsq5edgLXh3O7Jg90Ug&oe=62ADD86C" alt=""></div>
-                        <div class="ml-4 fs-s1">
-                            <div class="indigo-lightest">Szydnom</div>
-                            <div class="indigo-lightest opacity-20">Zeszyciarz</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+const PROJECTS = {
+  obsidian: {
+    name: 'OBSIDIAN',
+    client: 'Client · Sovereign Treasury Holdings (EU)',
+    desc: 'Deployed sovereign-grade infrastructure and zero-day defense protocols across a multi-jurisdictional treasury operation. Air-gapped key vaults, hardware-bound signing paths, and continuous adversary telemetry.',
+    metrics: [
+      { l: 'Contract Revenue', v: '$1,284,500', a: '+22.4%' },
+      { l: 'Engagement', v: '14 months' },
+      { l: 'Incidents', v: '0 breached' }
+    ],
+    seed: 0.62
+  },
+  aegis: {
+    name: 'AEGIS PROTOCOL',
+    client: 'Client · Tier-1 Defense Subcontractor',
+    desc: 'Designed and rolled out a zero-trust mesh across 38 facilities. Identity-bound microsegmentation, deterministic policy enforcement, and a custom telemetry plane reporting to a private SOC.',
+    metrics: [
+      { l: 'Contract Revenue', v: '$2,140,800', a: '+31.7%' },
+      { l: 'Facilities', v: '38 nodes' },
+      { l: 'Lateral Movement', v: '0 confirmed' }
+    ],
+    seed: 0.78
+  },
+  vanguard: {
+    name: 'SILENT VANGUARD',
+    client: 'Client · Private Banking Consortium',
+    desc: 'Continuous adversary simulation program. Custom implants, social-engineering scenarios, and quarterly red-team cycles against a hardened estate of 11,000+ endpoints.',
+    metrics: [
+      { l: 'Program Revenue', v: '$876,200', a: '+12.9%' },
+      { l: 'Cycles Delivered', v: '9' },
+      { l: 'Critical Findings', v: '47 closed' }
+    ],
+    seed: 0.45
+  },
+  nexus: {
+    name: 'NEXUS DEPLOYMENT',
+    client: 'Client · Cross-border Logistics Group',
+    desc: 'Distributed runtime across 4 continents with hardened orchestration, signed-build supply chain, and deterministic failover. Sub-second regional cutover under hostile network conditions.',
+    metrics: [
+      { l: 'Contract Revenue', v: '$1,602,330', a: '+18.3%' },
+      { l: 'Regions', v: '7 active' },
+      { l: 'SLA', v: '99.998%' }
+    ],
+    seed: 0.55
+  }
+};
 
-        </div>
-    </section>
+const modal = document.getElementById('modal');
+const panelDenied = document.getElementById('panelDenied');
+const panelUnlocked = document.getElementById('panelUnlocked');
+const modalText = document.getElementById('modalText');
+const uName = document.getElementById('uName');
+const uClient = document.getElementById('uClient');
+const uDesc = document.getElementById('uDesc');
+const uMetrics = document.getElementById('uMetrics');
+const analysis = document.getElementById('analysis');
+const analyzeBtn = document.getElementById('analyzeBtn');
 
-    <!-- featured blog -->
-    <section class="p-10 md-p-l10">
-        <div class="md-w-75pc">
-            <h2 class="white fs-l3 fw-900 lh-1">We're good in what we do</h2>
-            <p class="indigo-lightest fw-600 fs-m1 opacity-50 my-5">Our service is unbreakable. Not only you get warranty of good game - when can also offer you anti-DDOS software. </p>
-        </div>
-        <div class="relative w-100pc h-75vh bg-cover bg-b"
-            style="background-image: url(assets/images/nicholas-kwok-VBWWscZtszY-unsplash.jpg);">
-            <a href="#"
-                class="bg-white black px-5 py-3 absolute right-0 bottom-0 hover-bg-black hover-white ease-500 flex justify-center items-center after-arrow-right no-underline fs-m1"></a>
-        </div>
+function closeModal(){
+  modal.classList.remove('show');
+  analysis.classList.remove('show');
+}
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('unlockedClose').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
-    </section>
+document.querySelectorAll('.archive').forEach(a => {
+  a.addEventListener('click', () => {
+    const key = a.dataset.key;
+    const p = PROJECTS[key];
+    if (ownerSession && p){
+      panelDenied.style.display = 'none';
+      panelUnlocked.style.display = 'block';
+      uName.textContent = p.name;
+      uClient.textContent = p.client;
+      uDesc.textContent = p.desc;
+      uMetrics.innerHTML = '';
+      analysis.classList.remove('show');
+      analyzeBtn.dataset.key = key;
+      modal.classList.add('show');
+    } else {
+      panelDenied.style.display = 'block';
+      panelUnlocked.style.display = 'none';
+      modalText.textContent = (p ? p.name : 'Archive') + ' — clearance required.';
+      modal.classList.add('show');
+    }
+  });
+});
 
-    <!-- subscribe -->
-    <section class="p-10 md-p-l5">
-        <div class="br-8 bg-indigo-lightest-10 p-5 md-p-l5 flex flex-wrap md-justify-between md-items-center">
-            <div class="w-100pc md-w-33pc">
-                <h2 class="white fs-m4 fw-800">Play Ethereal today</h2>
-                <p class="fw-600 indigo-lightest opacity-40">Get first month free for test use. Forever free for
-                    sponsors. We're not talking about your 1000 subscribers YouTube channel. By sponsors we mean sponsors.</p>
-            </div>
-            <div class="w-100pc md-w-50pc">
-                <div class="flex my-5">
-                    <input type="text"
-                        class="input-lg flex-grow-1 bw-0 fw-200 bg-indigo-lightest-10 white ph-indigo-lightest focus-white opacity-80 fs-s3 py-5 br-r-0"
-                        placeholder="Email Address">
-                    <button class="button-lg bg-indigo indigo-lightest fw-300 fs-s3 br-l-0">Get Started</button>
-                </div>
-            </div>
-        </div>
-    </section>
+analyzeBtn.addEventListener('click', () => {
+  const key = analyzeBtn.dataset.key;
+  const p = PROJECTS[key];
+  if (!p) return;
+  uMetrics.innerHTML = p.metrics.map(m => {
+    const accent = m.a ? ' <span class="accent">'+m.a+'</span>' : '';
+    return '<div class="m"><div class="l">'+m.l+'</div><div class="v">'+m.v+accent+'</div></div>';
+  }).join('');
+  analysis.classList.add('show');
+  drawMini(p.seed);
+});
 
-    <!-- footer -->
-    <footer class="p-5 md-p-l5 bg-indigo-lightest-10">
-        <div class="flex flex-wrap">
-            <div class="md-w-25pc mb-10">
-                <img src="assets/images/logo.png" class="w-l5" alt="">
-                <div class="white opacity-70 fs-s2 mt-4 md-pr-10">
-                    <p>© 2022 All Rights Reserved. Ethereal is a project made by jacobekata for further information please contact him. </p>
-                    <br>
-                    <p>We Ethereal as a team are professionals. Do not tell us what to do. Do not ask for lower price. We don't do that here.</p>
-                </div>
-            </div>
-            <div class="w-100pc md-w-50pc">
-                <div class="flex justify-around">
-                    <div class="w-33pc md-px-10 mb-10">
-                        <h5 class="white">Company</h5>
-                        <ul class="list-none mt-5 fs-s2">
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">About
-                                    Us</a></li>
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">Jobs</a>
-                            </li>
-                            <li class="my-3"><a href="#"
-                                    class="white opacity-70 no-underline hover-underline">Contact</a></li>
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">Media</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="w-33pc md-px-10 mb-10">
-                        <h5 class="white">Product</h5>
-                        <ul class="list-none mt-5 fs-s2">
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">About
-                                    Us</a></li>
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">Jobs</a>
-                            </li>
-                            <li class="my-3"><a href="#"
-                                    class="white opacity-70 no-underline hover-underline">Contact</a></li>
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">Media</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="w-33pc md-px-10 mb-10">
-                        <h5 class="white">Support</h5>
-                        <ul class="list-none mt-5 fs-s2">
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">About
-                                    Us</a></li>
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">Jobs</a>
-                            </li>
-                            <li class="my-3"><a href="#"
-                                    class="white opacity-70 no-underline hover-underline">Contact</a></li>
-                            <li class="my-3"><a href="#" class="white opacity-70 no-underline hover-underline">Media</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="w-100pc md-w-25pc">
-                <div class="flex w-75pc md-w-100pc mx-auto">
-                    <input type="text"
-                        class="input flex-grow-1 bw-0 fw-200 bg-indigo-lightest-10 white ph-indigo-lightest focus-white opacity-80 fs-s3 py-5 br-r-0"
-                        placeholder="Email Address">
-                    <button class="button bg-indigo indigo-lightest fw-300 fs-s3 br-l-0">Start</button>
-                </div>
-                <div class="flex justify-around my-8">
-                    <a href="#" class="relative p-5 bg-indigo br-round white hover-scale-up-1 ease-400"><i
-                            data-feather="twitter" class="absolute-center h-4"></i></a>
-                    <a href="#" class="relative p-5 bg-indigo br-round white hover-scale-up-1 ease-400"><i
-                            data-feather="facebook" class="absolute-center h-4"></i></a>
-                    <a href="#" class="relative p-5 bg-indigo br-round white hover-scale-up-1 ease-400"><i
-                            data-feather="instagram" class="absolute-center h-4"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15.0.0/dist/smooth-scroll.polyfills.min.js"></script>
-    <script src="assets/js/script.js"></script>
+function drawMini(seed){
+  const c = document.getElementById('miniChart');
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0,0,w,h);
+  const pts = 24;
+  const data = [];
+  let v = 40 + seed*30;
+  let s = seed*1000;
+  function rnd(){ s = (s*9301 + 49297) % 233280; return s/233280; }
+  for (let i=0;i<pts;i++){ v += (rnd()-0.38)*8; v = Math.max(15, Math.min(95, v)); data.push(v); }
+  const toX = i => (i/(pts-1))*w;
+  const toY = val => h - (val/100)*h*0.85 - 8;
+  const grad = ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(0,255,156,0.28)');
+  grad.addColorStop(1,'rgba(0,255,156,0)');
+  ctx.beginPath(); ctx.moveTo(0,h);
+  data.forEach((d,i)=>ctx.lineTo(toX(i), toY(d)));
+  ctx.lineTo(w,h); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.shadowColor = 'rgba(0,255,156,0.7)'; ctx.shadowBlur = 10;
+  ctx.strokeStyle = '#00ff9c'; ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  data.forEach((d,i)=>{ const x=toX(i), y=toY(d); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.stroke(); ctx.shadowBlur = 0;
+}
+
+const term = document.getElementById('term');
+const termBody = document.getElementById('termBody');
+const execBtn = document.getElementById('execBtn');
+
+function appendLog(html){
+  const div = document.createElement('div');
+  div.className = 'log';
+  div.innerHTML = html;
+  termBody.insertBefore(div, termBody.querySelector('.input-line'));
+}
+
+function executeTransmission(){
+  const msg = term.value.trim();
+  if (!msg) {
+    appendLog('<span class="err">[ERR]</span> empty payload — transmission aborted.');
+    return;
+  }
+  execBtn.classList.add('sent');
+  appendLog('<span class="ok">[ENCRYPT]</span> AES-256-GCM · sealing payload...');
+  setTimeout(()=>appendLog('<span class="ok">[ROUTE]</span> howlora.sec → relay/04 → endpoint'), 250);
+  setTimeout(()=>{
+    appendLog('<span class="ok">[TRANSMISSION SENT]</span> — channel will be wiped in 60s.');
+    execBtn.classList.remove('sent');
+    term.value = '';
+    showToast('Transmission received. Encrypted.');
+  }, 700);
+}
+execBtn.addEventListener('click', executeTransmission);
+term.addEventListener('keydown', e => { if (e.key === 'Enter') executeTransmission(); });
+
+const toast = document.getElementById('toast');
+const toastText = document.getElementById('toastText');
+function showToast(msg){
+  toastText.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>toast.classList.remove('show'), 2000);
+}
+
+const auth = document.getElementById('auth');
+const loginBtn = document.getElementById('login');
+const userIn = document.getElementById('user');
+const passIn = document.getElementById('pass');
+const dashboard = document.getElementById('dashboard');
+
+function attemptLogin(e){
+  if (e) e.preventDefault();
+  const u = userIn.value.trim();
+  const p = passIn.value;
+  if (u === 'Kerwzy' && p === 'Kubulinka11'){
+    ownerSession = true;
+    document.body.classList.add('owner');
+    document.querySelectorAll('.archive .status').forEach(s => s.textContent = 'Declassified');
+    showToast('Welcome back, owner.');
+    auth.innerHTML = '<div class="session-pill"><span class="led"></span>Session: Owner</div>';
+    dashboard.classList.add('visible');
+    setTimeout(() => {
+      dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      applyRange('month');
+    }, 600);
+  } else {
+    auth.classList.remove('shake');
+    void auth.offsetWidth;
+    auth.classList.add('shake');
+    passIn.value = '';
+  }
+}
+loginBtn.addEventListener('click', attemptLogin);
+passIn.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(e); });
+userIn.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(e); });
+
+const RANGES = {
+  month: { title: 'Revenue · This Month', amount: 3784.58, delta: '+14.2%', pts: 30, seed: 0.30, vol: 9 },
+  q:     { title: 'Revenue · Last 3 Months', amount: 14290.12, delta: '+18.7%', pts: 90, seed: 0.55, vol: 7 },
+  year:  { title: 'Revenue · This Year', amount: 26595.08, delta: '+24.1%', pts: 120, seed: 0.72, vol: 6 },
+  life:  { title: 'Revenue · Lifetime', amount: 42408.56, delta: '+38.9%', pts: 160, seed: 0.91, vol: 5 }
+};
+let currentRange = 'month';
+let animRAF = null;
+
+function fmtMoney(n){
+  return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function animateNumber(el, from, to, dur, formatter){
+  const start = performance.now();
+  function step(now){
+    const t = Math.min(1, (now-start)/dur);
+    const eased = 1 - Math.pow(1-t, 3);
+    const val = from + (to-from)*eased;
+    el.textContent = formatter(val);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function applyRange(key){
+  currentRange = key;
+  const r = RANGES[key];
+  document.querySelectorAll('#filters button').forEach(b => b.classList.toggle('active', b.dataset.range === key));
+  document.getElementById('chTitle').textContent = r.title;
+  const statRev = document.getElementById('statRev');
+  const statDelta = document.getElementById('statDelta');
+  const chValue = document.getElementById('chValue');
+  const fromTxt = (statRev.textContent || '$0').replace(/[^0-9.]/g,'');
+  const from = parseFloat(fromTxt) || 0;
+  animateNumber(statRev, from, r.amount, 700, v => fmtMoney(v));
+  animateNumber({ set textContent(v){ chValue.textContent = v + ' · ' + r.delta; } }, from, r.amount, 700, v => fmtMoney(v));
+  statDelta.textContent = '▲ ' + r.delta;
+  drawChart(r);
+}
+
+document.querySelectorAll('#filters button').forEach(b => {
+  b.addEventListener('click', () => applyRange(b.dataset.range));
+});
+
+function buildSeries(r){
+  const pts = r.pts;
+  const data = [];
+  let s = r.seed * 10000;
+  function rnd(){ s = (s*9301 + 49297) % 233280; return s/233280; }
+  let v = 30 + r.seed*30;
+  for (let i=0;i<pts;i++){ v += (rnd()-0.42)*r.vol; v = Math.max(10, Math.min(95, v)); data.push(v); }
+  data[pts-1] = 78 + r.seed*15;
+  return data;
+}
+
+let chartState = { from: null, to: null, t: 1 };
+function drawChartFrame(){
+  const c = document.getElementById('chart');
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle = '#0e0e0e'; ctx.lineWidth = 1;
+  for (let i=0;i<=5;i++){ const y = (h/5)*i; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  const data = chartState.to;
+  const from = chartState.from;
+  const t = chartState.t;
+  const pts = data.length;
+  const interp = data.map((d,i) => {
+    const fv = from ? (from[Math.floor(i*(from.length-1)/(pts-1))] || d) : d;
+    return fv + (d - fv) * t;
+  });
+  const toX = i => (i/(pts-1))*w;
+  const toY = val => h - (val/100)*h*0.9 - 10;
+  const grad = ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(0,255,156,0.35)');
+  grad.addColorStop(1,'rgba(0,255,156,0)');
+  ctx.beginPath(); ctx.moveTo(0, h);
+  interp.forEach((d,i)=>ctx.lineTo(toX(i), toY(d)));
+  ctx.lineTo(w, h); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.shadowColor = 'rgba(0,255,156,0.9)'; ctx.shadowBlur = 14;
+  ctx.strokeStyle = '#00ff9c'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  interp.forEach((d,i)=>{ const x=toX(i), y=toY(d); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.stroke(); ctx.shadowBlur = 0;
+  const lx = toX(pts-1), ly = toY(interp[pts-1]);
+  ctx.fillStyle = '#00ff9c';
+  ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(lx, ly, 10, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(0,255,156,0.4)'; ctx.lineWidth = 1; ctx.stroke();
+}
+
+function drawChart(r){
+  const next = buildSeries(r);
+  chartState.from = chartState.to || next;
+  chartState.to = next;
+  chartState.t = 0;
+  if (animRAF) cancelAnimationFrame(animRAF);
+  const start = performance.now();
+  function step(now){
+    const t = Math.min(1, (now-start)/650);
+    chartState.t = 1 - Math.pow(1-t, 3);
+    drawChartFrame();
+    if (t < 1) animRAF = requestAnimationFrame(step);
+  }
+  animRAF = requestAnimationFrame(step);
+}
+
+window.addEventListener('resize', () => {
+  if (dashboard.classList.contains('visible')) drawChartFrame();
+});
+</script>
 </body>
-
 </html>
