@@ -20,6 +20,7 @@
     --text-dim: #5a5a5a;
     --text-white: #f5f5f5;
     --accent: #00ff9c;
+    --cyan: #00e0ff;
     --danger: #ff3b3b;
     --mono: 'JetBrains Mono', ui-monospace, monospace;
     --sans: 'Inter', -apple-system, sans-serif;
@@ -51,16 +52,16 @@
   #cursor-dot {
     position: fixed; width: 6px; height: 6px;
     background: var(--text-white); border-radius: 50%;
-    pointer-events: none; z-index: 99999;
+    pointer-events: none; z-index: 2147483646;
     transform: translate(-50%, -50%); mix-blend-mode: difference;
   }
   #cursor-glow {
     position: fixed; width: 480px; height: 480px;
-    border-radius: 50%; pointer-events: none; z-index: 99998;
+    border-radius: 50%; pointer-events: none; z-index: 2147483645;
     transform: translate(-50%, -50%);
     background: radial-gradient(circle, rgba(255,255,255,0.06), rgba(255,255,255,0) 60%);
   }
-  a, button, input { cursor: none; }
+  a, button, input, select, textarea { cursor: none; }
 
   #boot {
     position: fixed; inset: 0; background: #000; z-index: 99999;
@@ -124,10 +125,9 @@
     box-shadow: 0 0 8px var(--accent), 0 0 18px rgba(0,255,156,0.45);
     animation: pulse 1.6s ease-in-out infinite;
   }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
 
   main { padding-top: var(--header-h); position: relative; z-index: 3; }
-
   section { padding: 160px 10%; border-bottom: 1px solid var(--line); position: relative; }
 
   .hero { min-height: calc(100vh - var(--header-h)); display: flex; flex-direction: column; justify-content: center; padding: 120px 10%; }
@@ -171,7 +171,6 @@
   body.owner .archive .status { color: var(--accent); }
   body.owner .archive .status::before { content: "● "; }
 
-  /* TERMINAL */
   .terminal .box {
     border: 1px solid #1f1f1f;
     background: #030303;
@@ -249,7 +248,7 @@
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.88);
     backdrop-filter: blur(10px);
-    z-index: 20000; display: none;
+    z-index: 200000; display: none;
     align-items: center; justify-content: center;
     padding: 40px;
   }
@@ -304,7 +303,7 @@
     transform: translate(-50%, -50%) scale(0.96);
     background: rgba(5,5,5,0.95);
     border: 1px solid #1a3a26;
-    padding: 32px 56px; z-index: 30000;
+    padding: 32px 56px; z-index: 300000;
     font-family: var(--sans); font-weight: 300;
     font-size: 22px; color: var(--text-white);
     letter-spacing: -0.01em; opacity: 0; pointer-events: none;
@@ -313,92 +312,6 @@
   }
   .toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   .toast .glow { color: var(--accent); margin-right: 10px; }
-
-  .hidden-dashboard { display: none; opacity: 0; transition: opacity .8s ease; }
-  .hidden-dashboard.visible { display: block; opacity: 1; }
-  .dash .head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; padding-bottom: 30px; border-bottom: 1px solid var(--line-2); }
-  .dash .head h2 { font-family: var(--sans); font-weight: 300; font-size: 56px; letter-spacing: -0.04em; color: var(--text-white); }
-  .dash .head .sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); }
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-2); border: 1px solid var(--line-2); margin-bottom: 60px; }
-  .stat { background: #050505; padding: 32px; }
-  .stat .label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
-  .stat .val { font-family: var(--sans); font-weight: 300; font-size: 36px; letter-spacing: -0.03em; color: var(--text-white); transition: opacity .35s ease; }
-  .stat .delta { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 8px; }
-
-  .chart-wrap { border: 1px solid var(--line-2); background: #030303; padding: 40px; }
-  .chart-wrap .ch-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-  .chart-wrap .ch-head .t { font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); }
-  .chart-wrap .ch-head .v { font-family: var(--sans); font-weight: 300; font-size: 14px; color: var(--accent); transition: opacity .35s ease; }
-  .filters { display: flex; gap: 8px; margin-bottom: 18px; }
-  .filters button {
-    background: transparent; border: 1px solid var(--line-2);
-    color: var(--text-dim);
-    padding: 8px 14px;
-    font-family: var(--mono); font-size: 10px;
-    letter-spacing: 0.22em; text-transform: uppercase;
-    transition: all .25s;
-  }
-  .filters button:hover { color: var(--text-white); border-color: #2a2a2a; }
-  .filters button.active {
-    color: var(--accent); border-color: #1f5a32;
-    background: rgba(0,255,156,0.05);
-    box-shadow: 0 0 12px rgba(0,255,156,0.18);
-  }
-  #chart { width: 100%; height: 320px; display: block; }
-
-  .status-list { display: flex; flex-direction: column; gap: 22px; max-width: 900px; }
-  .status-row { display: grid; grid-template-columns: 220px 1fr 160px; gap: 28px; align-items: center; }
-  .status-row .sname { font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-white); }
-  .status-row .sbar { height: 4px; background: #0c0c0c; border: 1px solid #111; position: relative; overflow: hidden; }
-  .status-row .sbar > i { position: absolute; left: 0; top: 0; bottom: 0; width: 99.99%; background: linear-gradient(90deg, #00e0ff, #00ff9c); box-shadow: 0 0 12px rgba(0,224,255,0.55); animation: barPulse 3s ease-in-out infinite; }
-  @keyframes barPulse { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
-  .status-row .sval { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #00e0ff; text-align: right; text-shadow: 0 0 10px rgba(0,224,255,0.4); }
-  .report-row { margin-top: 50px; }
-  .report-btn { background: transparent; border: 1px solid var(--line-2); color: var(--text); padding: 12px 22px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; transition: all .25s; }
-  .report-btn:hover { border-color: #00e0ff; color: #00e0ff; box-shadow: 0 0 14px rgba(0,224,255,0.2); }
-  .report-form { display: none; margin-top: 28px; max-width: 640px; border: 1px solid #1f1f1f; background: #030303; font-family: var(--mono); }
-  .report-form.show { display: block; }
-  .report-form .rf-head { padding: 10px 14px; border-bottom: 1px solid #1f1f1f; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); background: #060606; }
-  .report-form .rf-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
-  .report-form input, .report-form textarea { background: #050505; border: 1px solid var(--line-2); color: var(--text-white); padding: 10px 12px; font-family: var(--mono); font-size: 12px; outline: none; resize: vertical; }
-  .report-form input:focus, .report-form textarea:focus { border-color: #00e0ff; }
-  .report-form textarea { min-height: 100px; }
-  .report-form .rf-send { align-self: flex-end; background: transparent; border: 1px solid #145e6e; color: #00e0ff; padding: 9px 18px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; }
-  .report-form .rf-send:hover { box-shadow: 0 0 14px rgba(0,224,255,0.35); background: rgba(0,224,255,0.06); }
-  .report-success { display: none; margin-top: 24px; max-width: 640px; padding: 22px 26px; border: 1px solid #145e6e; background: rgba(0,224,255,0.04); color: #cfeff7; font-family: var(--mono); font-size: 12px; line-height: 1.7; letter-spacing: 0.04em; }
-  .report-success.show { display: block; }
-
-  .hidden-worker { display: none; opacity: 0; transition: opacity .8s ease; }
-  .hidden-worker.visible { display: block; opacity: 1; }
-  .editor-wrap { border: 1px solid #1f1f1f; background: #0a0a0a; max-width: 1100px; font-family: var(--mono); }
-  .editor-wrap .ed-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #111; border-bottom: 1px solid #1f1f1f; }
-  .editor-wrap .ed-bar .tab { font-size: 11px; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 12px; border: 1px solid #1f1f1f; background: #0a0a0a; color: var(--text-white); }
-  .editor-wrap .ed-bar .meta { margin-left: auto; font-size: 10px; color: var(--text-dim); letter-spacing: 0.25em; text-transform: uppercase; }
-  .editor-body { display: grid; grid-template-columns: 56px 1fr; min-height: 380px; }
-  .ed-gutter { background: #0a0a0a; border-right: 1px solid #1f1f1f; padding: 14px 8px; font-size: 13px; line-height: 1.55; color: #3a3a3a; text-align: right; font-family: var(--mono); user-select: none; white-space: pre; }
-  .ed-area { background: #050505; padding: 14px 18px; font-size: 13px; line-height: 1.55; color: #d4d4d4; font-family: var(--mono); outline: none; border: none; resize: none; width: 100%; caret-color: #00e0ff; }
-  .editor-actions { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 1px solid #1f1f1f; background: #080808; }
-  .editor-actions .ed-status { font-size: 10px; color: var(--text-dim); letter-spacing: 0.25em; text-transform: uppercase; }
-  .editor-actions .ed-send { background: transparent; border: 1px solid #1f5a32; color: var(--accent); padding: 9px 20px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; transition: all .25s; }
-  .editor-actions .ed-send:hover { background: rgba(0,255,156,0.08); box-shadow: 0 0 14px rgba(0,255,156,0.3); }
-
-  @media (max-width: 900px) {
-    :root { --header-h: 64px; }
-    header.site { padding: 16px 22px; }
-    header.site nav { display: none; }
-    .auth input { width: 80px; }
-    section { padding: 100px 6%; }
-    .hero { padding: 80px 6%; }
-    .manifesto .grid { grid-template-columns: 1fr; gap: 40px; }
-    .manifesto p { font-size: 1.5rem; }
-    .archive { grid-template-columns: 40px 1fr; }
-    .archive .meta, .archive .status { display: none; }
-    .archive .name { font-size: 22px; }
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .dash .head h2 { font-size: 34px; }
-    .panel.unlocked .metrics { grid-template-columns: 1fr; }
-    .panel.unlocked .ubody h2 { font-size: 32px; }
-  }
 
   .nav-dash {
     color: var(--accent) !important;
@@ -431,17 +344,152 @@
   .live-card .lh { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #1f1f1f; background: #060606; font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); }
   .live-card .lh .ld { color: var(--accent); }
   .live-card .lh .ld::before { content: "● "; }
-  #waveCanvas { width: 100%; height: 200px; display: block; background: #020402; }
-  .feed-body { height: 200px; overflow: hidden; padding: 14px 16px; font-family: var(--mono); font-size: 11px; color: var(--text); line-height: 1.7; }
-  .feed-body .fl { opacity: 0; animation: feedIn .35s ease forwards; }
+  #waveCanvas { width: 100%; height: 220px; display: block; background: #020402; }
+  .feed-body { height: 220px; overflow: hidden; padding: 14px 16px; font-family: var(--mono); font-size: 11px; color: var(--text); line-height: 1.85; }
+  .feed-body .fl { opacity: 0; animation: feedIn .5s ease forwards; }
   .feed-body .fl .t { color: var(--text-dim); margin-right: 8px; }
   .feed-body .fl .ip { color: #4d8aff; }
   .feed-body .fl .at { color: #ffb84d; }
   .feed-body .fl .res { color: var(--accent); }
   .feed-body .fl .resR { color: var(--danger); }
+  .feed-body .fl .cursor { display: inline-block; width: 8px; background: var(--accent); margin-left: 2px; animation: cblink 1s steps(2) infinite; }
+  @keyframes cblink { 50% { opacity: 0; } }
   @keyframes feedIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-  .ddos-panel { border: 1px solid #1f1f1f; background: #030303; max-width: 900px; margin-top: 50px; }
+  /* ============ FULL-SCREEN DASHBOARD OVERLAY ============ */
+  .os-overlay {
+    position: fixed; inset: 0; width: 100vw; height: 100vh;
+    background: #000; z-index: 100000;
+    display: none; overflow-y: auto;
+    color: var(--text);
+  }
+  .os-overlay.show { display: block; }
+  .os-overlay.boot { animation: crtPower .9s ease-out; }
+  @keyframes crtPower {
+    0%   { transform: scale(1.4, 0.001); filter: brightness(8) blur(2px); opacity: 0; }
+    35%  { transform: scale(1, 0.004); filter: brightness(8); opacity: 1; }
+    55%  { transform: scale(1, 0.05); filter: brightness(4); }
+    75%  { transform: scale(1, 0.6); filter: brightness(2); }
+    100% { transform: scale(1,1); filter: none; opacity: 1; }
+  }
+  .os-overlay::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode: overlay; z-index: 2;
+  }
+  .os-overlay::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.6) 100%);
+    z-index: 2;
+  }
+  .os-shake { animation: osShake .35s linear; }
+  @keyframes osShake {
+    0%,100% { transform: translate(0,0); }
+    20% { transform: translate(-3px,2px); }
+    40% { transform: translate(4px,-1px); }
+    60% { transform: translate(-2px,-3px); }
+    80% { transform: translate(2px,3px); }
+  }
+
+  .os-topbar {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 32px;
+    background: rgba(0,0,0,0.85);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border-bottom: 1px solid #111;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+  }
+  .os-topbar .left { display: flex; align-items: center; gap: 18px; color: var(--text-dim); }
+  .os-topbar .brand { color: var(--text-white); font-family: var(--sans); font-size: 15px; letter-spacing: -0.02em; font-weight: 500; }
+  .os-topbar .brand .dot { color: var(--accent); }
+  .os-topbar .right { display: flex; gap: 10px; align-items: center; }
+  .os-topbar .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid #1a3a26; background: rgba(0,255,156,0.04); color: var(--text-white); font-size: 9px; }
+  .os-topbar .pill .led { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1.6s ease-in-out infinite; }
+  .os-topbar .clock { color: var(--accent); }
+  .os-logout {
+    background: transparent; border: 1px solid #3a1010; color: var(--danger);
+    padding: 7px 14px; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.28em; text-transform: uppercase; transition: all .25s;
+  }
+  .os-logout:hover { background: rgba(255,59,59,0.08); box-shadow: 0 0 14px rgba(255,59,59,0.3); color: #fff; }
+
+  .os-body { padding: 50px 56px 80px; max-width: 1500px; margin: 0 auto; position: relative; z-index: 3; }
+  .os-body .sec-label { margin-bottom: 36px; }
+
+  .dash .head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 50px; padding-bottom: 28px; border-bottom: 1px solid var(--line-2); }
+  .dash .head h2 { font-family: var(--sans); font-weight: 300; font-size: 56px; letter-spacing: -0.04em; color: var(--text-white); }
+  .dash .head .sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-2); border: 1px solid var(--line-2); margin-bottom: 40px; }
+  .stat { background: #050505; padding: 32px; }
+  .stat .label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+  .stat .val { font-family: var(--sans); font-weight: 300; font-size: 36px; letter-spacing: -0.03em; color: var(--text-white); transition: opacity .35s ease; }
+  .stat .delta { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 8px; }
+
+  .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 28px; margin-bottom: 40px; }
+  @media (max-width: 1100px) { .dash-grid { grid-template-columns: 1fr; } }
+
+  .chart-wrap { border: 1px solid var(--line-2); background: #030303; padding: 32px; }
+  .chart-wrap .ch-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .chart-wrap .ch-head .t { font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); }
+  .chart-wrap .ch-head .v { font-family: var(--sans); font-weight: 300; font-size: 14px; color: var(--accent); transition: opacity .35s ease; }
+  .filters { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .filters button {
+    background: transparent; border: 1px solid var(--line-2);
+    color: var(--text-dim);
+    padding: 8px 14px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    transition: all .25s;
+  }
+  .filters button:hover { color: var(--text-white); border-color: #2a2a2a; }
+  .filters button.active {
+    color: var(--accent); border-color: #1f5a32;
+    background: rgba(0,255,156,0.05);
+    box-shadow: 0 0 12px rgba(0,255,156,0.18);
+  }
+  #chart { width: 100%; height: 320px; display: block; }
+
+  /* OPERATIVES PANEL */
+  .ops-card { border: 1px solid var(--line-2); background: #030303; }
+  .ops-card .oc-head { padding: 14px 18px; border-bottom: 1px solid var(--line-2); font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center; background: #060606; }
+  .ops-card .oc-head .live { color: var(--accent); }
+  .ops-card .oc-head .live::before { content: "● "; }
+  .ops-list { padding: 14px 18px; display: flex; flex-direction: column; gap: 14px; max-height: 420px; overflow-y: auto; }
+  .ops-list::-webkit-scrollbar { width: 4px; }
+  .ops-list::-webkit-scrollbar-thumb { background: #1a1a1a; }
+  .op-row { display: grid; grid-template-columns: 22px 1fr auto; gap: 14px; align-items: center; padding: 8px 10px; border: 1px solid #0d0d0d; background: #050505; transition: border-color .3s, background .3s; }
+  .op-row:hover { border-color: #1a3a26; background: rgba(0,255,156,0.02); }
+  .op-row .dot { width: 9px; height: 9px; border-radius: 50%; justify-self: center; }
+  .op-row .dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent), 0 0 18px rgba(0,255,156,0.5); animation: pulse 1.6s ease-in-out infinite; }
+  .op-row .dot.off { background: transparent; border: 1px solid #2a2a2a; }
+  .op-row .alias { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--text-white); }
+  .op-row .role { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--text-dim); display: block; margin-top: 2px; }
+  .op-row .meta { font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); text-align: right; }
+  .op-row .meta.on { color: var(--accent); }
+
+  /* SEGMENTED STATUS BARS */
+  .status-list { display: flex; flex-direction: column; gap: 22px; max-width: 100%; margin-top: 8px; }
+  .status-row { display: grid; grid-template-columns: 240px 1fr 200px; gap: 28px; align-items: center; }
+  .status-row .sname { font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-white); }
+  .seg-bar { display: flex; gap: 3px; height: 18px; }
+  .seg-bar .seg { flex: 1; background: #0a0a0a; border: 1px solid #141414; position: relative; overflow: hidden; }
+  .seg-bar .seg.on {
+    background: linear-gradient(180deg, rgba(0,255,156,0.25), rgba(0,224,255,0.18));
+    border-color: #1f5a32;
+    box-shadow: 0 0 8px rgba(0,255,156,0.4), inset 0 0 6px rgba(0,255,156,0.25);
+    animation: segGlow 2.4s ease-in-out infinite;
+  }
+  .seg-bar .seg.warn { background: linear-gradient(180deg, rgba(255,184,77,0.3), rgba(255,59,59,0.15)); border-color: #3a2a10; box-shadow: 0 0 8px rgba(255,184,77,0.35); }
+  @keyframes segGlow { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.4); } }
+  .status-row .sval { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--cyan); text-align: right; text-shadow: 0 0 10px rgba(0,224,255,0.4); }
+  body.lockdown .seg-bar .seg.on { background: linear-gradient(180deg, rgba(255,59,59,0.35), rgba(255,184,77,0.18)) !important; border-color: #3a1010 !important; box-shadow: 0 0 10px rgba(255,59,59,0.5) !important; }
+  body.lockdown .status-row .sval { color: var(--danger) !important; text-shadow: 0 0 10px rgba(255,59,59,0.4) !important; }
+
+  /* DDOS PANEL */
+  .ddos-panel { border: 1px solid #1f1f1f; background: #030303; margin-top: 40px; transition: border-color .3s; }
+  .ddos-panel.shake { animation: osShake .35s linear infinite; border-color: #5a1f1f; }
   .ddos-panel .dp-head { padding: 14px 18px; border-bottom: 1px solid #1f1f1f; background: #060606; font-family: var(--mono); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--danger); display: flex; justify-content: space-between; align-items: center; }
   .ddos-panel .dp-head .warn { color: #ffb84d; font-size: 9px; letter-spacing: 0.3em; }
   .ddos-panel .dp-body { padding: 28px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 18px; align-items: end; }
@@ -453,17 +501,27 @@
   .ddos-panel .dp-fire { width: 100%; background: transparent; border: 1px solid #5a1f1f; color: var(--danger); padding: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; transition: all .25s; }
   .ddos-panel .dp-fire:hover:not(:disabled) { background: rgba(255,59,59,0.08); box-shadow: 0 0 20px rgba(255,59,59,0.35); color: #fff; }
   .ddos-panel .dp-fire:disabled { opacity: 0.55; }
-  .ddos-panel .dp-log { padding: 0 28px 24px; font-family: var(--mono); font-size: 11px; color: var(--text); line-height: 1.8; min-height: 8px; }
-  .ddos-panel .dp-log .ok { color: var(--accent); }
-  .ddos-panel .dp-log .err { color: var(--danger); }
-  .ddos-panel .dp-progress { height: 2px; background: #1a0808; margin: 0 28px 14px; overflow: hidden; display: none; }
-  .ddos-panel .dp-progress.show { display: block; }
-  .ddos-panel .dp-progress > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--danger), #ffb84d); transition: width 5s linear; box-shadow: 0 0 12px rgba(255,59,59,0.6); }
-  .ddos-panel .dp-progress.run > i { width: 100%; }
-  .ddos-panel .dp-result { padding: 0 28px 24px; font-family: var(--mono); font-size: 12px; color: var(--accent); letter-spacing: 0.18em; text-transform: uppercase; display: none; }
-  .ddos-panel .dp-result.show { display: block; }
 
-  .protocol-zero { margin-top: 80px; padding-top: 60px; border-top: 1px solid #1a0808; text-align: center; }
+  .dp-term { display: none; margin: 0 28px 18px; border: 1px solid #1f0808; background: #050000; font-family: var(--mono); font-size: 12px; padding: 16px 18px; min-height: 180px; line-height: 1.85; color: var(--text); }
+  .dp-term.show { display: block; }
+  .dp-term .line { opacity: 0; animation: feedIn .35s ease forwards; }
+  .dp-term .pct { color: var(--cyan); margin-right: 10px; }
+  .dp-term .ok { color: var(--accent); }
+  .dp-term .err { color: var(--danger); }
+  .dp-term .warn { color: #ffb84d; }
+  .dp-term .blip { display: inline-block; width: 8px; background: var(--danger); margin-left: 4px; animation: cblink .8s steps(2) infinite; }
+
+  .dp-stutter { display: none; height: 10px; margin: 0 28px 14px; background: #0a0000; border: 1px solid #1a0808; position: relative; overflow: hidden; }
+  .dp-stutter.show { display: block; }
+  .dp-stutter > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--danger), #ffb84d, var(--danger)); background-size: 20px 100%; box-shadow: 0 0 14px rgba(255,59,59,0.7); }
+  .dp-stutter > i.run { animation: stutterFill 5.5s steps(40) forwards, stutterShift .35s linear infinite; }
+  @keyframes stutterFill { 0%{width:0%} 12%{width:18%} 14%{width:9%} 30%{width:42%} 33%{width:36%} 55%{width:70%} 58%{width:62%} 80%{width:92%} 84%{width:86%} 100%{width:100%} }
+  @keyframes stutterShift { from { background-position: 0 0; } to { background-position: 20px 0; } }
+
+  .dp-result { padding: 0 28px 24px; font-family: var(--mono); font-size: 13px; color: var(--danger); letter-spacing: 0.22em; text-transform: uppercase; display: none; text-shadow: 0 0 14px rgba(255,59,59,0.6); }
+  .dp-result.show { display: block; animation: feedIn .5s ease; }
+
+  .protocol-zero { margin-top: 70px; padding-top: 50px; border-top: 1px solid #1a0808; text-align: center; }
   .pz-btn {
     background: transparent; border: 1px solid #3a1010;
     color: var(--danger); padding: 18px 44px;
@@ -478,13 +536,10 @@
   .pz-btn:hover { background: rgba(255,59,59,0.06); color: #fff; border-color: var(--danger); }
   .pz-note { display: block; margin-top: 14px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--text-dim); }
 
-  body.lockdown { }
   body.lockdown { --accent: #ff3b3b; }
   body.lockdown .stat .val, body.lockdown .ch-head .v, body.lockdown .stat .delta { color: var(--danger) !important; }
-  body.lockdown .sbar > i { background: linear-gradient(90deg, #ff3b3b, #ffb84d) !important; box-shadow: 0 0 12px rgba(255,59,59,0.55) !important; }
-  body.lockdown .sval { color: var(--danger) !important; text-shadow: 0 0 10px rgba(255,59,59,0.4) !important; }
   #lockdownOverlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 50000;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500000;
     display: none; flex-direction: column; align-items: center; justify-content: center;
     text-align: center; padding: 40px;
   }
@@ -495,28 +550,75 @@
   #lockdownOverlay button:hover { background: rgba(255,59,59,0.1); }
   @keyframes lockPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
 
-  .glitching { animation: glitchFx 0.5s steps(2) 1; }
-  @keyframes glitchFx {
-    0% { transform: translate(0,0) skew(0); filter: none; }
-    10% { transform: translate(-4px,2px) skew(-1deg); filter: hue-rotate(20deg); }
-    20% { transform: translate(5px,-3px) skew(1deg); filter: hue-rotate(-30deg) contrast(1.4); }
-    30% { transform: translate(-3px,1px); filter: invert(0.05); }
-    50% { transform: translate(4px,3px) skew(-2deg); filter: hue-rotate(40deg); }
-    70% { transform: translate(-2px,-2px); filter: contrast(1.2); }
-    100% { transform: translate(0,0); filter: none; }
+  /* VOID CINEMATIC */
+  #voidScene {
+    position: fixed; inset: 0; background: #000; z-index: 1000000;
+    display: none; padding: 60px 80px;
+    font-family: var(--mono); font-size: 22px;
+    color: var(--accent);
+    text-shadow: 0 0 12px rgba(0,255,156,0.55);
+    letter-spacing: 0.04em;
   }
+  #voidScene.show { display: block; }
+  #voidScene .vtext::after {
+    content: "_"; display: inline-block; margin-left: 2px;
+    animation: cblink 1s steps(2) infinite;
+    color: var(--accent);
+  }
+  #voidFlash {
+    position: fixed; inset: 0; background: var(--danger); z-index: 1000001;
+    opacity: 0; pointer-events: none;
+  }
+  #voidFlash.flash { animation: vflash .12s linear; }
+  @keyframes vflash { 0%{opacity:0} 30%{opacity:.85} 100%{opacity:0} }
 
-  #compromised {
-    position: fixed; bottom: 24px; left: 24px; z-index: 40000;
-    background: #0a0000; border: 1px solid #5a1f1f; color: var(--danger);
-    padding: 14px 22px; font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    box-shadow: 0 0 30px rgba(255,59,59,0.35);
-    opacity: 0; transform: translateY(10px); transition: opacity .4s, transform .4s;
-    pointer-events: none;
+  /* WORKER */
+  .editor-wrap { border: 1px solid #1f1f1f; background: #0a0a0a; max-width: 1100px; font-family: var(--mono); }
+  .editor-wrap .ed-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #111; border-bottom: 1px solid #1f1f1f; }
+  .editor-wrap .ed-bar .tab { font-size: 11px; color: var(--text-white); letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 12px; border: 1px solid #1f1f1f; background: #0a0a0a; }
+  .editor-wrap .ed-bar .meta { margin-left: auto; font-size: 10px; color: var(--text-dim); letter-spacing: 0.25em; text-transform: uppercase; }
+  .editor-body { display: grid; grid-template-columns: 56px 1fr; min-height: 380px; }
+  .ed-gutter { background: #0a0a0a; border-right: 1px solid #1f1f1f; padding: 14px 8px; font-size: 13px; line-height: 1.55; color: #3a3a3a; text-align: right; font-family: var(--mono); user-select: none; white-space: pre; }
+  .ed-area { background: #050505; padding: 14px 18px; font-size: 13px; line-height: 1.55; color: #d4d4d4; font-family: var(--mono); outline: none; border: none; resize: none; width: 100%; caret-color: var(--cyan); }
+  .editor-actions { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 1px solid #1f1f1f; background: #080808; }
+  .editor-actions .ed-status { font-size: 10px; color: var(--text-dim); letter-spacing: 0.25em; text-transform: uppercase; }
+  .editor-actions .ed-send { background: transparent; border: 1px solid #1f5a32; color: var(--accent); padding: 9px 20px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; transition: all .25s; }
+  .editor-actions .ed-send:hover { background: rgba(0,255,156,0.08); box-shadow: 0 0 14px rgba(0,255,156,0.3); }
+
+  .report-row { margin-top: 40px; }
+  .report-btn { background: transparent; border: 1px solid var(--line-2); color: var(--text); padding: 12px 22px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; transition: all .25s; }
+  .report-btn:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 14px rgba(0,224,255,0.2); }
+  .report-form { display: none; margin-top: 28px; max-width: 640px; border: 1px solid #1f1f1f; background: #030303; font-family: var(--mono); }
+  .report-form.show { display: block; }
+  .report-form .rf-head { padding: 10px 14px; border-bottom: 1px solid #1f1f1f; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); background: #060606; }
+  .report-form .rf-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+  .report-form input, .report-form textarea { background: #050505; border: 1px solid var(--line-2); color: var(--text-white); padding: 10px 12px; font-family: var(--mono); font-size: 12px; outline: none; resize: vertical; }
+  .report-form input:focus, .report-form textarea:focus { border-color: var(--cyan); }
+  .report-form textarea { min-height: 100px; }
+  .report-form .rf-send { align-self: flex-end; background: transparent; border: 1px solid #145e6e; color: var(--cyan); padding: 9px 18px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; }
+  .report-form .rf-send:hover { box-shadow: 0 0 14px rgba(0,224,255,0.35); background: rgba(0,224,255,0.06); }
+  .report-success { display: none; margin-top: 24px; max-width: 640px; padding: 22px 26px; border: 1px solid #145e6e; background: rgba(0,224,255,0.04); color: #cfeff7; font-family: var(--mono); font-size: 12px; line-height: 1.7; letter-spacing: 0.04em; }
+  .report-success.show { display: block; }
+
+  @media (max-width: 900px) {
+    :root { --header-h: 64px; }
+    header.site { padding: 16px 22px; }
+    header.site nav { display: none; }
+    .auth input { width: 80px; }
+    section { padding: 100px 6%; }
+    .hero { padding: 80px 6%; }
+    .manifesto .grid { grid-template-columns: 1fr; gap: 40px; }
+    .manifesto p { font-size: 1.5rem; }
+    .archive { grid-template-columns: 40px 1fr; }
+    .archive .meta, .archive .status { display: none; }
+    .archive .name { font-size: 22px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .dash .head h2 { font-size: 34px; }
+    .status-row { grid-template-columns: 1fr; gap: 8px; }
+    .os-body { padding: 28px 18px 60px; }
+    .panel.unlocked .metrics { grid-template-columns: 1fr; }
+    .panel.unlocked .ubody h2 { font-size: 32px; }
   }
-  #compromised.show { opacity: 1; transform: translateY(0); }
-  #compromised .led { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 10px var(--danger); margin-right: 10px; animation: pulse 0.8s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -591,48 +693,8 @@
     </div>
   </section>
 
-  <section class="status-sec" id="status">
-    <div class="sec-label">02 — System Status</div>
-    <div class="status-list" id="statusList">
-      <div class="status-row">
-        <div class="sname">Anti-DDoS Node 01</div>
-        <div class="sbar"><i></i></div>
-        <div class="sval">99.99% · Operational</div>
-      </div>
-      <div class="status-row">
-        <div class="sname">WAF Routing</div>
-        <div class="sbar"><i></i></div>
-        <div class="sval">99.99% · Operational</div>
-      </div>
-      <div class="status-row">
-        <div class="sname">Zero-Day Mitigation</div>
-        <div class="sbar"><i></i></div>
-        <div class="sval">99.99% · Operational</div>
-      </div>
-      <div class="status-row">
-        <div class="sname">Edge Perimeter / TLS</div>
-        <div class="sbar"><i></i></div>
-        <div class="sval">99.99% · Operational</div>
-      </div>
-    </div>
-    <div class="report-row">
-      <button class="report-btn" id="reportBtn">▸ Report Downtime</button>
-      <div class="report-form" id="reportForm">
-        <div class="rf-head">root@howlora:~# report --incident</div>
-        <div class="rf-body">
-          <input id="rfService" type="text" placeholder="service name (e.g. Anti-DDoS Node 01)" autocomplete="off" />
-          <textarea id="rfDesc" placeholder="describe the anomaly..."></textarea>
-          <button class="rf-send" id="rfSend">[ TRANSMIT ]</button>
-        </div>
-      </div>
-      <div class="report-success" id="reportSuccess">
-        <span style="color:#00ff9c">●</span> The message has been instantly sent to the owner and all the workers. We'll start working on a fix immediately.
-      </div>
-    </div>
-  </section>
-
   <section class="archives" id="archives">
-    <div class="sec-label">03 — Encrypted Archives</div>
+    <div class="sec-label">02 — Encrypted Archives</div>
     <div class="list">
       <div class="archive" data-key="obsidian">
         <span class="idx">// 01</span>
@@ -662,7 +724,7 @@
   </section>
 
   <section class="terminal" id="contact">
-    <div class="sec-label">04 — Secure Channel</div>
+    <div class="sec-label">03 — Secure Channel</div>
     <div class="box">
       <div class="bar-top">
         <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
@@ -682,142 +744,6 @@
       </div>
     </div>
   </section>
-
-  <section class="dash hidden-dashboard" id="dashboard">
-    <div class="sec-label">05 — Owner Dashboard</div>
-    <div class="head">
-      <h2>Operational Overview</h2>
-      <div class="sub">● Live · Cycle 47</div>
-    </div>
-    <div class="stats">
-      <div class="stat">
-        <div class="label">Current Cycle Revenue</div>
-        <div class="val" id="statRev">$3,784.58</div>
-        <div class="delta" id="statDelta">▲ +14.2%</div>
-      </div>
-      <div class="stat">
-        <div class="label">Active Contracts</div>
-        <div class="val">07</div>
-        <div class="delta">▲ +2</div>
-      </div>
-      <div class="stat">
-        <div class="label">Threat Events Blocked</div>
-        <div class="val">12,481</div>
-        <div class="delta">▲ +8.7%</div>
-      </div>
-      <div class="stat">
-        <div class="label">Uptime</div>
-        <div class="val">99.998%</div>
-        <div class="delta">▲ stable</div>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <div class="ch-head">
-        <span class="t" id="chTitle">Revenue · This Month</span>
-        <span class="v" id="chValue">$3,784.58 · +14.2%</span>
-      </div>
-      <div class="filters" id="filters">
-        <button data-range="month" class="active">This Month</button>
-        <button data-range="q">Last 3 Months</button>
-        <button data-range="year">This Year</button>
-        <button data-range="life">Lifetime</button>
-      </div>
-      <canvas id="chart"></canvas>
-    </div>
-
-    <div class="ddos-panel" data-ddos="owner">
-      <div class="dp-head"><span>// Network Stress Protocol (DDoS)</span><span class="warn">Owner Authorized</span></div>
-      <div class="dp-body">
-        <div>
-          <label>Target IP / Domain</label>
-          <input type="text" class="dp-target" placeholder="e.g. 192.0.2.14 or target.tld" autocomplete="off" />
-        </div>
-        <div>
-          <label>Port</label>
-          <select class="dp-port">
-            <option value="80">80 — HTTP</option>
-            <option value="443">443 — HTTPS</option>
-            <option value="0">0 — All</option>
-            <option value="random">Random</option>
-          </select>
-        </div>
-        <div>
-          <label>Power Level</label>
-          <select class="dp-power">
-            <option value="low">Low · 4 Gbps</option>
-            <option value="medium" selected>Medium · 28 Gbps</option>
-            <option value="high">High · 140 Gbps</option>
-            <option value="max">Max · 1.2 Tbps</option>
-          </select>
-        </div>
-      </div>
-      <div class="dp-actions">
-        <button class="dp-fire">[ Initiate Stress Attack ]</button>
-      </div>
-      <div class="dp-progress"><i></i></div>
-      <div class="dp-log"></div>
-      <div class="dp-result">[ TARGET OFFLINE. PACKET FLOOD SUCCESSFUL. ]</div>
-    </div>
-
-    <div class="protocol-zero">
-      <button class="pz-btn" id="protocolZero">[ Initiate Protocol Zero ]</button>
-      <span class="pz-note">Global Lockdown · Owner Override Required</span>
-    </div>
-  </section>
-  <section class="worker hidden-worker" id="worker">
-    <div class="sec-label">06 — Worker Console</div>
-    <div class="head" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid var(--line-2);">
-      <h2 style="font-family:var(--sans);font-weight:300;font-size:48px;letter-spacing:-0.04em;color:var(--text-white);">Pending Assignment</h2>
-      <div class="sub" style="font-family:var(--mono);font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);">● Worker · Mirxal</div>
-    </div>
-    <div class="editor-wrap">
-      <div class="ed-bar">
-        <span class="tab">assignment.ts</span>
-        <span class="meta">utf-8 · lf · typescript</span>
-      </div>
-      <div class="editor-body">
-        <div class="ed-gutter" id="edGutter">1</div>
-        <textarea class="ed-area" id="edArea" spellcheck="false" placeholder="// write secure module here..."></textarea>
-      </div>
-      <div class="editor-actions">
-        <div class="ed-status" id="edStatus">ready · awaiting transmission</div>
-        <button class="ed-send" id="edSend">[ Send to be verified. ]</button>
-      </div>
-    </div>
-
-    <div class="ddos-panel" data-ddos="worker">
-      <div class="dp-head"><span>// Network Stress Protocol (DDoS)</span><span class="warn">Worker Tooling</span></div>
-      <div class="dp-body">
-        <div>
-          <label>Target IP / Domain</label>
-          <input type="text" class="dp-target" placeholder="e.g. 198.51.100.7" autocomplete="off" />
-        </div>
-        <div>
-          <label>Port</label>
-          <select class="dp-port">
-            <option value="80">80 — HTTP</option>
-            <option value="443">443 — HTTPS</option>
-            <option value="0">0 — All</option>
-            <option value="random">Random</option>
-          </select>
-        </div>
-        <div>
-          <label>Power Level</label>
-          <select class="dp-power">
-            <option value="low">Low · 4 Gbps</option>
-            <option value="medium" selected>Medium · 28 Gbps</option>
-            <option value="high">High · 140 Gbps</option>
-          </select>
-        </div>
-      </div>
-      <div class="dp-actions">
-        <button class="dp-fire">[ Initiate Stress Attack ]</button>
-      </div>
-      <div class="dp-progress"><i></i></div>
-      <div class="dp-log"></div>
-      <div class="dp-result">[ TARGET OFFLINE. PACKET FLOOD SUCCESSFUL. ]</div>
-    </div>
-  </section>
 </main>
 
 <footer>
@@ -825,6 +751,201 @@
   <span>All transmissions encrypted</span>
   <span>node 04 / sector 7</span>
 </footer>
+
+<!-- ===== FULL-SCREEN OWNER DASHBOARD OS ===== -->
+<div class="os-overlay" id="ownerOS">
+  <div class="os-topbar">
+    <div class="left">
+      <span class="brand">howlora<span class="dot">.</span>os</span>
+      <span>node 04</span>
+      <span class="clock" id="osClock">00:00:00 UTC</span>
+    </div>
+    <div class="right">
+      <span class="pill"><span class="led"></span>Session · Owner</span>
+      <button class="os-logout" data-os-close>Log Out / Return</button>
+    </div>
+  </div>
+  <div class="os-body">
+    <div class="sec-label">// Operational Overview</div>
+    <div class="dash">
+      <div class="head">
+        <h2>Operational Overview</h2>
+        <div class="sub">● Live · Cycle 47</div>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Current Cycle Revenue</div>
+          <div class="val" id="statRev">$3,784.58</div>
+          <div class="delta" id="statDelta">▲ +14.2%</div>
+        </div>
+        <div class="stat">
+          <div class="label">Active Contracts</div>
+          <div class="val">07</div>
+          <div class="delta">▲ +2</div>
+        </div>
+        <div class="stat">
+          <div class="label">Threat Events Blocked</div>
+          <div class="val">12,481</div>
+          <div class="delta">▲ +8.7%</div>
+        </div>
+        <div class="stat">
+          <div class="label">Uptime</div>
+          <div class="val">99.998%</div>
+          <div class="delta">▲ stable</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="chart-wrap">
+          <div class="ch-head">
+            <span class="t" id="chTitle">Revenue · This Month</span>
+            <span class="v" id="chValue">$3,784.58 · +14.2%</span>
+          </div>
+          <div class="filters" id="filters">
+            <button data-range="month" class="active">This Month</button>
+            <button data-range="q">Last 3 Months</button>
+            <button data-range="year">This Year</button>
+            <button data-range="life">Lifetime</button>
+          </div>
+          <canvas id="chart"></canvas>
+        </div>
+
+        <div class="ops-card">
+          <div class="oc-head"><span>// Active Network Operatives</span><span class="live">Live</span></div>
+          <div class="ops-list" id="opsList"></div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-top:50px">// System Status</div>
+      <div class="status-list" id="statusList"></div>
+
+      <div class="report-row">
+        <button class="report-btn" id="reportBtn">▸ Report Downtime</button>
+        <div class="report-form" id="reportForm">
+          <div class="rf-head">root@howlora:~# report --incident</div>
+          <div class="rf-body">
+            <input id="rfService" type="text" placeholder="service name (e.g. Anti-DDoS Node 01)" autocomplete="off" />
+            <textarea id="rfDesc" placeholder="describe the anomaly..."></textarea>
+            <button class="rf-send" id="rfSend">[ TRANSMIT ]</button>
+          </div>
+        </div>
+        <div class="report-success" id="reportSuccess">
+          <span style="color:#00ff9c">●</span> The message has been instantly sent to the owner and all the workers. We'll start working on a fix immediately.
+        </div>
+      </div>
+
+      <div class="ddos-panel" data-ddos="owner">
+        <div class="dp-head"><span>// Network Stress Protocol (DDoS)</span><span class="warn">Owner Authorized</span></div>
+        <div class="dp-body">
+          <div>
+            <label>Target IP / Domain</label>
+            <input type="text" class="dp-target" placeholder="e.g. 192.0.2.14 or target.tld" autocomplete="off" />
+          </div>
+          <div>
+            <label>Port</label>
+            <select class="dp-port">
+              <option value="80">80 — HTTP</option>
+              <option value="443">443 — HTTPS</option>
+              <option value="0">0 — All</option>
+              <option value="random">Random</option>
+            </select>
+          </div>
+          <div>
+            <label>Power Level</label>
+            <select class="dp-power">
+              <option value="low">Low · 4 Gbps</option>
+              <option value="medium" selected>Medium · 28 Gbps</option>
+              <option value="high">High · 140 Gbps</option>
+              <option value="max">Max · 1.2 Tbps</option>
+            </select>
+          </div>
+        </div>
+        <div class="dp-actions">
+          <button class="dp-fire">[ Initiate Stress Attack ]</button>
+        </div>
+        <div class="dp-stutter"><i></i></div>
+        <div class="dp-term"></div>
+        <div class="dp-result">[ TARGET INFRASTRUCTURE: OFFLINE ]</div>
+      </div>
+
+      <div class="protocol-zero">
+        <button class="pz-btn" id="protocolZero">[ Initiate Protocol Zero ]</button>
+        <span class="pz-note">Global Lockdown · Owner Override Required</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FULL-SCREEN WORKER OS ===== -->
+<div class="os-overlay" id="workerOS">
+  <div class="os-topbar">
+    <div class="left">
+      <span class="brand">howlora<span class="dot">.</span>os</span>
+      <span>worker console</span>
+      <span class="clock" id="osClockW">00:00:00 UTC</span>
+    </div>
+    <div class="right">
+      <span class="pill"><span class="led"></span>Session · Worker</span>
+      <button class="os-logout" data-os-close>Log Out / Return</button>
+    </div>
+  </div>
+  <div class="os-body">
+    <div class="sec-label">// Worker Console</div>
+    <div class="dash">
+      <div class="head">
+        <h2>Pending Assignment</h2>
+        <div class="sub">● Worker · Mirxal</div>
+      </div>
+      <div class="editor-wrap">
+        <div class="ed-bar">
+          <span class="tab">assignment.ts</span>
+          <span class="meta">utf-8 · lf · typescript</span>
+        </div>
+        <div class="editor-body">
+          <div class="ed-gutter" id="edGutter">1</div>
+          <textarea class="ed-area" id="edArea" spellcheck="false" placeholder="// write secure module here..."></textarea>
+        </div>
+        <div class="editor-actions">
+          <div class="ed-status" id="edStatus">ready · awaiting transmission</div>
+          <button class="ed-send" id="edSend">[ Send to be verified. ]</button>
+        </div>
+      </div>
+
+      <div class="ddos-panel" data-ddos="worker">
+        <div class="dp-head"><span>// Network Stress Protocol (DDoS)</span><span class="warn">Worker Tooling</span></div>
+        <div class="dp-body">
+          <div>
+            <label>Target IP / Domain</label>
+            <input type="text" class="dp-target" placeholder="e.g. 198.51.100.7" autocomplete="off" />
+          </div>
+          <div>
+            <label>Port</label>
+            <select class="dp-port">
+              <option value="80">80 — HTTP</option>
+              <option value="443">443 — HTTPS</option>
+              <option value="0">0 — All</option>
+              <option value="random">Random</option>
+            </select>
+          </div>
+          <div>
+            <label>Power Level</label>
+            <select class="dp-power">
+              <option value="low">Low · 4 Gbps</option>
+              <option value="medium" selected>Medium · 28 Gbps</option>
+              <option value="high">High · 140 Gbps</option>
+            </select>
+          </div>
+        </div>
+        <div class="dp-actions">
+          <button class="dp-fire">[ Initiate Stress Attack ]</button>
+        </div>
+        <div class="dp-stutter"><i></i></div>
+        <div class="dp-term"></div>
+        <div class="dp-result">[ TARGET INFRASTRUCTURE: OFFLINE ]</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="modal-bg" id="modal">
   <div class="panel denied" id="panelDenied">
@@ -874,9 +995,8 @@
   <button id="lockdownExit">Release Override</button>
 </div>
 
-<div id="compromised"><span class="led"></span>[ SYSTEM COMPROMISED. WE ARE WATCHING. ]</div>
-
-
+<div id="voidScene"><span class="vtext" id="voidText"></span></div>
+<div id="voidFlash"></div>
 
 <script>
 const cursor = document.getElementById('cursor-dot');
@@ -909,8 +1029,12 @@ setTimeout(showLine, 500);
 function tick(){
   const d = new Date();
   const t = d.toISOString().substr(11,8) + ' UTC';
-  const el = document.getElementById('clock');
-  if (el) el.textContent = t;
+  const a = document.getElementById('clock');
+  const b = document.getElementById('osClock');
+  const c = document.getElementById('osClockW');
+  if (a) a.textContent = t;
+  if (b) b.textContent = t;
+  if (c) c.textContent = t;
 }
 setInterval(tick, 1000); tick();
 
@@ -978,10 +1102,7 @@ const uMetrics = document.getElementById('uMetrics');
 const analysis = document.getElementById('analysis');
 const analyzeBtn = document.getElementById('analyzeBtn');
 
-function closeModal(){
-  modal.classList.remove('show');
-  analysis.classList.remove('show');
-}
+function closeModal(){ modal.classList.remove('show'); analysis.classList.remove('show'); }
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('unlockedClose').addEventListener('click', closeModal);
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
@@ -1061,13 +1182,9 @@ function appendLog(html){
   div.innerHTML = html;
   termBody.insertBefore(div, termBody.querySelector('.input-line'));
 }
-
 function executeTransmission(){
   const msg = term.value.trim();
-  if (!msg) {
-    appendLog('<span class="err">[ERR]</span> empty payload — transmission aborted.');
-    return;
-  }
+  if (!msg) { appendLog('<span class="err">[ERR]</span> empty payload — transmission aborted.'); return; }
   execBtn.classList.add('sent');
   appendLog('<span class="ok">[ENCRYPT]</span> AES-256-GCM · sealing payload...');
   setTimeout(()=>appendLog('<span class="ok">[ROUTE]</span> howlora.sec → relay/04 → endpoint'), 250);
@@ -1094,9 +1211,28 @@ const auth = document.getElementById('auth');
 const loginBtn = document.getElementById('login');
 const userIn = document.getElementById('user');
 const passIn = document.getElementById('pass');
-const dashboard = document.getElementById('dashboard');
 
-const workerSection = document.getElementById('worker');
+const ownerOS = document.getElementById('ownerOS');
+const workerOS = document.getElementById('workerOS');
+
+function openOS(os){
+  document.body.style.overflow = 'hidden';
+  os.classList.add('show');
+  os.classList.remove('boot');
+  void os.offsetWidth;
+  os.classList.add('boot');
+  os.scrollTop = 0;
+}
+function closeOS(os){
+  os.classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('[data-os-close]').forEach(b => {
+  b.addEventListener('click', () => {
+    closeOS(ownerOS); closeOS(workerOS);
+    showToast('Session closed. Returning to surface.');
+  });
+});
 
 function attemptLogin(e){
   if (e) e.preventDefault();
@@ -1108,26 +1244,22 @@ function attemptLogin(e){
     document.querySelectorAll('.archive .status').forEach(s => s.textContent = 'Declassified');
     showToast('Welcome back, owner.');
     auth.innerHTML = '<div class="session-pill"><span class="led"></span>Session: Owner</div>';
-    dashboard.classList.add('visible');
-    setTimeout(() => {
-      dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      applyRange('month');
-    }, 600);
+    openOS(ownerOS);
+    setTimeout(() => { applyRange('month'); renderStatusList(); renderOperatives(); }, 600);
+    return true;
   } else if (u === 'test' && p === 'test'){
     showToast('Test completed, reload the website.');
     auth.innerHTML = '<div class="session-pill" style="border-color:#2a2a2a;background:rgba(255,255,255,0.02)"><span class="led" style="background:#888;box-shadow:0 0 8px #888"></span>Session: Tester</div>';
+    return true;
   } else if (u === 'Mirxal' && p === 'Fersi17!'){
     showToast("Welcome back, Mirxal. There's a job to be done.");
     auth.innerHTML = '<div class="session-pill"><span class="led"></span>Session: Worker</div>';
-    workerSection.classList.add('visible');
-    setTimeout(() => {
-      workerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 600);
+    openOS(workerOS);
+    return true;
   } else {
-    auth.classList.remove('shake');
-    void auth.offsetWidth;
-    auth.classList.add('shake');
+    auth.classList.remove('shake'); void auth.offsetWidth; auth.classList.add('shake');
     passIn.value = '';
+    return false;
   }
 }
 loginBtn.addEventListener('click', attemptLogin);
@@ -1138,10 +1270,7 @@ const reportBtn = document.getElementById('reportBtn');
 const reportForm = document.getElementById('reportForm');
 const reportSuccess = document.getElementById('reportSuccess');
 const rfSend = document.getElementById('rfSend');
-reportBtn.addEventListener('click', () => {
-  reportSuccess.classList.remove('show');
-  reportForm.classList.toggle('show');
-});
+reportBtn.addEventListener('click', () => { reportSuccess.classList.remove('show'); reportForm.classList.toggle('show'); });
 rfSend.addEventListener('click', () => {
   reportForm.classList.remove('show');
   reportSuccess.classList.add('show');
@@ -1176,17 +1305,13 @@ let titleInterval = setInterval(() => {
   titleBlink = !titleBlink;
 }, 1000);
 window.addEventListener('blur', () => {
-  clearInterval(titleInterval);
-  titleInterval = null;
+  clearInterval(titleInterval); titleInterval = null;
   document.title = 'howlora inactive.';
 });
 window.addEventListener('focus', () => {
   if (titleInterval) return;
   titleBlink = true;
-  titleInterval = setInterval(() => {
-    document.title = titleBlink ? 'howlora.' : 'howlora';
-    titleBlink = !titleBlink;
-  }, 1000);
+  titleInterval = setInterval(() => { document.title = titleBlink ? 'howlora.' : 'howlora'; titleBlink = !titleBlink; }, 1000);
 });
 
 const RANGES = {
@@ -1198,10 +1323,7 @@ const RANGES = {
 let currentRange = 'month';
 let animRAF = null;
 
-function fmtMoney(n){
-  return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
+function fmtMoney(n){ return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 function animateNumber(el, from, to, dur, formatter){
   const start = performance.now();
   function step(now){
@@ -1213,7 +1335,6 @@ function animateNumber(el, from, to, dur, formatter){
   }
   requestAnimationFrame(step);
 }
-
 function applyRange(key){
   currentRange = key;
   const r = RANGES[key];
@@ -1229,10 +1350,7 @@ function applyRange(key){
   statDelta.textContent = '▲ ' + r.delta;
   drawChart(r);
 }
-
-document.querySelectorAll('#filters button').forEach(b => {
-  b.addEventListener('click', () => applyRange(b.dataset.range));
-});
+document.querySelectorAll('#filters button').forEach(b => { b.addEventListener('click', () => applyRange(b.dataset.range)); });
 
 function buildSeries(r){
   const pts = r.pts;
@@ -1244,10 +1362,10 @@ function buildSeries(r){
   data[pts-1] = 78 + r.seed*15;
   return data;
 }
-
 let chartState = { from: null, to: null, t: 1 };
 function drawChartFrame(){
   const c = document.getElementById('chart');
+  if (!c) return;
   const dpr = window.devicePixelRatio || 1;
   const w = c.clientWidth, h = c.clientHeight;
   c.width = w*dpr; c.height = h*dpr;
@@ -1284,7 +1402,6 @@ function drawChartFrame(){
   ctx.beginPath(); ctx.arc(lx, ly, 10, 0, Math.PI*2);
   ctx.strokeStyle = 'rgba(0,255,156,0.4)'; ctx.lineWidth = 1; ctx.stroke();
 }
-
 function drawChart(r){
   const next = buildSeries(r);
   chartState.from = chartState.to || next;
@@ -1300,9 +1417,8 @@ function drawChart(r){
   }
   animRAF = requestAnimationFrame(step);
 }
-
 window.addEventListener('resize', () => {
-  if (dashboard.classList.contains('visible')) drawChartFrame();
+  if (ownerOS.classList.contains('show')) drawChartFrame();
 });
 
 const loginModal = document.getElementById('loginModal');
@@ -1310,11 +1426,8 @@ const loginGate = document.getElementById('loginGate');
 const gateUser = document.getElementById('gateUser');
 const gatePass = document.getElementById('gatePass');
 const gateErr = document.getElementById('gateErr');
-
 function openLoginGate(){
-  gateUser.value = '';
-  gatePass.value = '';
-  gateErr.textContent = '';
+  gateUser.value = ''; gatePass.value = ''; gateErr.textContent = '';
   loginModal.classList.add('show');
   setTimeout(()=>gateUser.focus(), 60);
 }
@@ -1322,18 +1435,13 @@ function closeLoginGate(){ loginModal.classList.remove('show'); }
 document.getElementById('navDash').addEventListener('click', e => { e.preventDefault(); openLoginGate(); });
 document.getElementById('gateCancel').addEventListener('click', closeLoginGate);
 loginModal.addEventListener('click', e => { if (e.target === loginModal) closeLoginGate(); });
-
 function gateAuthenticate(){
   const u = gateUser.value.trim();
   const p = gatePass.value;
   userIn.value = u; passIn.value = p;
-  const before = ownerSession;
-  attemptLogin();
-  const ownerOK = (u === 'Kerwzy' && p === 'Kubulinka11');
-  const workerOK = (u === 'Mirxal' && p === 'Fersi17!');
-  if (ownerOK || workerOK){
-    closeLoginGate();
-  } else {
+  const ok = attemptLogin();
+  if (ok){ closeLoginGate(); }
+  else {
     loginGate.classList.remove('shake'); void loginGate.offsetWidth; loginGate.classList.add('shake');
     gateErr.textContent = '// access denied — invalid clearance.';
     gatePass.value = '';
@@ -1343,8 +1451,20 @@ document.getElementById('gateEnter').addEventListener('click', gateAuthenticate)
 gatePass.addEventListener('keydown', e => { if (e.key === 'Enter') gateAuthenticate(); });
 gateUser.addEventListener('keydown', e => { if (e.key === 'Enter') gateAuthenticate(); });
 
+/* ============ HIGH-TECH PARTICLE PACKET FLOW ============ */
 const waveC = document.getElementById('waveCanvas');
-let waveT = 0;
+let particles = [];
+function spawnParticle(w, h){
+  const lane = Math.floor(Math.random()*5);
+  return {
+    x: -10,
+    y: (h/6)*(lane+1) + (Math.random()-0.5)*14,
+    vx: 1 + Math.random()*2.6,
+    r: 1 + Math.random()*1.8,
+    life: 1,
+    hue: Math.random() < 0.85 ? 0 : 1
+  };
+}
 function drawWave(){
   if (!waveC) return;
   const dpr = window.devicePixelRatio || 1;
@@ -1352,35 +1472,48 @@ function drawWave(){
   if (waveC.width !== w*dpr) { waveC.width = w*dpr; waveC.height = h*dpr; }
   const ctx = waveC.getContext('2d');
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.clearRect(0,0,w,h);
-  ctx.strokeStyle = '#0e0e0e'; ctx.lineWidth = 1;
-  for (let i=0;i<=4;i++){ const y=(h/4)*i; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
-  waveT += 0.04;
+  ctx.fillStyle = 'rgba(2,4,2,0.35)';
+  ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle = '#0e1a14'; ctx.lineWidth = 1;
+  for (let i=1;i<=5;i++){ const y = (h/6)*i; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
   const lock = document.body.classList.contains('lockdown');
-  const color = lock ? '#ff3b3b' : '#00ff9c';
-  ctx.shadowColor = lock ? 'rgba(255,59,59,0.7)' : 'rgba(0,255,156,0.7)';
-  ctx.shadowBlur = 10;
-  ctx.strokeStyle = color; ctx.lineWidth = 1.4;
-  ctx.beginPath();
-  for (let x=0; x<=w; x+=2){
-    const n = Math.sin((x*0.02)+waveT) * 14
-            + Math.sin((x*0.045)+waveT*1.7) * 10
-            + Math.sin((x*0.11)-waveT*0.6) * 6
-            + (Math.random()-0.5) * 3;
-    const y = h/2 + n;
-    if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  if (Math.random() < 0.6) particles.push(spawnParticle(w,h));
+  if (Math.random() < 0.25) particles.push(spawnParticle(w,h));
+  for (let i=particles.length-1;i>=0;i--){
+    const p = particles[i];
+    p.x += p.vx;
+    if (p.x > w + 20){ particles.splice(i,1); continue; }
+    const baseHex = lock ? '#ff3b3b' : (p.hue === 1 ? '#00e0ff' : '#00ff9c');
+    const glow = lock ? 'rgba(255,59,59,0.9)' : (p.hue === 1 ? 'rgba(0,224,255,0.9)' : 'rgba(0,255,156,0.9)');
+    ctx.strokeStyle = glow;
+    ctx.lineWidth = 1.1;
+    ctx.beginPath(); ctx.moveTo(p.x - 22, p.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    ctx.fillStyle = baseHex;
+    ctx.shadowColor = glow; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
   }
-  ctx.stroke();
-  ctx.shadowBlur = 0;
   requestAnimationFrame(drawWave);
 }
 requestAnimationFrame(drawWave);
 
+/* ============ SLOW THREAT FEED ============ */
 const FEED_ATTACKS = ['LAYER 7 HTTP FLOOD','SYN BOMB','UDP AMPLIFICATION','SLOWLORIS','DNS REFLECTION','BOTNET PROBE','TLS HANDSHAKE FLOOD','ICMP STORM','SQL INJECTION ATTEMPT','XSS PAYLOAD','BRUTE-FORCE SSH','RANSOM PAYLOAD','MALFORMED PACKET','PORT SCAN','CREDENTIAL STUFFING'];
 const FEED_RES = ['BLOCKED','ROUTED TO BLACKHOLE','DROPPED AT EDGE','QUARANTINED','RATE-LIMITED','SIGNATURE MATCHED'];
 const feed = document.getElementById('threatFeed');
 function randIP(){ return [Math.floor(Math.random()*223)+1, Math.floor(Math.random()*256), Math.floor(Math.random()*256), Math.floor(Math.random()*256)].join('.'); }
 function ts(){ const d=new Date(); return [d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':'); }
+function typeInto(el, full, dur){
+  let i = 0;
+  const step = Math.max(12, Math.floor(dur/full.length));
+  function tk(){
+    i++;
+    el.innerHTML = full.slice(0,i) + '<span class="cursor">&nbsp;</span>';
+    if (i < full.length) setTimeout(tk, step);
+    else el.innerHTML = full;
+  }
+  tk();
+}
 function pushFeed(){
   if (!feed) return;
   const ip = Math.random() < 0.15 ? 'UNKNOWN ORIGIN' : randIP();
@@ -1389,62 +1522,132 @@ function pushFeed(){
   const danger = Math.random() < 0.08;
   const row = document.createElement('div');
   row.className = 'fl';
-  row.innerHTML = '<span class="t">['+ts()+']</span><span class="ip">'+ip+'</span> — <span class="at">'+at+'</span> — <span class="'+(danger?'resR':'res')+'">'+(danger?'ESCALATED':res)+'</span>';
+  const html = '<span class="t">['+ts()+']</span><span class="ip">'+ip+'</span> — <span class="at">'+at+'</span> — <span class="'+(danger?'resR':'res')+'">'+(danger?'ESCALATED':res)+'</span>';
   feed.insertBefore(row, feed.firstChild);
-  while (feed.children.length > 14) feed.removeChild(feed.lastChild);
-  setTimeout(pushFeed, 800 + Math.random()*2200);
+  while (feed.children.length > 8) feed.removeChild(feed.lastChild);
+  typeInto(row, html, 600);
+  setTimeout(pushFeed, 3000 + Math.random()*3000);
 }
-for (let i=0;i<6;i++) setTimeout(pushFeed, i*150);
+setTimeout(pushFeed, 600);
 
+/* ============ STATUS BARS (segmented) ============ */
+const STATUS_SERVICES = [
+  { n: 'Anti-DDoS Node 01', v: '99.99% · Operational' },
+  { n: 'WAF Routing', v: '99.99% · Operational' },
+  { n: 'Zero-Day Mitigation', v: '99.99% · Operational' },
+  { n: 'Edge Perimeter / TLS', v: '99.99% · Operational' },
+  { n: 'Telemetry Relay', v: '99.97% · Operational' }
+];
+function renderStatusList(){
+  const host = document.getElementById('statusList');
+  if (!host) return;
+  host.innerHTML = STATUS_SERVICES.map(s => {
+    let segs = '';
+    for (let i=0;i<24;i++){ segs += '<div class="seg on" style="animation-delay:'+(i*60)+'ms"></div>'; }
+    return '<div class="status-row"><div class="sname">'+s.n+'</div><div class="seg-bar">'+segs+'</div><div class="sval">'+s.v+'</div></div>';
+  }).join('');
+}
+
+/* ============ OPERATIVES ============ */
+const OPERATIVES = [
+  { a: 'sys_ghost', r: 'edge ops · sector 7', on: true },
+  { a: 'null_ptr', r: 'kernel hardening', on: true },
+  { a: 'cipher_0x', r: 'crypto · key rotation', on: true },
+  { a: 'override_admin', r: 'root · failover', on: true },
+  { a: 'wraith_07', r: 'red team', on: false },
+  { a: 'parity_bit', r: 'telemetry', on: true },
+  { a: 'cold_route', r: 'edge perimeter', on: false },
+  { a: 'mirxal', r: 'worker · payload eng', on: true },
+  { a: 'silent_v', r: 'adversary sim', on: false },
+  { a: 'nyx_daemon', r: 'observer', on: true }
+];
+function renderOperatives(){
+  const host = document.getElementById('opsList');
+  if (!host) return;
+  host.innerHTML = OPERATIVES.map(o => {
+    const meta = o.on ? '<span class="meta on">Online</span>' : '<span class="meta">Offline</span>';
+    return '<div class="op-row"><span class="dot '+(o.on?'on':'off')+'"></span><div><div class="alias">'+o.a+'</div><span class="role">'+o.r+'</span></div>'+meta+'</div>';
+  }).join('');
+}
+setInterval(() => {
+  const i = Math.floor(Math.random()*OPERATIVES.length);
+  if (Math.random() < 0.35) OPERATIVES[i].on = !OPERATIVES[i].on;
+  if (ownerOS.classList.contains('show')) renderOperatives();
+}, 4500);
+
+/* ============ DDOS DRAMATIC SEQUENCE ============ */
 document.querySelectorAll('.ddos-panel').forEach(panel => {
   const fire = panel.querySelector('.dp-fire');
   const target = panel.querySelector('.dp-target');
   const port = panel.querySelector('.dp-port');
   const power = panel.querySelector('.dp-power');
-  const prog = panel.querySelector('.dp-progress');
-  const log = panel.querySelector('.dp-log');
+  const stutter = panel.querySelector('.dp-stutter');
+  const stutterBar = stutter.querySelector('i');
+  const term = panel.querySelector('.dp-term');
   const result = panel.querySelector('.dp-result');
+  const body = panel.querySelector('.dp-body');
+  const actions = panel.querySelector('.dp-actions');
   fire.addEventListener('click', () => {
     const tgt = target.value.trim();
     if (!tgt){
-      log.innerHTML = '<span class="err">[ERR]</span> target required.';
+      term.classList.add('show');
+      term.innerHTML = '<div class="line"><span class="err">[ERR]</span> target required — abort.</div>';
       return;
     }
     fire.disabled = true;
+    body.style.opacity = '0.25';
+    body.style.pointerEvents = 'none';
+    actions.style.opacity = '0.25';
+    actions.style.pointerEvents = 'none';
     result.classList.remove('show');
-    log.innerHTML = '';
-    prog.classList.add('show');
-    prog.classList.remove('run');
-    void prog.offsetWidth;
-    prog.classList.add('run');
+    term.classList.add('show');
+    term.innerHTML = '<div class="line"><span class="ok">root@howlora:~#</span> stress --target '+tgt+' --power '+power.value.toUpperCase()+'<span class="blip">&nbsp;</span></div>';
+    stutter.classList.add('show');
+    stutterBar.classList.remove('run'); void stutterBar.offsetWidth; stutterBar.classList.add('run');
     const portTxt = port.value === 'random' ? String(1024 + Math.floor(Math.random()*64000)) : port.value;
     const steps = [
-      { t: 250, html: '<span class="ok">[INIT]</span> stress vector → '+tgt+':'+portTxt+' · '+power.value.toUpperCase() },
-      { t: 900, html: '<span class="ok">[RECON]</span> fingerprinting target stack...' },
-      { t: 1700, html: '<span class="ok">[BYPASS]</span> WAF evaded · cloudflare ruleset side-stepped' },
-      { t: 2700, html: '<span class="ok">[FLOOD]</span> dispatching packets across 4,812 vectors...' },
-      { t: 3800, html: '<span class="ok">[SATURATE]</span> upstream pipe at 96.4% · backbone trembling' },
-      { t: 4600, html: '<span class="ok">[KILL]</span> target unresponsive · session terminated' }
+      { t: 700,  pct: '10%',  cls: 'ok',   msg: 'Bypassing external WAF · cloudflare ruleset side-stepped...' },
+      { t: 1900, pct: '24%',  cls: 'ok',   msg: 'Recon complete · target stack: nginx/1.25 · edge: anycast' },
+      { t: 3100, pct: '45%',  cls: 'warn', msg: 'Establishing botnet handshake across 4,812 vectors...' },
+      { t: 4400, pct: '62%',  cls: 'warn', msg: 'Saturating upstream pipe → port '+portTxt+' · 87% capacity' },
+      { t: 5500, pct: '80%',  cls: 'err',  msg: 'Flooding target with malicious packets · backbone trembling' },
+      { t: 6400, pct: '94%',  cls: 'err',  msg: 'Session table exhausted · TCP/SYN drops detected' }
     ];
     steps.forEach(s => setTimeout(() => {
-      const d = document.createElement('div'); d.innerHTML = s.html; log.appendChild(d);
+      const d = document.createElement('div');
+      d.className = 'line';
+      d.innerHTML = '<span class="pct">['+s.pct+']</span><span class="'+s.cls+'">'+s.msg+'</span>';
+      term.appendChild(d);
+      term.scrollTop = term.scrollHeight;
     }, s.t));
+    setTimeout(() => { panel.classList.add('shake'); }, 5400);
     setTimeout(() => {
-      prog.classList.remove('show','run');
+      panel.classList.remove('shake');
+      stutter.classList.remove('show');
+      stutterBar.classList.remove('run');
+      const k = document.createElement('div');
+      k.className = 'line';
+      k.innerHTML = '<span class="pct">[100%]</span><span class="err">KILL · target unresponsive · session terminated</span>';
+      term.appendChild(k);
       result.classList.add('show');
-      fire.disabled = false;
-    }, 5000);
+      setTimeout(() => {
+        fire.disabled = false;
+        body.style.opacity = ''; body.style.pointerEvents = '';
+        actions.style.opacity = ''; actions.style.pointerEvents = '';
+      }, 1200);
+    }, 7000);
   });
 });
 
+/* ============ PROTOCOL ZERO ============ */
 const pzBtn = document.getElementById('protocolZero');
 const lockOverlay = document.getElementById('lockdownOverlay');
 function enterLockdown(){
   document.body.classList.add('lockdown');
   document.querySelectorAll('.stat .val').forEach(v => v.textContent = '0');
   document.querySelectorAll('.stat .delta').forEach(v => v.textContent = '▼ -100%');
-  document.getElementById('statRev') && (document.getElementById('statRev').textContent = '$0.00');
-  document.getElementById('chValue') && (document.getElementById('chValue').textContent = '$0.00 · OFFLINE');
+  const sr = document.getElementById('statRev'); if (sr) sr.textContent = '$0.00';
+  const cv = document.getElementById('chValue'); if (cv) cv.textContent = '$0.00 · OFFLINE';
   chartState.from = chartState.to ? chartState.to.map(()=>0) : null;
   chartState.to = (chartState.to || new Array(60).fill(0)).map(()=>0);
   chartState.t = 1;
@@ -1462,28 +1665,44 @@ pzBtn.addEventListener('click', () => {
 });
 document.getElementById('lockdownExit').addEventListener('click', exitLockdown);
 
-const compromised = document.getElementById('compromised');
+/* ============ VOID / ROOT CINEMATIC ============ */
+const voidScene = document.getElementById('voidScene');
+const voidText = document.getElementById('voidText');
+const voidFlash = document.getElementById('voidFlash');
 let keyBuf = '';
-let glitchTimer = null;
-function triggerGlitch(){
-  document.body.classList.remove('glitching');
-  void document.body.offsetWidth;
-  document.body.classList.add('glitching');
-  clearTimeout(glitchTimer);
-  glitchTimer = setTimeout(() => document.body.classList.remove('glitching'), 550);
-  compromised.classList.add('show');
-  setTimeout(() => compromised.classList.remove('show'), 4000);
-  setTimeout(() => openLoginGate(), 600);
+let voidActive = false;
+function playVoid(){
+  if (voidActive) return;
+  voidActive = true;
+  voidScene.classList.add('show');
+  voidText.textContent = '';
+  setTimeout(() => {
+    const msg = 'System compromised. We are watching.';
+    let i = 0;
+    function step(){
+      i++;
+      voidText.textContent = msg.slice(0,i);
+      if (i < msg.length) setTimeout(step, 75 + Math.random()*55);
+      else {
+        setTimeout(() => {
+          voidFlash.classList.remove('flash'); void voidFlash.offsetWidth; voidFlash.classList.add('flash');
+          setTimeout(() => {
+            voidScene.classList.remove('show');
+            voidActive = false;
+            openLoginGate();
+          }, 120);
+        }, 2000);
+      }
+    }
+    step();
+  }, 1000);
 }
 window.addEventListener('keydown', e => {
   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
   const k = e.key.length === 1 ? e.key.toUpperCase() : '';
   if (!k) return;
   keyBuf = (keyBuf + k).slice(-6);
-  if (keyBuf.endsWith('VOID') || keyBuf.endsWith('ROOT')){
-    keyBuf = '';
-    triggerGlitch();
-  }
+  if (keyBuf.endsWith('VOID') || keyBuf.endsWith('ROOT')){ keyBuf = ''; playVoid(); }
 });
 </script>
 </body>
