@@ -4,7 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="chat-tag" content="3950863804">
-<title>howlora — out of sight, not out of mind.</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<title>howlora.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -50,12 +51,12 @@
   #cursor-dot {
     position: fixed; width: 6px; height: 6px;
     background: var(--text-white); border-radius: 50%;
-    pointer-events: none; z-index: 10000;
+    pointer-events: none; z-index: 99999;
     transform: translate(-50%, -50%); mix-blend-mode: difference;
   }
   #cursor-glow {
     position: fixed; width: 480px; height: 480px;
-    border-radius: 50%; pointer-events: none; z-index: 2;
+    border-radius: 50%; pointer-events: none; z-index: 99998;
     transform: translate(-50%, -50%);
     background: radial-gradient(circle, rgba(255,255,255,0.06), rgba(255,255,255,0) 60%);
   }
@@ -345,6 +346,42 @@
   }
   #chart { width: 100%; height: 320px; display: block; }
 
+  .status-list { display: flex; flex-direction: column; gap: 22px; max-width: 900px; }
+  .status-row { display: grid; grid-template-columns: 220px 1fr 160px; gap: 28px; align-items: center; }
+  .status-row .sname { font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-white); }
+  .status-row .sbar { height: 4px; background: #0c0c0c; border: 1px solid #111; position: relative; overflow: hidden; }
+  .status-row .sbar > i { position: absolute; left: 0; top: 0; bottom: 0; width: 99.99%; background: linear-gradient(90deg, #00e0ff, #00ff9c); box-shadow: 0 0 12px rgba(0,224,255,0.55); animation: barPulse 3s ease-in-out infinite; }
+  @keyframes barPulse { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
+  .status-row .sval { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #00e0ff; text-align: right; text-shadow: 0 0 10px rgba(0,224,255,0.4); }
+  .report-row { margin-top: 50px; }
+  .report-btn { background: transparent; border: 1px solid var(--line-2); color: var(--text); padding: 12px 22px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; transition: all .25s; }
+  .report-btn:hover { border-color: #00e0ff; color: #00e0ff; box-shadow: 0 0 14px rgba(0,224,255,0.2); }
+  .report-form { display: none; margin-top: 28px; max-width: 640px; border: 1px solid #1f1f1f; background: #030303; font-family: var(--mono); }
+  .report-form.show { display: block; }
+  .report-form .rf-head { padding: 10px 14px; border-bottom: 1px solid #1f1f1f; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); background: #060606; }
+  .report-form .rf-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+  .report-form input, .report-form textarea { background: #050505; border: 1px solid var(--line-2); color: var(--text-white); padding: 10px 12px; font-family: var(--mono); font-size: 12px; outline: none; resize: vertical; }
+  .report-form input:focus, .report-form textarea:focus { border-color: #00e0ff; }
+  .report-form textarea { min-height: 100px; }
+  .report-form .rf-send { align-self: flex-end; background: transparent; border: 1px solid #145e6e; color: #00e0ff; padding: 9px 18px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; }
+  .report-form .rf-send:hover { box-shadow: 0 0 14px rgba(0,224,255,0.35); background: rgba(0,224,255,0.06); }
+  .report-success { display: none; margin-top: 24px; max-width: 640px; padding: 22px 26px; border: 1px solid #145e6e; background: rgba(0,224,255,0.04); color: #cfeff7; font-family: var(--mono); font-size: 12px; line-height: 1.7; letter-spacing: 0.04em; }
+  .report-success.show { display: block; }
+
+  .hidden-worker { display: none; opacity: 0; transition: opacity .8s ease; }
+  .hidden-worker.visible { display: block; opacity: 1; }
+  .editor-wrap { border: 1px solid #1f1f1f; background: #0a0a0a; max-width: 1100px; font-family: var(--mono); }
+  .editor-wrap .ed-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #111; border-bottom: 1px solid #1f1f1f; }
+  .editor-wrap .ed-bar .tab { font-size: 11px; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 12px; border: 1px solid #1f1f1f; background: #0a0a0a; color: var(--text-white); }
+  .editor-wrap .ed-bar .meta { margin-left: auto; font-size: 10px; color: var(--text-dim); letter-spacing: 0.25em; text-transform: uppercase; }
+  .editor-body { display: grid; grid-template-columns: 56px 1fr; min-height: 380px; }
+  .ed-gutter { background: #0a0a0a; border-right: 1px solid #1f1f1f; padding: 14px 8px; font-size: 13px; line-height: 1.55; color: #3a3a3a; text-align: right; font-family: var(--mono); user-select: none; white-space: pre; }
+  .ed-area { background: #050505; padding: 14px 18px; font-size: 13px; line-height: 1.55; color: #d4d4d4; font-family: var(--mono); outline: none; border: none; resize: none; width: 100%; caret-color: #00e0ff; }
+  .editor-actions { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 1px solid #1f1f1f; background: #080808; }
+  .editor-actions .ed-status { font-size: 10px; color: var(--text-dim); letter-spacing: 0.25em; text-transform: uppercase; }
+  .editor-actions .ed-send { background: transparent; border: 1px solid #1f5a32; color: var(--accent); padding: 9px 20px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; transition: all .25s; }
+  .editor-actions .ed-send:hover { background: rgba(0,255,156,0.08); box-shadow: 0 0 14px rgba(0,255,156,0.3); }
+
   @media (max-width: 900px) {
     :root { --header-h: 64px; }
     header.site { padding: 16px 22px; }
@@ -371,7 +408,7 @@
 
 <div id="boot">
   <div class="line">&gt; initializing secure channel...</div>
-  <div class="line">&gt; handshake [SHA-512] : ok</div>
+  <div class="line">&gt; cipher negotiation [SHA-512] : ok</div>
   <div class="line">&gt; verifying client signature...</div>
   <div class="line">&gt; node://howlora.sec | latency 4ms</div>
   <div class="line">&gt; loading encrypted manifest...</div>
@@ -425,8 +462,48 @@
     </div>
   </section>
 
+  <section class="status-sec" id="status">
+    <div class="sec-label">02 — System Status</div>
+    <div class="status-list" id="statusList">
+      <div class="status-row">
+        <div class="sname">Anti-DDoS Node 01</div>
+        <div class="sbar"><i></i></div>
+        <div class="sval">99.99% · Operational</div>
+      </div>
+      <div class="status-row">
+        <div class="sname">WAF Routing</div>
+        <div class="sbar"><i></i></div>
+        <div class="sval">99.99% · Operational</div>
+      </div>
+      <div class="status-row">
+        <div class="sname">Zero-Day Mitigation</div>
+        <div class="sbar"><i></i></div>
+        <div class="sval">99.99% · Operational</div>
+      </div>
+      <div class="status-row">
+        <div class="sname">Edge Perimeter / TLS</div>
+        <div class="sbar"><i></i></div>
+        <div class="sval">99.99% · Operational</div>
+      </div>
+    </div>
+    <div class="report-row">
+      <button class="report-btn" id="reportBtn">▸ Report Downtime</button>
+      <div class="report-form" id="reportForm">
+        <div class="rf-head">root@howlora:~# report --incident</div>
+        <div class="rf-body">
+          <input id="rfService" type="text" placeholder="service name (e.g. Anti-DDoS Node 01)" autocomplete="off" />
+          <textarea id="rfDesc" placeholder="describe the anomaly..."></textarea>
+          <button class="rf-send" id="rfSend">[ TRANSMIT ]</button>
+        </div>
+      </div>
+      <div class="report-success" id="reportSuccess">
+        <span style="color:#00ff9c">●</span> We hear you. We will start working on a fix immediately. Thank you for patience.
+      </div>
+    </div>
+  </section>
+
   <section class="archives" id="archives">
-    <div class="sec-label">02 — Encrypted Archives</div>
+    <div class="sec-label">03 — Encrypted Archives</div>
     <div class="list">
       <div class="archive" data-key="obsidian">
         <span class="idx">// 01</span>
@@ -456,7 +533,7 @@
   </section>
 
   <section class="terminal" id="contact">
-    <div class="sec-label">03 — Secure Channel</div>
+    <div class="sec-label">04 — Secure Channel</div>
     <div class="box">
       <div class="bar-top">
         <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
@@ -478,7 +555,7 @@
   </section>
 
   <section class="dash hidden-dashboard" id="dashboard">
-    <div class="sec-label">04 — Owner Dashboard</div>
+    <div class="sec-label">05 — Owner Dashboard</div>
     <div class="head">
       <h2>Operational Overview</h2>
       <div class="sub">● Live · Cycle 47</div>
@@ -517,6 +594,27 @@
         <button data-range="life">Lifetime</button>
       </div>
       <canvas id="chart"></canvas>
+    </div>
+  </section>
+  <section class="worker hidden-worker" id="worker">
+    <div class="sec-label">06 — Worker Console</div>
+    <div class="head" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid var(--line-2);">
+      <h2 style="font-family:var(--sans);font-weight:300;font-size:48px;letter-spacing:-0.04em;color:var(--text-white);">Pending Assignment</h2>
+      <div class="sub" style="font-family:var(--mono);font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);">● Worker · Mirxal</div>
+    </div>
+    <div class="editor-wrap">
+      <div class="ed-bar">
+        <span class="tab">assignment.ts</span>
+        <span class="meta">utf-8 · lf · typescript</span>
+      </div>
+      <div class="editor-body">
+        <div class="ed-gutter" id="edGutter">1</div>
+        <textarea class="ed-area" id="edArea" spellcheck="false" placeholder="// write secure module here..."></textarea>
+      </div>
+      <div class="editor-actions">
+        <div class="ed-status" id="edStatus">ready · awaiting transmission</div>
+        <button class="ed-send" id="edSend">[ Send to be verified. ]</button>
+      </div>
     </div>
   </section>
 </main>
@@ -598,10 +696,10 @@ let ownerSession = false;
 const PROJECTS = {
   obsidian: {
     name: 'OBSIDIAN',
-    client: 'Client · Sovereign Treasury Holdings (EU)',
-    desc: 'Deployed sovereign-grade infrastructure and zero-day defense protocols across a multi-jurisdictional treasury operation. Air-gapped key vaults, hardware-bound signing paths, and continuous adversary telemetry.',
+    client: 'Client · Private Trading Desk',
+    desc: 'Developed a high-frequency trading web application handling sub-millisecond order routing. howlora secured the backend with strict per-route rate limiting, biometric session tokenization, custom anti-DDoS packet filtering at the edge, and hardware-bound signing for every outbound execution call.',
     metrics: [
-      { l: 'Contract Revenue', v: '$1,284,500', a: '+22.4%' },
+      { l: 'Contract Revenue', v: '$4,280', a: '+22.4%' },
       { l: 'Engagement', v: '14 months' },
       { l: 'Incidents', v: '0 breached' }
     ],
@@ -609,21 +707,21 @@ const PROJECTS = {
   },
   aegis: {
     name: 'AEGIS PROTOCOL',
-    client: 'Client · Tier-1 Defense Subcontractor',
-    desc: 'Designed and rolled out a zero-trust mesh across 38 facilities. Identity-bound microsegmentation, deterministic policy enforcement, and a custom telemetry plane reporting to a private SOC.',
+    client: 'Client · Regional Fintech Operator',
+    desc: 'Built a customer-facing banking dashboard. howlora deployed a zero-trust service mesh, identity-bound microsegmentation between internal services, deterministic policy enforcement, and a private telemetry plane streaming anomalies into an isolated SOC.',
     metrics: [
-      { l: 'Contract Revenue', v: '$2,140,800', a: '+31.7%' },
-      { l: 'Facilities', v: '38 nodes' },
+      { l: 'Contract Revenue', v: '$3,140', a: '+18.7%' },
+      { l: 'Services', v: '38 internal' },
       { l: 'Lateral Movement', v: '0 confirmed' }
     ],
     seed: 0.78
   },
   vanguard: {
     name: 'SILENT VANGUARD',
-    client: 'Client · Private Banking Consortium',
-    desc: 'Continuous adversary simulation program. Custom implants, social-engineering scenarios, and quarterly red-team cycles against a hardened estate of 11,000+ endpoints.',
+    client: 'Client · Private Membership Platform',
+    desc: 'Hardened a closed-membership web platform handling sensitive client records. howlora ran continuous adversary simulation, deployed custom WAF rule sets, payload-aware bot mitigation, and quarterly red-team cycles against a 11,000+ user estate.',
     metrics: [
-      { l: 'Program Revenue', v: '$876,200', a: '+12.9%' },
+      { l: 'Program Revenue', v: '$1,870', a: '+12.9%' },
       { l: 'Cycles Delivered', v: '9' },
       { l: 'Critical Findings', v: '47 closed' }
     ],
@@ -631,10 +729,10 @@ const PROJECTS = {
   },
   nexus: {
     name: 'NEXUS DEPLOYMENT',
-    client: 'Client · Cross-border Logistics Group',
-    desc: 'Distributed runtime across 4 continents with hardened orchestration, signed-build supply chain, and deterministic failover. Sub-second regional cutover under hostile network conditions.',
+    client: 'Client · Cross-border Logistics SaaS',
+    desc: 'Re-architected a multi-region SaaS runtime serving logistics partners across 4 continents. howlora delivered a signed-build supply chain, hardened orchestration, deterministic regional failover, and edge-level filtering against volumetric and L7 attacks.',
     metrics: [
-      { l: 'Contract Revenue', v: '$1,602,330', a: '+18.3%' },
+      { l: 'Contract Revenue', v: '$2,602', a: '+18.3%' },
       { l: 'Regions', v: '7 active' },
       { l: 'SLA', v: '99.998%' }
     ],
@@ -771,6 +869,8 @@ const userIn = document.getElementById('user');
 const passIn = document.getElementById('pass');
 const dashboard = document.getElementById('dashboard');
 
+const workerSection = document.getElementById('worker');
+
 function attemptLogin(e){
   if (e) e.preventDefault();
   const u = userIn.value.trim();
@@ -786,6 +886,16 @@ function attemptLogin(e){
       dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
       applyRange('month');
     }, 600);
+  } else if (u === 'test' && p === 'test'){
+    showToast('Test completed, reload the website.');
+    auth.innerHTML = '<div class="session-pill" style="border-color:#2a2a2a;background:rgba(255,255,255,0.02)"><span class="led" style="background:#888;box-shadow:0 0 8px #888"></span>Session: Tester</div>';
+  } else if (u === 'Mirxal' && p === 'Fersi17!'){
+    showToast("Welcome back, Mirxal. There's a job to be done.");
+    auth.innerHTML = '<div class="session-pill"><span class="led"></span>Session: Worker</div>';
+    workerSection.classList.add('visible');
+    setTimeout(() => {
+      workerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 600);
   } else {
     auth.classList.remove('shake');
     void auth.offsetWidth;
@@ -796,6 +906,61 @@ function attemptLogin(e){
 loginBtn.addEventListener('click', attemptLogin);
 passIn.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(e); });
 userIn.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(e); });
+
+const reportBtn = document.getElementById('reportBtn');
+const reportForm = document.getElementById('reportForm');
+const reportSuccess = document.getElementById('reportSuccess');
+const rfSend = document.getElementById('rfSend');
+reportBtn.addEventListener('click', () => {
+  reportSuccess.classList.remove('show');
+  reportForm.classList.toggle('show');
+});
+rfSend.addEventListener('click', () => {
+  reportForm.classList.remove('show');
+  reportSuccess.classList.add('show');
+  document.getElementById('rfService').value = '';
+  document.getElementById('rfDesc').value = '';
+});
+
+const edArea = document.getElementById('edArea');
+const edGutter = document.getElementById('edGutter');
+const edSend = document.getElementById('edSend');
+const edStatus = document.getElementById('edStatus');
+function updateGutter(){
+  const lines = (edArea.value.split('\n').length) || 1;
+  let s = '';
+  for (let i=1;i<=Math.max(lines, 18);i++){ s += i + '\n'; }
+  edGutter.textContent = s;
+}
+edArea.addEventListener('input', updateGutter);
+edArea.addEventListener('scroll', () => { edGutter.scrollTop = edArea.scrollTop; });
+updateGutter();
+edSend.addEventListener('click', () => {
+  edArea.value = '';
+  updateGutter();
+  edStatus.textContent = '● code transmitted to the main server for owner verification.';
+  edArea.placeholder = 'Code transmitted to the main server for owner verification.';
+  setTimeout(() => { edStatus.textContent = 'ready · awaiting transmission'; edArea.placeholder = '// write secure module here...'; }, 5000);
+});
+
+let titleBlink = true;
+let titleInterval = setInterval(() => {
+  document.title = titleBlink ? 'howlora.' : 'howlora';
+  titleBlink = !titleBlink;
+}, 1000);
+window.addEventListener('blur', () => {
+  clearInterval(titleInterval);
+  titleInterval = null;
+  document.title = 'howlora inactive.';
+});
+window.addEventListener('focus', () => {
+  if (titleInterval) return;
+  titleBlink = true;
+  titleInterval = setInterval(() => {
+    document.title = titleBlink ? 'howlora.' : 'howlora';
+    titleBlink = !titleBlink;
+  }, 1000);
+});
 
 const RANGES = {
   month: { title: 'Revenue · This Month', amount: 3784.58, delta: '+14.2%', pts: 30, seed: 0.30, vol: 9 },
