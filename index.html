@@ -399,6 +399,124 @@
     .panel.unlocked .metrics { grid-template-columns: 1fr; }
     .panel.unlocked .ubody h2 { font-size: 32px; }
   }
+
+  .nav-dash {
+    color: var(--accent) !important;
+    border: 1px solid #1f5a32;
+    padding: 6px 14px;
+    text-decoration: none;
+    transition: all .25s;
+  }
+  .nav-dash:hover { background: rgba(0,255,156,0.08); box-shadow: 0 0 14px rgba(0,255,156,0.3); }
+
+  .login-gate {
+    width: min(440px,100%); border: 1px solid #1a3a26; background: #030503;
+    padding: 36px 40px; box-shadow: 0 0 60px rgba(0,255,156,0.08);
+  }
+  .login-gate h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
+  .login-gate p { font-family: var(--sans); font-weight: 300; font-size: 18px; color: var(--text-white); margin-bottom: 26px; letter-spacing: -0.01em; }
+  .login-gate .row { display: flex; flex-direction: column; gap: 10px; }
+  .login-gate input { background: #050505; border: 1px solid var(--line-2); color: var(--text-white); padding: 11px 14px; font-family: var(--mono); font-size: 12px; outline: none; letter-spacing: 0.08em; }
+  .login-gate input:focus { border-color: var(--accent); }
+  .login-gate .gactions { display: flex; gap: 10px; margin-top: 14px; }
+  .login-gate .gactions button { flex:1; background: transparent; border: 1px solid #1f5a32; color: var(--accent); padding: 11px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; transition: all .25s; }
+  .login-gate .gactions button:hover { background: rgba(0,255,156,0.08); box-shadow: 0 0 14px rgba(0,255,156,0.3); }
+  .login-gate .gactions .gcancel { border-color: var(--line-2); color: var(--text-dim); }
+  .login-gate.shake { animation: shake .4s; }
+  .login-gate .gerr { color: var(--danger); font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 12px; min-height: 14px; }
+
+  .live-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; margin-top: 48px; max-width: 1200px; }
+  @media (max-width: 900px) { .live-grid { grid-template-columns: 1fr; } }
+  .live-card { border: 1px solid #1f1f1f; background: #030303; padding: 0; }
+  .live-card .lh { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #1f1f1f; background: #060606; font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); }
+  .live-card .lh .ld { color: var(--accent); }
+  .live-card .lh .ld::before { content: "● "; }
+  #waveCanvas { width: 100%; height: 200px; display: block; background: #020402; }
+  .feed-body { height: 200px; overflow: hidden; padding: 14px 16px; font-family: var(--mono); font-size: 11px; color: var(--text); line-height: 1.7; }
+  .feed-body .fl { opacity: 0; animation: feedIn .35s ease forwards; }
+  .feed-body .fl .t { color: var(--text-dim); margin-right: 8px; }
+  .feed-body .fl .ip { color: #4d8aff; }
+  .feed-body .fl .at { color: #ffb84d; }
+  .feed-body .fl .res { color: var(--accent); }
+  .feed-body .fl .resR { color: var(--danger); }
+  @keyframes feedIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .ddos-panel { border: 1px solid #1f1f1f; background: #030303; max-width: 900px; margin-top: 50px; }
+  .ddos-panel .dp-head { padding: 14px 18px; border-bottom: 1px solid #1f1f1f; background: #060606; font-family: var(--mono); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--danger); display: flex; justify-content: space-between; align-items: center; }
+  .ddos-panel .dp-head .warn { color: #ffb84d; font-size: 9px; letter-spacing: 0.3em; }
+  .ddos-panel .dp-body { padding: 28px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 18px; align-items: end; }
+  @media (max-width: 900px) { .ddos-panel .dp-body { grid-template-columns: 1fr; } }
+  .ddos-panel label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .ddos-panel input, .ddos-panel select { width: 100%; background: #050505; border: 1px solid var(--line-2); color: var(--text-white); padding: 11px 14px; font-family: var(--mono); font-size: 12px; outline: none; }
+  .ddos-panel input:focus, .ddos-panel select:focus { border-color: var(--danger); }
+  .ddos-panel .dp-actions { padding: 16px 28px 24px; }
+  .ddos-panel .dp-fire { width: 100%; background: transparent; border: 1px solid #5a1f1f; color: var(--danger); padding: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; transition: all .25s; }
+  .ddos-panel .dp-fire:hover:not(:disabled) { background: rgba(255,59,59,0.08); box-shadow: 0 0 20px rgba(255,59,59,0.35); color: #fff; }
+  .ddos-panel .dp-fire:disabled { opacity: 0.55; }
+  .ddos-panel .dp-log { padding: 0 28px 24px; font-family: var(--mono); font-size: 11px; color: var(--text); line-height: 1.8; min-height: 8px; }
+  .ddos-panel .dp-log .ok { color: var(--accent); }
+  .ddos-panel .dp-log .err { color: var(--danger); }
+  .ddos-panel .dp-progress { height: 2px; background: #1a0808; margin: 0 28px 14px; overflow: hidden; display: none; }
+  .ddos-panel .dp-progress.show { display: block; }
+  .ddos-panel .dp-progress > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--danger), #ffb84d); transition: width 5s linear; box-shadow: 0 0 12px rgba(255,59,59,0.6); }
+  .ddos-panel .dp-progress.run > i { width: 100%; }
+  .ddos-panel .dp-result { padding: 0 28px 24px; font-family: var(--mono); font-size: 12px; color: var(--accent); letter-spacing: 0.18em; text-transform: uppercase; display: none; }
+  .ddos-panel .dp-result.show { display: block; }
+
+  .protocol-zero { margin-top: 80px; padding-top: 60px; border-top: 1px solid #1a0808; text-align: center; }
+  .pz-btn {
+    background: transparent; border: 1px solid #3a1010;
+    color: var(--danger); padding: 18px 44px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase;
+    transition: all .4s; position: relative;
+    animation: pzPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pzPulse {
+    0%,100% { box-shadow: 0 0 0 rgba(255,59,59,0); }
+    50% { box-shadow: 0 0 22px rgba(255,59,59,0.35), inset 0 0 12px rgba(255,59,59,0.08); }
+  }
+  .pz-btn:hover { background: rgba(255,59,59,0.06); color: #fff; border-color: var(--danger); }
+  .pz-note { display: block; margin-top: 14px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--text-dim); }
+
+  body.lockdown { }
+  body.lockdown { --accent: #ff3b3b; }
+  body.lockdown .stat .val, body.lockdown .ch-head .v, body.lockdown .stat .delta { color: var(--danger) !important; }
+  body.lockdown .sbar > i { background: linear-gradient(90deg, #ff3b3b, #ffb84d) !important; box-shadow: 0 0 12px rgba(255,59,59,0.55) !important; }
+  body.lockdown .sval { color: var(--danger) !important; text-shadow: 0 0 10px rgba(255,59,59,0.4) !important; }
+  #lockdownOverlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 50000;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 40px;
+  }
+  #lockdownOverlay.show { display: flex; }
+  #lockdownOverlay h1 { font-family: var(--sans); font-weight: 300; font-size: clamp(40px, 8vw, 110px); color: var(--danger); letter-spacing: -0.04em; line-height: 1; text-shadow: 0 0 50px rgba(255,59,59,0.55); animation: lockPulse 1.6s ease-in-out infinite; }
+  #lockdownOverlay p { margin-top: 24px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.4em; text-transform: uppercase; color: #ff8888; }
+  #lockdownOverlay button { margin-top: 40px; background: transparent; border: 1px solid #3a1010; color: var(--danger); padding: 12px 28px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; }
+  #lockdownOverlay button:hover { background: rgba(255,59,59,0.1); }
+  @keyframes lockPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+  .glitching { animation: glitchFx 0.5s steps(2) 1; }
+  @keyframes glitchFx {
+    0% { transform: translate(0,0) skew(0); filter: none; }
+    10% { transform: translate(-4px,2px) skew(-1deg); filter: hue-rotate(20deg); }
+    20% { transform: translate(5px,-3px) skew(1deg); filter: hue-rotate(-30deg) contrast(1.4); }
+    30% { transform: translate(-3px,1px); filter: invert(0.05); }
+    50% { transform: translate(4px,3px) skew(-2deg); filter: hue-rotate(40deg); }
+    70% { transform: translate(-2px,-2px); filter: contrast(1.2); }
+    100% { transform: translate(0,0); filter: none; }
+  }
+
+  #compromised {
+    position: fixed; bottom: 24px; left: 24px; z-index: 40000;
+    background: #0a0000; border: 1px solid #5a1f1f; color: var(--danger);
+    padding: 14px 22px; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    box-shadow: 0 0 30px rgba(255,59,59,0.35);
+    opacity: 0; transform: translateY(10px); transition: opacity .4s, transform .4s;
+    pointer-events: none;
+  }
+  #compromised.show { opacity: 1; transform: translateY(0); }
+  #compromised .led { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 10px var(--danger); margin-right: 10px; animation: pulse 0.8s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -424,6 +542,7 @@
     <a href="#manifesto">Manifesto</a>
     <a href="#archives">Archives</a>
     <a href="#contact">Contact</a>
+    <a href="#" id="navDash" class="nav-dash">Dashboard</a>
   </nav>
   <div class="auth" id="auth">
     <input id="user" type="text" placeholder="username" autocomplete="off" spellcheck="false" />
@@ -444,6 +563,16 @@
       <span>Est. cycle 2019</span>
       <span>Cybersecurity · Software Architecture</span>
       <span>Selective engagements only</span>
+    </div>
+    <div class="live-grid">
+      <div class="live-card">
+        <div class="lh"><span>// Real-Time Packet Flow</span><span class="ld">Stream Live</span></div>
+        <canvas id="waveCanvas"></canvas>
+      </div>
+      <div class="live-card">
+        <div class="lh"><span>// Threat Feed</span><span class="ld">Mitigated</span></div>
+        <div class="feed-body" id="threatFeed"></div>
+      </div>
     </div>
   </section>
 
@@ -497,7 +626,7 @@
         </div>
       </div>
       <div class="report-success" id="reportSuccess">
-        <span style="color:#00ff9c">●</span> We hear you. We will start working on a fix immediately. Thank you for patience.
+        <span style="color:#00ff9c">●</span> The message has been instantly sent to the owner and all the workers. We'll start working on a fix immediately.
       </div>
     </div>
   </section>
@@ -595,6 +724,45 @@
       </div>
       <canvas id="chart"></canvas>
     </div>
+
+    <div class="ddos-panel" data-ddos="owner">
+      <div class="dp-head"><span>// Network Stress Protocol (DDoS)</span><span class="warn">Owner Authorized</span></div>
+      <div class="dp-body">
+        <div>
+          <label>Target IP / Domain</label>
+          <input type="text" class="dp-target" placeholder="e.g. 192.0.2.14 or target.tld" autocomplete="off" />
+        </div>
+        <div>
+          <label>Port</label>
+          <select class="dp-port">
+            <option value="80">80 — HTTP</option>
+            <option value="443">443 — HTTPS</option>
+            <option value="0">0 — All</option>
+            <option value="random">Random</option>
+          </select>
+        </div>
+        <div>
+          <label>Power Level</label>
+          <select class="dp-power">
+            <option value="low">Low · 4 Gbps</option>
+            <option value="medium" selected>Medium · 28 Gbps</option>
+            <option value="high">High · 140 Gbps</option>
+            <option value="max">Max · 1.2 Tbps</option>
+          </select>
+        </div>
+      </div>
+      <div class="dp-actions">
+        <button class="dp-fire">[ Initiate Stress Attack ]</button>
+      </div>
+      <div class="dp-progress"><i></i></div>
+      <div class="dp-log"></div>
+      <div class="dp-result">[ TARGET OFFLINE. PACKET FLOOD SUCCESSFUL. ]</div>
+    </div>
+
+    <div class="protocol-zero">
+      <button class="pz-btn" id="protocolZero">[ Initiate Protocol Zero ]</button>
+      <span class="pz-note">Global Lockdown · Owner Override Required</span>
+    </div>
   </section>
   <section class="worker hidden-worker" id="worker">
     <div class="sec-label">06 — Worker Console</div>
@@ -615,6 +783,39 @@
         <div class="ed-status" id="edStatus">ready · awaiting transmission</div>
         <button class="ed-send" id="edSend">[ Send to be verified. ]</button>
       </div>
+    </div>
+
+    <div class="ddos-panel" data-ddos="worker">
+      <div class="dp-head"><span>// Network Stress Protocol (DDoS)</span><span class="warn">Worker Tooling</span></div>
+      <div class="dp-body">
+        <div>
+          <label>Target IP / Domain</label>
+          <input type="text" class="dp-target" placeholder="e.g. 198.51.100.7" autocomplete="off" />
+        </div>
+        <div>
+          <label>Port</label>
+          <select class="dp-port">
+            <option value="80">80 — HTTP</option>
+            <option value="443">443 — HTTPS</option>
+            <option value="0">0 — All</option>
+            <option value="random">Random</option>
+          </select>
+        </div>
+        <div>
+          <label>Power Level</label>
+          <select class="dp-power">
+            <option value="low">Low · 4 Gbps</option>
+            <option value="medium" selected>Medium · 28 Gbps</option>
+            <option value="high">High · 140 Gbps</option>
+          </select>
+        </div>
+      </div>
+      <div class="dp-actions">
+        <button class="dp-fire">[ Initiate Stress Attack ]</button>
+      </div>
+      <div class="dp-progress"><i></i></div>
+      <div class="dp-log"></div>
+      <div class="dp-result">[ TARGET OFFLINE. PACKET FLOOD SUCCESSFUL. ]</div>
     </div>
   </section>
 </main>
@@ -650,6 +851,32 @@
 </div>
 
 <div class="toast" id="toast"><span class="glow">●</span><span id="toastText">Welcome back, owner.</span></div>
+
+<div class="modal-bg" id="loginModal">
+  <div class="login-gate" id="loginGate">
+    <h3>// Secure Access</h3>
+    <p>Restricted interface. Authenticate to continue.</p>
+    <div class="row">
+      <input id="gateUser" type="text" placeholder="username" autocomplete="off" spellcheck="false" />
+      <input id="gatePass" type="password" placeholder="••••••••" autocomplete="off" />
+    </div>
+    <div class="gerr" id="gateErr"></div>
+    <div class="gactions">
+      <button class="gcancel" id="gateCancel">Cancel</button>
+      <button id="gateEnter">Authenticate</button>
+    </div>
+  </div>
+</div>
+
+<div id="lockdownOverlay">
+  <h1>[ SYSTEM IN LOCKDOWN ]</h1>
+  <p>Awaiting Override Key</p>
+  <button id="lockdownExit">Release Override</button>
+</div>
+
+<div id="compromised"><span class="led"></span>[ SYSTEM COMPROMISED. WE ARE WATCHING. ]</div>
+
+
 
 <script>
 const cursor = document.getElementById('cursor-dot');
@@ -891,7 +1118,7 @@ function attemptLogin(e){
     auth.innerHTML = '<div class="session-pill" style="border-color:#2a2a2a;background:rgba(255,255,255,0.02)"><span class="led" style="background:#888;box-shadow:0 0 8px #888"></span>Session: Tester</div>';
   } else if (u === 'Mirxal' && p === 'Fersi17!'){
     showToast("Welcome back, Mirxal. There's a job to be done.");
-    auth.innerHTML = '<div class="session-pill"><span class="led"></span>Session: Howlora Dev Team</div>';
+    auth.innerHTML = '<div class="session-pill"><span class="led"></span>Session: Worker</div>';
     workerSection.classList.add('visible');
     setTimeout(() => {
       workerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1076,6 +1303,187 @@ function drawChart(r){
 
 window.addEventListener('resize', () => {
   if (dashboard.classList.contains('visible')) drawChartFrame();
+});
+
+const loginModal = document.getElementById('loginModal');
+const loginGate = document.getElementById('loginGate');
+const gateUser = document.getElementById('gateUser');
+const gatePass = document.getElementById('gatePass');
+const gateErr = document.getElementById('gateErr');
+
+function openLoginGate(){
+  gateUser.value = '';
+  gatePass.value = '';
+  gateErr.textContent = '';
+  loginModal.classList.add('show');
+  setTimeout(()=>gateUser.focus(), 60);
+}
+function closeLoginGate(){ loginModal.classList.remove('show'); }
+document.getElementById('navDash').addEventListener('click', e => { e.preventDefault(); openLoginGate(); });
+document.getElementById('gateCancel').addEventListener('click', closeLoginGate);
+loginModal.addEventListener('click', e => { if (e.target === loginModal) closeLoginGate(); });
+
+function gateAuthenticate(){
+  const u = gateUser.value.trim();
+  const p = gatePass.value;
+  userIn.value = u; passIn.value = p;
+  const before = ownerSession;
+  attemptLogin();
+  const ownerOK = (u === 'Kerwzy' && p === 'Kubulinka11');
+  const workerOK = (u === 'Mirxal' && p === 'Fersi17!');
+  if (ownerOK || workerOK){
+    closeLoginGate();
+  } else {
+    loginGate.classList.remove('shake'); void loginGate.offsetWidth; loginGate.classList.add('shake');
+    gateErr.textContent = '// access denied — invalid clearance.';
+    gatePass.value = '';
+  }
+}
+document.getElementById('gateEnter').addEventListener('click', gateAuthenticate);
+gatePass.addEventListener('keydown', e => { if (e.key === 'Enter') gateAuthenticate(); });
+gateUser.addEventListener('keydown', e => { if (e.key === 'Enter') gateAuthenticate(); });
+
+const waveC = document.getElementById('waveCanvas');
+let waveT = 0;
+function drawWave(){
+  if (!waveC) return;
+  const dpr = window.devicePixelRatio || 1;
+  const w = waveC.clientWidth, h = waveC.clientHeight;
+  if (waveC.width !== w*dpr) { waveC.width = w*dpr; waveC.height = h*dpr; }
+  const ctx = waveC.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle = '#0e0e0e'; ctx.lineWidth = 1;
+  for (let i=0;i<=4;i++){ const y=(h/4)*i; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  waveT += 0.04;
+  const lock = document.body.classList.contains('lockdown');
+  const color = lock ? '#ff3b3b' : '#00ff9c';
+  ctx.shadowColor = lock ? 'rgba(255,59,59,0.7)' : 'rgba(0,255,156,0.7)';
+  ctx.shadowBlur = 10;
+  ctx.strokeStyle = color; ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  for (let x=0; x<=w; x+=2){
+    const n = Math.sin((x*0.02)+waveT) * 14
+            + Math.sin((x*0.045)+waveT*1.7) * 10
+            + Math.sin((x*0.11)-waveT*0.6) * 6
+            + (Math.random()-0.5) * 3;
+    const y = h/2 + n;
+    if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  requestAnimationFrame(drawWave);
+}
+requestAnimationFrame(drawWave);
+
+const FEED_ATTACKS = ['LAYER 7 HTTP FLOOD','SYN BOMB','UDP AMPLIFICATION','SLOWLORIS','DNS REFLECTION','BOTNET PROBE','TLS HANDSHAKE FLOOD','ICMP STORM','SQL INJECTION ATTEMPT','XSS PAYLOAD','BRUTE-FORCE SSH','RANSOM PAYLOAD','MALFORMED PACKET','PORT SCAN','CREDENTIAL STUFFING'];
+const FEED_RES = ['BLOCKED','ROUTED TO BLACKHOLE','DROPPED AT EDGE','QUARANTINED','RATE-LIMITED','SIGNATURE MATCHED'];
+const feed = document.getElementById('threatFeed');
+function randIP(){ return [Math.floor(Math.random()*223)+1, Math.floor(Math.random()*256), Math.floor(Math.random()*256), Math.floor(Math.random()*256)].join('.'); }
+function ts(){ const d=new Date(); return [d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':'); }
+function pushFeed(){
+  if (!feed) return;
+  const ip = Math.random() < 0.15 ? 'UNKNOWN ORIGIN' : randIP();
+  const at = FEED_ATTACKS[Math.floor(Math.random()*FEED_ATTACKS.length)];
+  const res = FEED_RES[Math.floor(Math.random()*FEED_RES.length)];
+  const danger = Math.random() < 0.08;
+  const row = document.createElement('div');
+  row.className = 'fl';
+  row.innerHTML = '<span class="t">['+ts()+']</span><span class="ip">'+ip+'</span> — <span class="at">'+at+'</span> — <span class="'+(danger?'resR':'res')+'">'+(danger?'ESCALATED':res)+'</span>';
+  feed.insertBefore(row, feed.firstChild);
+  while (feed.children.length > 14) feed.removeChild(feed.lastChild);
+  setTimeout(pushFeed, 800 + Math.random()*2200);
+}
+for (let i=0;i<6;i++) setTimeout(pushFeed, i*150);
+
+document.querySelectorAll('.ddos-panel').forEach(panel => {
+  const fire = panel.querySelector('.dp-fire');
+  const target = panel.querySelector('.dp-target');
+  const port = panel.querySelector('.dp-port');
+  const power = panel.querySelector('.dp-power');
+  const prog = panel.querySelector('.dp-progress');
+  const log = panel.querySelector('.dp-log');
+  const result = panel.querySelector('.dp-result');
+  fire.addEventListener('click', () => {
+    const tgt = target.value.trim();
+    if (!tgt){
+      log.innerHTML = '<span class="err">[ERR]</span> target required.';
+      return;
+    }
+    fire.disabled = true;
+    result.classList.remove('show');
+    log.innerHTML = '';
+    prog.classList.add('show');
+    prog.classList.remove('run');
+    void prog.offsetWidth;
+    prog.classList.add('run');
+    const portTxt = port.value === 'random' ? String(1024 + Math.floor(Math.random()*64000)) : port.value;
+    const steps = [
+      { t: 250, html: '<span class="ok">[INIT]</span> stress vector → '+tgt+':'+portTxt+' · '+power.value.toUpperCase() },
+      { t: 900, html: '<span class="ok">[RECON]</span> fingerprinting target stack...' },
+      { t: 1700, html: '<span class="ok">[BYPASS]</span> WAF evaded · cloudflare ruleset side-stepped' },
+      { t: 2700, html: '<span class="ok">[FLOOD]</span> dispatching packets across 4,812 vectors...' },
+      { t: 3800, html: '<span class="ok">[SATURATE]</span> upstream pipe at 96.4% · backbone trembling' },
+      { t: 4600, html: '<span class="ok">[KILL]</span> target unresponsive · session terminated' }
+    ];
+    steps.forEach(s => setTimeout(() => {
+      const d = document.createElement('div'); d.innerHTML = s.html; log.appendChild(d);
+    }, s.t));
+    setTimeout(() => {
+      prog.classList.remove('show','run');
+      result.classList.add('show');
+      fire.disabled = false;
+    }, 5000);
+  });
+});
+
+const pzBtn = document.getElementById('protocolZero');
+const lockOverlay = document.getElementById('lockdownOverlay');
+function enterLockdown(){
+  document.body.classList.add('lockdown');
+  document.querySelectorAll('.stat .val').forEach(v => v.textContent = '0');
+  document.querySelectorAll('.stat .delta').forEach(v => v.textContent = '▼ -100%');
+  document.getElementById('statRev') && (document.getElementById('statRev').textContent = '$0.00');
+  document.getElementById('chValue') && (document.getElementById('chValue').textContent = '$0.00 · OFFLINE');
+  chartState.from = chartState.to ? chartState.to.map(()=>0) : null;
+  chartState.to = (chartState.to || new Array(60).fill(0)).map(()=>0);
+  chartState.t = 1;
+  try { drawChartFrame(); } catch(e){}
+  lockOverlay.classList.add('show');
+}
+function exitLockdown(){
+  document.body.classList.remove('lockdown');
+  lockOverlay.classList.remove('show');
+  if (ownerSession) applyRange(currentRange);
+}
+pzBtn.addEventListener('click', () => {
+  const ok = confirm('Warning: This will sever all external routing and lock down the mainframes. Proceed?');
+  if (ok) enterLockdown();
+});
+document.getElementById('lockdownExit').addEventListener('click', exitLockdown);
+
+const compromised = document.getElementById('compromised');
+let keyBuf = '';
+let glitchTimer = null;
+function triggerGlitch(){
+  document.body.classList.remove('glitching');
+  void document.body.offsetWidth;
+  document.body.classList.add('glitching');
+  clearTimeout(glitchTimer);
+  glitchTimer = setTimeout(() => document.body.classList.remove('glitching'), 550);
+  compromised.classList.add('show');
+  setTimeout(() => compromised.classList.remove('show'), 4000);
+  setTimeout(() => openLoginGate(), 600);
+}
+window.addEventListener('keydown', e => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  const k = e.key.length === 1 ? e.key.toUpperCase() : '';
+  if (!k) return;
+  keyBuf = (keyBuf + k).slice(-6);
+  if (keyBuf.endsWith('VOID') || keyBuf.endsWith('ROOT')){
+    keyBuf = '';
+    triggerGlitch();
+  }
 });
 </script>
 </body>
