@@ -57,7 +57,7 @@
         .sys-row:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
         .sys-row .lbl { color: var(--muted); width: 90px; flex-shrink: 0; font-weight: bold; }
         .sys-row .val { color: #d8e2ea; word-break: break-word; text-align: right; line-height: 1.4; }
-        #devicePopup button { padding: 14px 30px; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); font-weight: 900; letter-spacing: 3px; border-radius: 4px; font-size: 12px; transition: 0.2s; width: 100%; }
+        #devicePopup button { padding: 14px 30px; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); font-weight: 900; letter-spacing: 3px; border-radius: 4px; font-size: 12px; transition: 0.2s; width: 100%; cursor: pointer;}
         #devicePopup button:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(46,224,255,0.4); }
 
         #bootOverlay{
@@ -222,7 +222,7 @@
         .win.closing{animation:winClose .15s ease-in forwards}
         @keyframes winClose{to{opacity:0;transform:scale(.95) translateY(-4px)}}
         .win.minimized{display:none}
-        .win .tb{height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;background:linear-gradient(180deg,#131d28,#0d151e);border-bottom:1px solid var(--line2);cursor:move;flex-shrink:0; touch-action: none;}
+        .win .tb{height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;background:linear-gradient(180deg,#131d28,#0d151e);border-bottom:1px solid var(--line2);cursor:move;flex-shrink:0;}
         .win .tb .dot{width:9px;height:9px;border-radius:50%;background:#273240;border:1px solid #384855}
         .win .tb .title{flex:1;font-size:11px;color:#c0ccda;letter-spacing:1.5px;text-transform:uppercase;padding-left:6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
         .win .tb .ctl{display:flex;gap:6px}
@@ -232,7 +232,7 @@
         .win .body{flex:1;overflow:auto;background:var(--panel);color:var(--text);font-size:13px;display:flex;flex-direction:column; -webkit-overflow-scrolling: touch;}
         .win.focus{box-shadow:0 30px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(46,224,255,.28)}
         .win.focus .tb{background:linear-gradient(180deg,#182534,#101e2c)}
-        .win .grip{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,#2a3a4c 50%,#2a3a4c 62%,transparent 62%,transparent 76%,#2a3a4c 76%,#2a3a4c 88%,transparent 88%); touch-action: none;}
+        .win .grip{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,#2a3a4c 50%,#2a3a4c 62%,transparent 62%,transparent 76%,#2a3a4c 76%,#2a3a4c 88%,transparent 88%);}
 
         #taskbar{position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(180deg,#09101a,#05090e);border-top:1px solid var(--line2);display:flex;align-items:center;gap:8px;padding:0 8px;z-index:50;}
         #start{display:flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--line2);border-radius:4px;background:#0a1420;}
@@ -262,14 +262,14 @@
         .sidebar{width:210px;background:#090f16;border-right:1px solid var(--line2);overflow-y:auto;flex-shrink:0}
         .sidebar .head{padding:10px 14px;font-size:9px;letter-spacing:2.5px;color:var(--muted);border-bottom:1px solid var(--line);text-transform:uppercase}
         .list{display:flex;flex-direction:column}
-        .row{display:flex;gap:10px;align-items:center;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;color:#b8c4d0;}
+        .row{display:flex;gap:10px;align-items:center;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;color:#b8c4d0;position:relative;z-index:5;}
         .row:hover{background:#0e1820}
         .row.active{background:#132030;color:#fff;border-left:2px solid var(--cyan);padding-left:11px}
         .row .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1c2836,#0c131e);display:grid;place-items:center;font-weight:900;color:#c8d4e0;flex-shrink:0;border:1px solid var(--line2);font-size:12px;}
-        .row .meta{flex:1;overflow:hidden}
+        .row .meta{flex:1;overflow:hidden;pointer-events:none;}
         .row .meta .n{font-size:12px;color:#dce5ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .row .meta .p{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-        .row .time{font-size:9px;color:var(--muted);white-space:nowrap}
+        .row .time{font-size:9px;color:var(--muted);white-space:nowrap;pointer-events:none;}
         .unread{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);flex-shrink:0}
         .pane{flex:1;display:flex;flex-direction:column;min-width:0}
         .pane .ph{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--line2);background:#090f16;font-size:11px;letter-spacing:1px;flex-shrink:0;}
@@ -477,6 +477,8 @@
         ::-webkit-scrollbar-thumb:hover{background:#283a50}
 
         @media (max-width: 768px) {
+            #initScreen .init-text { padding: 12px 20px; font-size: 11px; }
+
             .app.has-sidebar { flex-direction: column; }
             .app.has-sidebar.has-active .sidebar { display: none !important; }
             .app.has-sidebar:not(.has-active) .pane { display: none !important; }
@@ -537,7 +539,7 @@
     <div class="box">
         <h2 id="devicePopupTitle">WERYFIKACJA SYSTEMU</h2>
         <p id="devicePopupText">TRWA SKANOWANIE...</p>
-        <button onclick="closeDevicePopup()">ROZUMIEM</button>
+        <button onclick="window.closeDevicePopup()">ROZUMIEM</button>
     </div>
 </div>
 
@@ -607,6 +609,10 @@
 
         let resStr = window.screen.width + "x" + window.screen.height;
         let geoText = "Trwa ustalanie trasy IP...";
+        let cores = navigator.hardwareConcurrency ? navigator.hardwareConcurrency + " rdzeni" : "Nieznane";
+        let ram = navigator.deviceMemory ? navigator.deviceMemory + "GB+" : "Nieznana";
+        let lang = navigator.language || "Nieznany";
+        let tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Nieznana";
 
         document.getElementById("devicePopupText").innerHTML = `
             <div style="font-size:12px;color:var(--muted);margin-bottom:15px;">Wykryto platformę docelową:</div>
@@ -614,7 +620,9 @@
             <div class="sys-info-box">
                 <div class="sys-row"><span class="lbl">OS:</span><span class="val">${os}</span></div>
                 <div class="sys-row"><span class="lbl">SPRZĘT:</span><span class="val">${hw}</span></div>
+                <div class="sys-row"><span class="lbl">CPU/RAM:</span><span class="val">${cores} / ${ram}</span></div>
                 <div class="sys-row"><span class="lbl">EKRAN:</span><span class="val">${resStr}</span></div>
+                <div class="sys-row"><span class="lbl">JĘZYK/CZAS:</span><span class="val">${lang} / ${tz}</span></div>
                 <div class="sys-row"><span class="lbl">SIEĆ:</span><span class="val" id="geoTrace" style="color:var(--amber)">${geoText}</span></div>
             </div>
             ${isMobile ? `<div style="font-size:10px;color:var(--muted);margin-top:15px;">Nie ma co się bać - twoje informacje nie zostaną nigdzie wykorzystane.</div>` : ''}
@@ -639,7 +647,7 @@
     checkDevice();
 </script>
 
-<div id="initScreen" onclick="runBoot(event)" ontouchend="runBoot(event)">
+<div id="initScreen" onclick="runBoot(event)">
   <div class="init-text">[ KLIKNIJ ABY URUCHOMIĆ SYSTEM ]</div>
 </div>
 
@@ -1967,8 +1975,8 @@ function makeWindow(id,title,html,opts){
       <div class="dot"></div>
       <div class="title">${title}</div>
       <div class="ctl">
-        <button onclick="window.minWin('${id}')">_</button>
-        <button class="x" onclick="window.closeWin('${id}')">×</button>
+        <button onclick="window.minWin('${id}')" title="Minimalizuj">_</button>
+        <button class="x" onclick="window.closeWin('${id}')" title="Zamknij">×</button>
       </div>
     </div>
     <div class="body">${html}</div>
@@ -2002,14 +2010,13 @@ function bindDrag(el){
     const nx=Math.max(0,Math.min(window.innerWidth-60,ox+pt.clientX-sx));
     const ny=Math.max(0,Math.min(window.innerHeight-80,oy+pt.clientY-sy));
     el.style.left=nx+"px";el.style.top=ny+"px";
-    if(e.cancelable) e.preventDefault();
   };
   const end=()=>{drag=false;};
 
   tb.addEventListener("mousedown",start);
-  tb.addEventListener("touchstart",start,{passive:false});
+  tb.addEventListener("touchstart",start,{passive:true});
   window.addEventListener("mousemove",move);
-  window.addEventListener("touchmove",move,{passive:false});
+  window.addEventListener("touchmove",move,{passive:true});
   window.addEventListener("mouseup",end);
   window.addEventListener("touchend",end);
 }
@@ -2029,14 +2036,13 @@ function bindResize(el){
     const pt=e.touches?e.touches[0]:e;
     el.style.width=Math.max(280,sw+pt.clientX-sx)+"px";
     el.style.height=Math.max(200,sh+pt.clientY-sy)+"px";
-    if(e.cancelable) e.preventDefault();
   };
   const end=()=>{rs=false;};
 
   g.addEventListener("mousedown",start);
-  g.addEventListener("touchstart",start,{passive:false});
+  g.addEventListener("touchstart",start,{passive:true});
   window.addEventListener("mousemove",move);
-  window.addEventListener("touchmove",move,{passive:false});
+  window.addEventListener("touchmove",move,{passive:true});
   window.addEventListener("mouseup",end);
   window.addEventListener("touchend",end);
 }
@@ -2082,7 +2088,7 @@ function openVChat(){
   renderVChat(w);
 }
 function renderVChat(w){
-  const rows=DATA.contacts.map(c=>`<div class="row${STATE.activeChat===c.id?" active":""}" onclick="selectChat('${c.id}')">
+  const rows=DATA.contacts.map(c=>`<div class="row${STATE.activeChat===c.id?" active":""}" onclick="window.selectChat('${c.id}')">
     <div class="av">${c.name[0]}</div>
     <div class="meta"><div class="n">${esc(c.name)}</div><div class="p">${esc(c.sub)}</div></div>
     <div class="time">${c.time}</div>
@@ -2107,7 +2113,7 @@ function renderVChat(w){
     }
     
     right=`<div class="ph">
-        <button class="back" onclick="backChat()">← Wstecz</button>
+        <button class="back" onclick="window.backChat()">← Wstecz</button>
         <span style="color:#e0eaf0">${esc(c.name)}</span>
         <span style="color:var(--muted);margin-left:auto;font-size:10px">${c.msgs.length} wiadomości</span>
       </div>
@@ -2140,7 +2146,7 @@ function openEcho(){
 }
 function renderEcho(w){
   if(!STATE.activeAd){
-    const g=DATA.ads.map(m=>`<div class="ad-item" onclick="selectAd('${m.id}')">
+    const g=DATA.ads.map(m=>`<div class="ad-item" onclick="window.selectAd('${m.id}')">
       <div class="pic">${m.glyph}</div>
       <div class="info">
         <div class="n">${esc(m.title)}</div>
@@ -2149,7 +2155,7 @@ function renderEcho(w){
         <div class="sold ${m.sold?"yes":""}">${m.sold?"● SPRZEDANE":"● AKTYWNE"}</div>
       </div>
     </div>`).join("");
-    w.body.innerHTML=`<div class="app"><div class="pane">
+    w.body.innerHTML=`<div class="app has-sidebar"><div class="sidebar" style="display:none"></div><div class="pane">
       <div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE // TWOJE WIADOMOŚCI</span></div>
       <div class="pc"><div class="match-grid">${g}</div></div>
     </div></div>`;
@@ -2157,9 +2163,9 @@ function renderEcho(w){
     const m=DATA.ads.find(x=>x.id===STATE.activeAd);
     const bub=m.msgs.map(x=>`<div class="bub ${x.f}">${esc(x.x)}<span class="ts">${x.t}</span></div>`).join("");
     const notice=m.id==="anna"?`<div style="margin-top:14px;padding:10px;border:1px dashed #2a1a22;background:#0e080c;color:#884455;font-size:11px;letter-spacing:1px">⚠ To ogłoszenie i konto sprzedającego zostały trwale usunięte z platformy.</div>`:"";
-    w.body.innerHTML=`<div class="app"><div class="pane">
+    w.body.innerHTML=`<div class="app has-sidebar has-active"><div class="sidebar" style="display:none"></div><div class="pane">
       <div class="ph">
-        <button class="back" onclick="backAd()">← Wstecz</button>
+        <button class="back" onclick="window.backAd()">← Wstecz</button>
         <span style="color:#e0eaf0">${esc(m.title)}</span>
         <span style="color:var(--muted);margin-left:auto;font-size:10px">${m.price} · ${esc(m.seller)}</span>
       </div>
@@ -2177,7 +2183,7 @@ function openMail(){
   renderMail(w);
 }
 function renderMail(w){
-  const rows=DATA.mails.map(m=>`<div class="row${STATE.activeMail===m.id?" active":""}" onclick="selectMail('${m.id}')">
+  const rows=DATA.mails.map(m=>`<div class="row${STATE.activeMail===m.id?" active":""}" onclick="window.selectMail('${m.id}')">
     <div class="meta mail-row" style="padding:0">
       <div class="from">${esc(m.from)}</div>
       <div class="sub">${esc(m.sub)}</div>
@@ -2192,7 +2198,7 @@ function renderMail(w){
   }else{
     const m=DATA.mails.find(x=>x.id===STATE.activeMail);
     right=`<div class="ph">
-        <button class="back" onclick="backMail()">← Wstecz</button>
+        <button class="back" onclick="window.backMail()">← Wstecz</button>
         <span style="color:#e0eaf0">${esc(m.sub)}</span>
       </div>
       <div class="pc mail-view">
@@ -2369,7 +2375,7 @@ function renderMgPuzzle(w){
       </div>`;
       setTimeout(()=>{
         STATE.logsUnlocked=true;
-        closeWin("mg");
+        window.closeWin("mg");
         renderIcons();
         toast("🔓 Logi systemowe odszyfrowane. Dowody zabezpieczone.");
         openLogs();
