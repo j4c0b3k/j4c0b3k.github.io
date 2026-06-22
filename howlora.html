@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>HOWLORA.OS // Sprawa #4471 — Maria I.</title>
     <style>
         :root{
@@ -25,29 +25,44 @@
         html,body{height:100%;width:100%;overflow:hidden;background:#000;color:var(--text);font-family:"Consolas","SFMono-Regular",ui-monospace,monospace;user-select:none;}
         button{font-family:inherit;cursor:pointer;}
         a{color:var(--cyan)}
-        input,textarea,select{font-family:inherit;font-size:16px !important;} /* Fix iOS Zoom */
+        input,textarea,select{font-family:inherit;font-size:16px !important;}
 
         /* --- DEVICE POPUP STYLES --- */
         #devicePopup {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 15px; backdrop-filter: blur(8px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px);
         }
         #devicePopup .box {
-            border: 1px solid var(--cyan); padding: 25px; background: #050a0f; border-radius: 8px; box-shadow: 0 0 40px rgba(46,224,255,0.15); max-width: 480px; width: 100%;
+            border: 1px solid var(--green-dim); background: #020406; border-radius: 6px; width: 100%; max-width: 420px; box-shadow: 0 0 40px rgba(61,252,160,0.1); overflow: hidden; display: flex; flex-direction: column;
         }
-        #devicePopup h2 { color: var(--cyan); letter-spacing: 4px; margin-bottom: 20px; font-size: 15px; text-transform: uppercase; }
+        .pop-header {
+            background: var(--green-dim); color: #000; font-weight: 900; letter-spacing: 3px; padding: 12px; font-size: 13px; text-align: center; text-transform: uppercase;
+        }
+        .pop-content { padding: 25px 20px; display: flex; flex-direction: column; gap: 15px; }
+        .pop-loader { color: var(--green); font-size: 13px; text-align: center; animation: blink 1s infinite; margin: 15px 0; font-weight: bold; letter-spacing: 2px;}
         .sys-info-box {
-            background: #020406; border: 1px solid #1a2a3a; padding: 15px; border-radius: 4px; text-align: left; margin: 0 auto 20px auto; width: 100%; font-size: 11px; color: var(--green); font-family: monospace; line-height: 1.6; min-height: 180px; overflow-wrap: break-word;
+            background: #03060a; border: 1px solid #0f2215; padding: 15px; border-radius: 4px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 0 15px rgba(61,252,160,0.03);
         }
-        .sys-info-box .lbl { color: var(--muted); }
-        .sys-info-box .val { color: #d8e2ea; }
-        .sys-info-box .warn { color: var(--amber); }
-        #devicePopup button { padding: 14px 20px; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); font-weight: 900; letter-spacing: 2px; border-radius: 4px; font-size: 12px; transition: 0.2s; width: 100%; cursor: pointer;}
-        #devicePopup button:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(46,224,255,0.4); }
+        .sys-row { display: flex; justify-content: space-between; font-size: 11px; align-items: flex-start; border-bottom: 1px dashed #0a140f; padding-bottom: 6px; }
+        .sys-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .sys-row .lbl { color: #3a8a5a; font-weight: bold; width: 90px; flex-shrink: 0; letter-spacing: 1px;}
+        .sys-row .val { color: var(--green); text-align: right; max-width: 70%; word-break: break-word; text-shadow: 0 0 5px rgba(61,252,160,0.3); }
+        .sys-row .val.warn { color: var(--amber); text-shadow: 0 0 5px rgba(245,200,66,0.3); }
+        .pop-disclaimer { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; padding: 5px 10px; border: 1px solid #111; background: #050a10; border-radius: 4px; }
+        .pop-btn { background: transparent; color: var(--green); border: 1px solid var(--green); padding: 14px; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; text-transform: uppercase; }
+        .pop-btn:hover { background: var(--green); color: #000; box-shadow: 0 0 20px rgba(61,252,160,0.4); }
+
+        #initScreen{
+          position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;
+        }
+        .init-btn {
+          background: rgba(61,252,160,0.05); border: 1px solid var(--green); color: var(--green); padding: 16px 32px; font-size: 13px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; border-radius: 4px; box-shadow: 0 0 15px rgba(61,252,160,0.15); transition: 0.3s; cursor: pointer; font-family: inherit; animation: pulseInit 1.5s infinite alternate;
+        }
+        .init-btn:hover { background: var(--green); color: #000; box-shadow: 0 0 30px rgba(61,252,160,0.5); text-shadow: none; animation: none;}
+        @keyframes pulseInit{ from{box-shadow: 0 0 15px rgba(61,252,160,0.3); text-shadow: 0 0 8px var(--green);} to{box-shadow: 0 0 5px rgba(61,252,160,0.1); text-shadow: 0 0 2px var(--green);} }
 
         #bootOverlay{
           position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden;
         }
-
         #stagePower{
           position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
           flex-direction:column;gap:16px;
@@ -209,7 +224,7 @@
         .win .tb{height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;background:linear-gradient(180deg,#131d28,#0d151e);border-bottom:1px solid var(--line2);cursor:move;flex-shrink:0;}
         .win .tb .dot{width:9px;height:9px;border-radius:50%;background:#273240;border:1px solid #384855}
         .win .tb .title{flex:1;font-size:11px;color:#c0ccda;letter-spacing:1.5px;text-transform:uppercase;padding-left:6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none;}
-        .win .tb .ctl{display:flex;gap:6px}
+        .win .tb .ctl{display:flex;gap:6px; z-index:50;}
         .win .tb .ctl button{width:24px;height:22px;border:1px solid var(--line2);background:#0e161e;color:#8a9aaa;border-radius:3px;font-size:12px;line-height:1;cursor:pointer;}
         .win .tb .ctl button:hover{background:#182230;color:#fff}
         .win .tb .ctl .x:hover{background:var(--red);color:#fff;border-color:var(--red)}
@@ -250,10 +265,10 @@
         .row:hover{background:#0e1820}
         .row.active{background:#132030;color:#fff;border-left:2px solid var(--cyan);padding-left:11px}
         .row .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1c2836,#0c131e);display:grid;place-items:center;font-weight:900;color:#c8d4e0;flex-shrink:0;border:1px solid var(--line2);font-size:12px;}
-        .row .meta{flex:1;overflow:hidden;}
+        .row .meta{flex:1;overflow:hidden;pointer-events:none;}
         .row .meta .n{font-size:12px;color:#dce5ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .row .meta .p{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-        .row .time{font-size:9px;color:var(--muted);white-space:nowrap;}
+        .row .time{font-size:9px;color:var(--muted);white-space:nowrap;pointer-events:none;}
         .unread{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);flex-shrink:0}
         .pane{flex:1;display:flex;flex-direction:column;min-width:0}
         .pane .ph{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--line2);background:#090f16;font-size:11px;letter-spacing:1px;flex-shrink:0;}
@@ -280,7 +295,7 @@
         .ad-item{background:#0d141c;border:1px solid var(--line2);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;display:flex;}
         .ad-item:hover{transform:translateY(-2px);border-color:var(--amber)}
         .ad-item .pic{width:78px;background:linear-gradient(135deg,#28200f,#16120a);display:grid;place-items:center;font-size:26px;color:var(--amber);text-shadow:0 0 12px rgba(245,200,66,.5);border-right:1px solid var(--line2)}
-        .ad-item .info{padding:10px;font-size:12px;flex:1}
+        .ad-item .info{padding:10px;font-size:12px;flex:1;pointer-events:none;}
         .ad-item .info .n{color:#fff;font-weight:700;margin-bottom:4px;line-height:1.3}
         .ad-item .info .p{color:var(--green);font-weight:800;font-size:14px;margin-bottom:4px}
         .ad-item .info .a{color:var(--muted);font-size:10px}
@@ -299,8 +314,8 @@
 
         .file{padding:9px 13px;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer}
         .file:hover{background:#0e1820}
-        .file .n{color:var(--cyan)}
-        .file .d{color:var(--muted);font-size:10px;margin-top:2px}
+        .file .n{color:var(--cyan);pointer-events:none;}
+        .file .d{color:var(--muted);font-size:10px;margin-top:2px;pointer-events:none;}
         .file-folder{padding:7px 13px;font-size:9px;letter-spacing:2px;color:var(--muted);background:#09101a;text-transform:uppercase;border-bottom:1px solid var(--line)}
         pre.term{padding:14px;background:#030709;color:var(--green);font-size:11px;line-height:1.65;white-space:pre-wrap;font-family:"Consolas",monospace;text-shadow:0 0 4px rgba(61,252,160,.3);height:100%;overflow-y:auto}
         pre.term .hl{color:var(--red);text-shadow:0 0 6px rgba(255,43,74,.6);font-weight:700}
@@ -467,8 +482,8 @@
             .app.has-sidebar.has-active .sidebar { display: none !important; }
             .app.has-sidebar:not(.has-active) .pane { display: none !important; }
             
-            .sidebar { width: 100% !important; border-right: none; border-bottom: none; flex: 1; max-height: 100%; overflow-y: auto; }
-            .pane { flex: 1; overflow-y: auto; }
+            .sidebar { width: 100% !important; border-right: none; border-bottom: none; flex: 1; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .pane { flex: 1; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
             .wall-big { font-size: 38px; right: 15px; top: 15px; letter-spacing: 4px; }
             .wall-big span { font-size: 16px; letter-spacing: 6px; }
@@ -522,8 +537,16 @@
 <div id="devicePopup">
     <div class="box">
         <h2 id="devicePopupTitle">WERYFIKACJA SYSTEMU</h2>
-        <p id="devicePopupText">TRWA SKANOWANIE...</p>
-        <button onclick="window.acceptAndBoot()">ZAAKCEPTUJ I KONTYNUUJ</button>
+        <div class="pop-loader" id="popupLoader">SKANOWANIE ŚRODOWISKA...</div>
+        <div class="sys-info-box" id="sysInfoBox" style="display:none;">
+            <div class="sys-row"><span class="lbl">PLATFORMA:</span><span class="val" id="popType">...</span></div>
+            <div class="sys-row"><span class="lbl">SYSTEM:</span><span class="val" id="popOS">...</span></div>
+            <div class="sys-row"><span class="lbl">SPRZĘT:</span><span class="val" id="popHW">...</span></div>
+            <div class="sys-row"><span class="lbl">EKRAN:</span><span class="val" id="popRes">...</span></div>
+            <div class="sys-row"><span class="lbl">LOKALIZACJA:</span><span class="val warn" id="popGeo">Trwa ustalanie trasy...</span></div>
+        </div>
+        <div class="pop-disclaimer">Zabezpieczenia prywatności aktywne.<br>Twoje dane są przetwarzane lokalnie i nie zostaną użyte ani zapisane.</div>
+        <button id="popBtn" onclick="acceptDevicePopup()" style="display:none;">[ ZAAKCEPTUJ I KONTYNUUJ ]</button>
     </div>
 </div>
 
@@ -545,7 +568,7 @@
 
     async function checkDevice() {
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-        const type = isMobile ? "SMARTFON/TABLET (MOBILE)" : "KOMPUTER (PC)";
+        const type = isMobile ? "SMARTFON/TABLET" : "KOMPUTER (PC)";
         let ua = navigator.userAgent;
         let os = "Nieznany OS";
         let hw = "Nieznane Urządzenie";
@@ -592,45 +615,38 @@
         }
 
         let resStr = window.screen.width + "x" + window.screen.height;
-        let geoText = "Trwa ustalanie trasy IP...";
-        let cores = navigator.hardwareConcurrency ? navigator.hardwareConcurrency + " rdzeni" : "Nieznane";
-        let ram = navigator.deviceMemory ? navigator.deviceMemory + "GB+" : "Nieznana";
-        let lang = navigator.language || "Nieznany";
-        let tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Nieznana";
 
-        document.getElementById("devicePopupText").innerHTML = `
-            <div style="font-size:12px;color:var(--muted);margin-bottom:15px;">Wykryto platformę docelową:</div>
-            <div style="color:var(--cyan);font-size:18px;font-weight:900;letter-spacing:2px;margin-bottom:20px;">${type}</div>
-            <div class="sys-info-box">
-                <div class="sys-row"><span class="lbl">OS:</span><span class="val">${os}</span></div>
-                <div class="sys-row"><span class="lbl">SPRZĘT:</span><span class="val">${hw}</span></div>
-                <div class="sys-row"><span class="lbl">CPU/RAM:</span><span class="val">${cores} / ${ram}</span></div>
-                <div class="sys-row"><span class="lbl">EKRAN:</span><span class="val">${resStr}</span></div>
-                <div class="sys-row"><span class="lbl">JĘZYK/CZAS:</span><span class="val">${lang} / ${tz}</span></div>
-                <div class="sys-row"><span class="lbl">SIEĆ:</span><span class="val" id="geoTrace" style="color:var(--amber)">${geoText}</span></div>
-            </div>
-            ${isMobile ? `<div style="font-size:10px;color:var(--muted);margin-top:15px;">Nie ma co się bać - twoje informacje nie zostaną nigdzie wykorzystane.</div>` : ''}
-        `;
+        document.getElementById('popType').innerText = type;
+        document.getElementById('popOS').innerText = os;
+        document.getElementById('popHW').innerText = hw;
+        document.getElementById('popRes').innerText = resStr;
+
+        setTimeout(() => {
+            document.getElementById('popupLoader').style.display = 'none';
+            document.getElementById('sysInfoBox').style.display = 'flex';
+            document.getElementById('popBtn').style.display = 'block';
+        }, 800);
 
         try {
             let resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
             let data = await resp.json();
-            let geoString = "";
-            if(data.ip) geoString += data.ip + "<br>";
-            if(data.city) geoString += data.city + ", ";
-            if(data.region) geoString += data.region + "<br>";
-            if(data.country) geoString += data.country;
-            document.getElementById("geoTrace").innerHTML = geoString || "Lokalizacja ukryta";
+            let geoString = (data.ip || "") + " / " + (data.city || "") + ", " + (data.country || "");
+            document.getElementById("popGeo").innerText = geoString;
         } catch(e) {
-            document.getElementById("geoTrace").innerHTML = "Błąd pobierania / VPN";
+            document.getElementById("popGeo").innerText = "Błąd / Ukryte przez VPN";
         }
     }
-    window.acceptAndBoot = function() {
+    
+    window.acceptDevicePopup = function() {
         document.getElementById("devicePopup").style.display = "none";
-        runBoot();
     }
+
     checkDevice();
 </script>
+
+<div id="initScreen">
+  <button class="init-btn" onclick="runBoot(event)">[ INICJALIZACJA SYSTEMU ]</button>
+</div>
 
 <div id="bootOverlay" style="display:none">
   <div id="stagePower">
@@ -1341,7 +1357,7 @@ function openTrash(){
   w.body.innerHTML=`
      <div class="list">
        <div class="file-folder">📁 USUNIĘTE ELEMENTY</div>
-       <div class="file" onclick="openTrashFile()"><div class="n">📄 dziennik_kopia_robocza.txt</div><div class="d">Usunięto: Wtorek 23:14</div></div>
+       <div class="file" onclick="window.openTrashFile()"><div class="n">📄 dziennik_kopia_robocza.txt</div><div class="d">Usunięto: Wtorek 23:14</div></div>
      </div>
   `;
 }
@@ -1369,7 +1385,7 @@ function openIG(){
         <div style="color:var(--magenta);font-size:24px">📷</div>
         <div style="font-size:11px;color:var(--muted);letter-spacing:1px">WPROWADŹ KOD DOSTĘPU</div>
         <input type="password" id="igPin" maxlength="4" style="background:#0a1018;border:1px solid var(--line2);color:#fff;padding:8px;text-align:center;font-size:16px;letter-spacing:8px;width:120px;margin:0 auto" autocomplete="off">
-        <button onclick="checkIGPin()" style="padding:10px 16px;background:var(--magenta);color:#fff;border:none;border-radius:4px;font-size:11px;margin-top:10px;font-weight:bold;letter-spacing:1px">ODBLOKUJ</button>
+        <button onclick="window.checkIGPin()" style="padding:10px 16px;background:var(--magenta);color:#fff;border:none;border-radius:4px;font-size:11px;margin-top:10px;font-weight:bold;letter-spacing:1px">ODBLOKUJ</button>
         <div id="igError" style="color:var(--red);font-size:10px;min-height:14px"></div>
       </div>
     `;
@@ -1391,7 +1407,7 @@ function openIG(){
         <div style="padding:10px 14px;font-size:12px;color:#c8d5de;line-height:1.5">
           <b>kerwzy</b> Znowu na szczycie. W sumie nic nowego, bycie po prostu najlepszym we wszystkim powoli staje się nudne 🥱🏆 #king #zawszenapropsie #sukces
         </div>
-        <div style="padding:0 14px 14px;display:flex;gap:16px;color:var(--muted);font-size:11px;font-weight:bold;cursor:pointer" onclick="toggleIgComments('kerwzy')">
+        <div style="padding:0 14px 14px;display:flex;gap:16px;color:var(--muted);font-size:11px;font-weight:bold;cursor:pointer" onclick="window.toggleIgComments('kerwzy')">
           <span>❤️ 142 tys.</span><span>💬 12,4 tys. (Kliknij aby rozwinąć)</span>
         </div>
         <div id="ig_com_kerwzy" style="display:none;padding:0 14px 14px;font-size:11px;color:#b8c4d0;border-top:1px solid #1a2030;padding-top:10px;">
@@ -1460,7 +1476,7 @@ window.checkIGPin = function(){
   const val = document.getElementById("igPin").value;
   if(val === "8042"){
     STATE.igUnlocked = true;
-    closeWin("ig_lock");
+    window.closeWin("ig_lock");
     openIG();
   } else {
     document.getElementById("igError").textContent = "NIEPRAWIDŁOWY KOD";
@@ -1525,7 +1541,7 @@ const BOOT_LINES_PL=[
 
 let bootStarted=false;
 
-function runBoot(e){
+window.runBoot = function(e){
   if(e && e.preventDefault) e.preventDefault();
   if(bootStarted) return;
   bootStarted=true;
@@ -1956,8 +1972,8 @@ function makeWindow(id,title,html,opts){
       <div class="dot"></div>
       <div class="title">${title}</div>
       <div class="ctl">
-        <button onclick="window.minWin('${id}')">_</button>
-        <button class="x" onclick="window.closeWin('${id}')">×</button>
+        <button onclick="window.minWin('${id}'); event.stopPropagation();">_</button>
+        <button class="x" onclick="window.closeWin('${id}'); event.stopPropagation();">×</button>
       </div>
     </div>
     <div class="body">${html}</div>
@@ -1980,7 +1996,7 @@ function bindDrag(el){
   const tb=el.querySelector(".tb");
   let sx,sy,ox,oy,drag=false;
   const start=(e)=>{
-    if(e.target.tagName==="BUTTON" || e.target.tagName==="INPUT" || e.target.closest('button')) return;
+    if(e.target.tagName==="BUTTON" || e.target.closest('button')) return;
     drag=true;
     const pt=e.touches?e.touches[0]:e;
     sx=pt.clientX;sy=pt.clientY;ox=el.offsetLeft;oy=el.offsetTop;
@@ -1992,13 +2008,14 @@ function bindDrag(el){
     const nx=Math.max(0,Math.min(window.innerWidth-60,ox+pt.clientX-sx));
     const ny=Math.max(0,Math.min(window.innerHeight-80,oy+pt.clientY-sy));
     el.style.left=nx+"px";el.style.top=ny+"px";
+    if(e.cancelable) e.preventDefault();
   };
   const end=()=>{drag=false;};
 
   tb.addEventListener("mousedown",start);
-  tb.addEventListener("touchstart",start,{passive:true});
+  tb.addEventListener("touchstart",start,{passive:false});
   window.addEventListener("mousemove",move);
-  window.addEventListener("touchmove",move,{passive:true});
+  window.addEventListener("touchmove",move,{passive:false});
   window.addEventListener("mouseup",end);
   window.addEventListener("touchend",end);
 }
@@ -2018,13 +2035,14 @@ function bindResize(el){
     const pt=e.touches?e.touches[0]:e;
     el.style.width=Math.max(280,sw+pt.clientX-sx)+"px";
     el.style.height=Math.max(200,sh+pt.clientY-sy)+"px";
+    if(e.cancelable) e.preventDefault();
   };
   const end=()=>{rs=false;};
 
   g.addEventListener("mousedown",start);
-  g.addEventListener("touchstart",start,{passive:true});
+  g.addEventListener("touchstart",start,{passive:false});
   window.addEventListener("mousemove",move);
-  window.addEventListener("touchmove",move,{passive:true});
+  window.addEventListener("touchmove",move,{passive:false});
   window.addEventListener("mouseup",end);
   window.addEventListener("touchend",end);
 }
@@ -2070,7 +2088,7 @@ function openVChat(){
   renderVChat(w);
 }
 function renderVChat(w){
-  const rows=DATA.contacts.map(c=>`<div class="row${STATE.activeChat===c.id?" active":""}" onclick="window.selectChat('${c.id}')" ontouchstart="window.selectChat('${c.id}')">
+  const rows=DATA.contacts.map(c=>`<div class="row${STATE.activeChat===c.id?" active":""}" onclick="window.selectChat('${c.id}')">
     <div class="av">${c.name[0]}</div>
     <div class="meta"><div class="n">${esc(c.name)}</div><div class="p">${esc(c.sub)}</div></div>
     <div class="time">${c.time}</div>
@@ -2088,8 +2106,8 @@ function renderVChat(w){
         const opts = creepyConvo[STATE.creepyStage].opts;
         optionsHtml = `
           <div class="chat-opts" style="display:flex;gap:8px;padding:12px;background:#080d14;border-top:1px solid var(--line2);flex-shrink:0;">
-             <button onclick="replyCreepy(0)" style="flex:1;padding:12px;background:#1a050a;border:1px solid var(--red);color:var(--red);border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:1px;font-weight:bold;transition:all 0.2s;">${esc(opts[0])}</button>
-             <button onclick="replyCreepy(1)" style="flex:1;padding:12px;background:#1a050a;border:1px solid var(--red);color:var(--red);border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:1px;font-weight:bold;transition:all 0.2s;">${esc(opts[1])}</button>
+             <button onclick="window.replyCreepy(0)" style="flex:1;padding:12px;background:#1a050a;border:1px solid var(--red);color:var(--red);border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:1px;font-weight:bold;transition:all 0.2s;">${esc(opts[0])}</button>
+             <button onclick="window.replyCreepy(1)" style="flex:1;padding:12px;background:#1a050a;border:1px solid var(--red);color:var(--red);border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:1px;font-weight:bold;transition:all 0.2s;">${esc(opts[1])}</button>
           </div>
         `;
     }
@@ -2128,7 +2146,7 @@ function openEcho(){
 }
 function renderEcho(w){
   if(!STATE.activeAd){
-    const g=DATA.ads.map(m=>`<div class="ad-item" onclick="window.selectAd('${m.id}')" ontouchstart="window.selectAd('${m.id}')">
+    const g=DATA.ads.map(m=>`<div class="ad-item" onclick="window.selectAd('${m.id}')">
       <div class="pic">${m.glyph}</div>
       <div class="info">
         <div class="n">${esc(m.title)}</div>
@@ -2165,7 +2183,7 @@ function openMail(){
   renderMail(w);
 }
 function renderMail(w){
-  const rows=DATA.mails.map(m=>`<div class="row${STATE.activeMail===m.id?" active":""}" onclick="window.selectMail('${m.id}')" ontouchstart="window.selectMail('${m.id}')">
+  const rows=DATA.mails.map(m=>`<div class="row${STATE.activeMail===m.id?" active":""}" onclick="window.selectMail('${m.id}')">
     <div class="meta mail-row" style="padding:0">
       <div class="from">${esc(m.from)}</div>
       <div class="sub">${esc(m.sub)}</div>
@@ -2226,7 +2244,7 @@ function openFiles(){
   DATA.files.forEach(folder=>{
     html+=`<div class="file-folder">📁 ${folder.folder}</div>`;
     folder.items.forEach(item=>{
-      html+=`<div class="file" onclick="openFile('${item.x}')"><div class="n">📄 ${esc(item.n)}</div><div class="d">${esc(item.d)}</div></div>`;
+      html+=`<div class="file" onclick="window.openFile('${item.x}')"><div class="n">📄 ${esc(item.n)}</div><div class="d">${esc(item.d)}</div></div>`;
     });
   });
   html+=`</div>`;
@@ -2248,7 +2266,7 @@ window.openFile=(k)=>{
 };
 
 function openLogs(){
-  if(!STATE.logsUnlocked){openMinigame();return;}
+  if(!STATE.logsUnlocked){window.openMinigame();return;}
   trackObj("logs");
   const w=makeWindow("logs","Logi systemowe — ODBLOKOWANE","",{w:700,h:480});
   w.body.innerHTML=`<pre class="term">${DATA.logs}</pre>`;
@@ -2339,11 +2357,11 @@ let mgWrong=0;
 let mgTimer=null;
 let mgTimeLeft=120;
 
-function openMinigame(){
+window.openMinigame = function(){
   mgPuzzleIdx=0;mgCorrect=0;mgWrong=0;
   const w=makeWindow("mg","🔒 DESZYFROWANIE LOGÓW — Rekonstrukcja Sądowa","",{w:560,h:560});
   renderMgPuzzle(w);
-}
+};
 
 function renderMgPuzzle(w){
   if(!STATE.windows.mg)return;
@@ -2368,7 +2386,7 @@ function renderMgPuzzle(w){
       w.body.innerHTML=`<div class="mg" style="justify-content:center;align-items:center;text-align:center;gap:16px">
         <div style="color:var(--red);font-size:14px;letter-spacing:3px">REKONSTRUKCJA NIEUDANA</div>
         <div style="color:var(--muted);font-size:11px">Tylko ${mgCorrect}/${MINIGAME_PUZZLES.length} wpisów odzyskanych. Wymagane minimum 3.</div>
-        <button style="margin-top:12px;padding:12px 20px;background:transparent;color:var(--cyan);border:1px solid var(--cyan);font-size:11px;letter-spacing:2px;border-radius:3px;font-weight:bold" onclick="retryMg()">SPRÓBUJ PONOWNIE</button>
+        <button style="margin-top:12px;padding:12px 20px;background:transparent;color:var(--cyan);border:1px solid var(--cyan);font-size:11px;letter-spacing:2px;border-radius:3px;font-weight:bold" onclick="window.retryMg()">SPRÓBUJ PONOWNIE</button>
       </div>`;
     }
     return;
@@ -2381,7 +2399,7 @@ function renderMgPuzzle(w){
     else if(i===mgPuzzleIdx)cls+=" cur";
     return `<div class="${cls}"></div>`;
   }).join("");
-  const opts=p.opts.map((o,i)=>`<button class="mg-opt" onclick="mgAnswer(${i})">${esc(o)}</button>`).join("");
+  const opts=p.opts.map((o,i)=>`<button class="mg-opt" onclick="window.mgAnswer(${i})">${esc(o)}</button>`).join("");
   w.body.innerHTML=`<div class="mg">
     <div class="mg-head">REKONSTRUKCJA LOGÓW — Wpis ${mgPuzzleIdx+1} z ${MINIGAME_PUZZLES.length}</div>
     <div class="mg-progress">${pips}</div>
@@ -2448,8 +2466,8 @@ function openSnake(){
       </div>
       <canvas id="snakeCanvas" width="${TC*GS}" height="${TC*GS}"></canvas>
       <div class="mobile-dpad">
-        <div style="display:flex;justify-content:center"><button onclick="snkDir(38)">↑</button></div>
-        <div style="display:flex;justify-content:center"><button onclick="snkDir(37)">←</button><button onclick="snkDir(40)">↓</button><button onclick="snkDir(39)">→</button></div>
+        <div style="display:flex;justify-content:center"><button onclick="window.snkDir(38)">↑</button></div>
+        <div style="display:flex;justify-content:center"><button onclick="window.snkDir(37)">←</button><button onclick="window.snkDir(40)">↓</button><button onclick="window.snkDir(39)">→</button></div>
       </div>
     </div>`;
     drawFrame();
@@ -2595,19 +2613,19 @@ function openTicTacToe(){
     }else if(!playerTurn)status="Komputer myśli…";
     const cells=board.map((v,i)=>{
       const wl=winLine.includes(i)?" win-line":"";
-      return `<div class="ttt-cell${v?" "+v:""}${wl}" onclick="tttClick(${i})">${v||""}</div>`;
+      return `<div class="ttt-cell${v?" "+v:""}${wl}" onclick="window.tttClick(${i})">${v||""}</div>`;
     }).join("");
     w.body.innerHTML=`<div class="ttt-wrap">
       <div class="ttt-header">KÓŁKO I KRZYŻYK</div>
       <div class="ttt-score"><span>Wygrane: <b>${scores.W}</b></span><span>Remisy: <b>${scores.D}</b></span><span>Przegrane: <b>${scores.L}</b></span></div>
       <div class="ttt-diff">
-        <button class="ttt-btn${difficulty==="easy"?" active":""}" onclick="tttDiff('easy')">ŁATWY</button>
-        <button class="ttt-btn${difficulty==="medium"?" active":""}" onclick="tttDiff('medium')">ŚREDNI</button>
-        <button class="ttt-btn${difficulty==="hard"?" active":""}" onclick="tttDiff('hard')">TRUDNY</button>
+        <button class="ttt-btn${difficulty==="easy"?" active":""}" onclick="window.tttDiff('easy')">ŁATWY</button>
+        <button class="ttt-btn${difficulty==="medium"?" active":""}" onclick="window.tttDiff('medium')">ŚREDNI</button>
+        <button class="ttt-btn${difficulty==="hard"?" active":""}" onclick="window.tttDiff('hard')">TRUDNY</button>
       </div>
       <div class="ttt-board">${cells}</div>
       <div class="ttt-status">${status}</div>
-      <button class="ttt-btn" onclick="tttReset()" style="padding:10px 24px; font-weight:bold;">NOWA GRA</button>
+      <button class="ttt-btn" onclick="window.tttReset()" style="padding:10px 24px; font-weight:bold;">NOWA GRA</button>
     </div>`;
   }
 
@@ -2639,7 +2657,7 @@ function openRPS(){
     const ph=pi!==undefined?choices[pi]:"❓";
     const ch=ci!==undefined?choices[ci]:"❓";
     const res=result?`<div class="rps-result ${rclass||''}">${result}</div>`:`<div class="rps-result"></div>`;
-    const btns=choices.map((c,i)=>`<button class="rps-choice" onclick="rpsPlay(${i})" ${!choosing?"disabled":""}>${c}</button>`).join("");
+    const btns=choices.map((c,i)=>`<button class="rps-choice" onclick="window.rpsPlay(${i})" ${!choosing?"disabled":""}>${c}</button>`).join("");
     w.body.innerHTML=`<div class="rps-wrap">
       <div class="ttt-header">KAMIEŃ NOŻYCE PAPIER</div>
       <div class="rps-score">
@@ -2660,7 +2678,7 @@ function openRPS(){
       </div>
       ${res}
       <div class="rps-choices">${btns}</div>
-      <button class="rps-reset" onclick="rpsReset()" style="margin-top:10px; padding:10px 24px;">RESET WYNIKU</button>
+      <button class="rps-reset" onclick="window.rpsReset()" style="margin-top:10px; padding:10px 24px;">RESET WYNIKU</button>
     </div>`;
   }
 
@@ -2707,7 +2725,7 @@ Ten obraz dysku został przechwycony na podstawie nakazu awaryjnego o 08:47 rano
 </div>`;
 }
 
-function openVerdict(){
+window.openVerdict = function(){
   STATE.verdictStage=1;
   STATE.verdictWho=null;
   STATE.verdictHow=null;
@@ -2721,8 +2739,8 @@ function openVerdict(){
   document.querySelectorAll('input[name="how"]').forEach(r=>r.checked=false);
   document.querySelectorAll('input[name="why"]').forEach(r=>r.checked=false);
   document.getElementById("verdictModal").classList.add("on");
-}
-function closeVerdict(){document.getElementById("verdictModal").classList.remove("on");}
+};
+window.closeVerdict = function(){document.getElementById("verdictModal").classList.remove("on");};
 
 window.verdictNext=function(){
   if(STATE.verdictStage===1){
@@ -2754,7 +2772,7 @@ window.submitVerdict=function(){
   const who=STATE.verdictWho;
   const how=STATE.verdictHow;
   STATE.endGameDone=true;
-  closeVerdict();
+  window.closeVerdict();
 
   const WIN=who==="sender"&&how==="remote"&&why==="obsession";
   const WRONG_WHO_JAKUB=who==="jakub";
@@ -2788,4 +2806,74 @@ Wyznanie — napisane o 02:14 z jego konta, na jego urządzeniu — zostaje prze
 
 Sąd skazuje na podstawie wyznania.
 
-Trzynaście miesięcy później kobieta na Mokotowie otrzymuje list podpisany literą S. JeszZostałem zaprojektowany tylko do przetwarzania i generowania tekstu. Nie potrafię Ci w tym pomóc.
+Trzynaście miesięcy później kobieta na Mokotowie otrzymuje list podpisany literą S. Jeszcze nie wie co to oznacza. Wkrótce się dowie.
+
+Miałeś log sesji. Miałeś odcisk palca urządzenia. Miałeś konto sprzedającego założone z tego samego węzła który wysyłał groźby.
+
+Przeczytałeś wiadomość i przestałeś czytać.`;
+  }else if(WRONG_WHO_BARTEK){
+    stamp="RAPORT ODRZUCONY";cls="lose";
+    txt=`Bartek K. zostaje wezwany na przesłuchanie na podstawie twojego raportu.
+
+Ma alibi. Był w domu. Potwierdzają to dwaj sąsiedzi. Potwierdzają to jego zapisy telefoniczne. Jedyną rzeczą łączącą go z nocą zdarzenia jest wiadomość którą otrzymał — wiadomość o której natychmiast zadzwonił, zaniepokojony.
+
+Zostaje zwolniony po 48 godzinach.
+
+Twój raport zostaje zdyskredytowany. Prokuratura flaguje twoją analizę jako niewiarygodną. Prawdziwa sprawa upada zanim może zostać odbudowana.
+
+Rozmowa między Bartkiem i Jakubem nie była dowodem winy. Była dowodem przyjaźni i bardzo złego poranka.`;
+  }else if(who==="unknown"){
+    stamp="RAPORT NIEKOMPLETNY";cls="lose";
+    txt=`Złożyłeś raport bez konkluzji.
+
+Sprawa zostaje przydzielona drugiemu analitykowi. Mija sześć tygodni. Ślad stygnie. Urządzenie, które połączyło się zdalnie w noc zdarzenia, przestaje pojawiać się w jakiejkolwiek sieci.
+
+Raport bez konkluzji jest czasem uczciwym raportem. W tym przypadku dowody były. Log sesji. Plik cache. Odcisk palca urządzenia który pojawił się w groźbach, w fałszywym ogłoszeniu i w dzienniku zdarzeń systemowych tej samej nocy.
+
+Miałeś to czego potrzebowałeś.
+
+Zdecydowałeś że nie masz.`;
+  }else{
+    stamp="RAPORT NIESPÓJNY";cls="lose";
+    txt=`Twoje trzy ustalenia nie tworzą spójnej sprawy.
+
+Prokurator przegląda twój raport i zwraca go. Wybrane przez ciebie dowody nie zgadzają się z opisanym mechanizmem ani przypisanym motywem.
+
+Raport kryminalistyczny musi być wewnętrznie spójny. Tożsamość, metoda i motyw muszą się łączyć — każde musi być poparte tym samym zbiorem dowodów, wskazującym w tym samym kierunku.
+
+Miałeś właściwe elementy. Złożyłeś je nieprawidłowo.
+
+Sprawa zostaje przydzielona ponownie.`;
+  }
+  showEnding(who+how+why,stamp,cls==="win"?"win":"lose",txt);
+};
+
+function showEnding(key,stamp,winLose,txt){
+  const e=document.getElementById("ending");
+  const s=document.getElementById("endStamp");
+  const t=document.getElementById("endTxt");
+  const b=document.getElementById("endBtns");
+  s.textContent=stamp;
+  s.className="stamp "+(winLose==="win"?"win":"lose");
+  t.innerHTML='<span class="crt"></span>';
+  
+  if(winLose==="win"){
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">⟲ RESTART SYSTEMU</button>
+                 <button class="end-btn end-btn-next" onclick="location.href='howlora2.html'">→ PRZEJDŹ DO SPRAWY #2</button>`;
+  } else {
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">⟲ RESTART SYSTEMU</button>`;
+  }
+  
+  e.classList.add("on");
+  let i=0;
+  const tick=()=>{
+    if(i>=txt.length)return;
+    i++;
+    t.innerHTML=txt.slice(0,i).replace(/\n/g,"<br>")+'<span class="crt"></span>';
+    setTimeout(tick,txt[i-1]==="\n"?200:15);
+  };
+  setTimeout(tick,800);
+}
+</script>
+</body>
+</html>
