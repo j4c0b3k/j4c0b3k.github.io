@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HOWLORA</title>
     <style>
         *, *::before, *::after {
@@ -14,8 +14,8 @@
             background-color: #050608;
             color: #c5cdd8;
             font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
-            height: 100vh;
+            overflow-x: hidden;
+            min-height: 100vh;
             width: 100vw;
             user-select: none;
             animation: crt-flicker 0.15s infinite;
@@ -78,6 +78,7 @@
             justify-content: center;
             align-items: center;
             z-index: 10004;
+            padding: 20px;
         }
         .boot-terminal {
             width: 100%;
@@ -89,6 +90,7 @@
             font-size: 14px;
             letter-spacing: 1px;
             line-height: 1.5;
+            word-wrap: break-word;
         }
         .boot-line.visible {
             opacity: 1;
@@ -100,7 +102,16 @@
             letter-spacing: 2px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+        .login-input-wrapper {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 51, 51, 0.4);
+            padding-bottom: 5px;
         }
         .login-input {
             background: transparent;
@@ -110,37 +121,57 @@
             font-size: 16px;
             font-weight: bold;
             outline: none;
-            width: 250px;
+            width: 180px;
             letter-spacing: 2px;
             text-transform: uppercase;
+            text-align: center;
+        }
+        .login-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid #ff3b30;
+            color: #ff3b30;
+            padding: 8px 16px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+        .login-btn:active {
+            background: #ff3b30;
+            color: #050608;
         }
         .login-cursor {
             animation: blink 1s step-end infinite;
+            color: #ff3b30;
         }
         #main-interface {
             opacity: 0;
             transition: opacity 1.5s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100vw;
             display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100vw;
         }
         #main-interface.ready {
             display: flex;
             opacity: 1;
         }
         header {
-            height: 50px;
+            min-height: 50px;
             border-bottom: 1px solid rgba(255, 51, 51, 0.2);
             background: rgba(13, 15, 20, 0.9);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 10px 20px;
             letter-spacing: 2px;
             font-size: 12px;
             color: #627285;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         header .sys-title { color: #a0b0c0; font-weight: bold; }
         header .sys-time { color: #ff3b30; }
@@ -189,6 +220,7 @@
             color: #4a5768;
             overflow: hidden;
             position: relative;
+            min-height: 150px;
         }
         .data-stream {
             position: absolute;
@@ -228,6 +260,7 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.1), 0 0 30px rgba(255, 51, 51, 0.15);
             display: inline-block;
             margin-right: -14px;
+            word-break: break-all;
         }
         .logo-tag {
             font-size: 11px;
@@ -245,6 +278,7 @@
             color: #92a1b3;
             margin-bottom: 50px;
             letter-spacing: 1px;
+            padding: 0 10px;
         }
         .btn-investigate {
             background: transparent;
@@ -259,8 +293,10 @@
             position: relative;
             transition: all 0.3s ease;
             box-shadow: inset 0 0 10px rgba(255, 51, 51, 0.1), 0 0 10px rgba(255, 51, 51, 0.1);
+            width: 80%;
+            max-width: 350px;
         }
-        .btn-investigate:hover {
+        .btn-investigate:hover, .btn-investigate:active {
             background: #ff3b30;
             color: #050608;
             box-shadow: 0 0 25px rgba(255, 51, 51, 0.6);
@@ -277,8 +313,8 @@
         }
         .btn-investigate::before { left: 15px; }
         .btn-investigate::after { content: '<'; right: 15px; }
-        .btn-investigate:hover::before { left: 22px; opacity: 1; color: #000; }
-        .btn-investigate:hover::after { right: 22px; opacity: 1; color: #000; }
+        .btn-investigate:hover::before, .btn-investigate:active::before { left: 22px; opacity: 1; color: #000; }
+        .btn-investigate:hover::after, .btn-investigate:active::after { right: 22px; opacity: 1; color: #000; }
         .dossier-list {
             display: flex;
             flex-direction: column;
@@ -293,7 +329,7 @@
             cursor: crosshair;
             transition: border-color 0.2s;
         }
-        .dossier-card:hover {
+        .dossier-card:hover, .dossier-card:active {
             border-color: rgba(255, 51, 51, 0.4);
             background: rgba(15, 10, 10, 0.8);
         }
@@ -304,7 +340,7 @@
             background-color: #3a4454;
             transition: background-color 0.2s;
         }
-        .dossier-card:hover::before { background-color: #ff3b30; }
+        .dossier-card:hover::before, .dossier-card:active::before { background-color: #ff3b30; }
         .dossier-header {
             font-size: 13px;
             font-weight: bold;
@@ -343,7 +379,7 @@
             animation: pulse-alert 2s infinite;
         }
         footer {
-            height: 35px;
+            min-height: 35px;
             border-top: 1px solid rgba(255, 255, 255, 0.03);
             background: rgba(7, 8, 12, 0.9);
             display: flex;
@@ -352,6 +388,8 @@
             font-size: 11px;
             color: #434d59;
             letter-spacing: 1px;
+            text-align: center;
+            padding: 5px 10px;
         }
         @keyframes crt-flicker {
             0% { opacity: 0.995; }
@@ -379,12 +417,40 @@
             80% { transform: translate(1px, -1px); text-shadow: 1px 0 red, -1px 0 blue; }
             100% { transform: translate(0); text-shadow: none; }
         }
+
         @media (max-width: 1024px) {
-            body { overflow-y: auto; }
-            .workspace { grid-template-columns: 1fr; height: auto; gap: 20px; overflow: visible; }
-            .main-menu { padding: 60px 20px; order: -1; }
-            .data-stream-container { height: 150px; }
-            .data-stream { position: relative; bottom: 0; left: 0; right: 0; }
+            body { 
+                overflow-y: auto; 
+                height: auto;
+            }
+            .workspace { 
+                grid-template-columns: 1fr; 
+                height: auto; 
+                gap: 20px; 
+                overflow: visible; 
+            }
+            .main-menu { 
+                padding: 40px 15px; 
+                order: -1; 
+            }
+            .logo {
+                font-size: 42px;
+                letter-spacing: 8px;
+                margin-right: -8px;
+            }
+            .data-stream-container { 
+                height: 150px; 
+            }
+            .data-stream { 
+                position: relative; 
+                bottom: 0; left: 0; right: 0; 
+            }
+            .login-box {
+                flex-direction: column;
+            }
+            .login-btn {
+                display: block;
+            }
         }
     </style>
 </head>
@@ -400,8 +466,11 @@
     <div id="login-screen">
         <div class="login-box">
             <span>PODAJ IDENTYFIKATOR KRYMINOLOGA:</span>
-            <input type="text" id="login-input" class="login-input" autocomplete="off" spellcheck="false" maxlength="12">
-            <span class="login-cursor">█</span>
+            <div class="login-input-wrapper">
+                <input type="text" id="login-input" class="login-input" autocomplete="off" spellcheck="false" maxlength="12">
+                <span class="login-cursor">█</span>
+            </div>
+            <button id="login-btn" class="login-btn">ZALOGUJ</button>
         </div>
     </div>
 
@@ -583,6 +652,7 @@
         const bootScreen = document.getElementById('boot-screen');
         const loginScreen = document.getElementById('login-screen');
         const loginInput = document.getElementById('login-input');
+        const loginBtn = document.getElementById('login-btn');
         const mainInterface = document.getElementById('main-interface');
 
         bootLines.forEach(line => {
@@ -603,21 +673,26 @@
                 loginScreen.style.display = 'flex';
                 setTimeout(() => {
                     loginScreen.style.opacity = '1';
-                    loginInput.focus();
+                    if (window.innerWidth > 1024) {
+                        loginInput.focus();
+                    }
                 }, 50);
             }, 500);
         }, 3000);
 
-        document.addEventListener('click', () => {
-            if(loginScreen.style.display === 'flex') loginInput.focus();
+        document.addEventListener('click', (e) => {
+            if(loginScreen.style.display === 'flex' && e.target !== loginBtn && window.innerWidth > 1024) {
+                loginInput.focus();
+            }
         });
 
-        loginInput.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter' && loginInput.value.trim() !== '') {
+        function executeLogin() {
+            if(loginInput.value.trim() !== '') {
                 initAudio();
                 playBeep();
                 startAmbient();
                 loginInput.disabled = true;
+                loginBtn.disabled = true;
                 loginScreen.style.opacity = '0';
                 
                 setTimeout(() => {
@@ -628,7 +703,13 @@
                     }, 50);
                 }, 500);
             }
+        }
+
+        loginInput.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') executeLogin();
         });
+
+        loginBtn.addEventListener('click', executeLogin);
 
         function updateClock() {
             const now = new Date();
@@ -683,13 +764,14 @@
             const targetLen = parseInt(redacted.getAttribute('data-len'));
             let interval;
 
-            card.addEventListener('mouseenter', () => {
+            function startDecode() {
                 playClick();
                 badge.innerText = 'DEKODOWANIE...';
                 badge.style.color = '#ffcc00';
                 badge.style.borderColor = '#ffcc00';
                 badge.style.background = 'rgba(255, 204, 0, 0.1)';
                 
+                clearInterval(interval);
                 interval = setInterval(() => {
                     let randStr = '';
                     for(let i=0; i<targetLen; i++) {
@@ -701,9 +783,9 @@
                     redacted.style.backgroundColor = 'transparent';
                     redacted.style.color = '#ff3b30';
                 }, 40);
-            });
+            }
 
-            card.addEventListener('mouseleave', () => {
+            function stopDecode() {
                 clearInterval(interval);
                 badge.innerText = originalBadge;
                 badge.style.color = '';
@@ -717,13 +799,20 @@
                 redacted.innerText = blockStr;
                 redacted.style.backgroundColor = '';
                 redacted.style.color = '';
-            });
+            }
+
+            card.addEventListener('mouseenter', startDecode);
+            card.addEventListener('mouseleave', stopDecode);
+            card.addEventListener('touchstart', startDecode);
+            card.addEventListener('touchend', stopDecode);
         });
 
         const startBtn = document.getElementById('start-btn');
+        
         startBtn.addEventListener('mouseenter', () => {
             playClick();
         });
+        
         startBtn.addEventListener('click', () => {
             playHeavyClick();
             setTimeout(() => {
