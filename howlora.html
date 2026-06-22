@@ -27,38 +27,28 @@
         a{color:var(--cyan)}
         input,textarea,select{font-family:inherit;font-size:16px !important;}
 
-        /* --- DEVICE POPUP STYLES --- */
         #devicePopup {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px);
         }
-        #devicePopup .box {
-            border: 1px solid var(--green-dim); background: #020406; border-radius: 6px; width: 100%; max-width: 420px; box-shadow: 0 0 40px rgba(61,252,160,0.1); overflow: hidden; display: flex; flex-direction: column;
+        .pop-box {
+            border: 1px solid var(--green); background: #020406; border-radius: 4px; width: 100%; max-width: 400px; box-shadow: 0 0 30px rgba(61,252,160,0.1); display: flex; flex-direction: column; overflow: hidden;
         }
         .pop-header {
-            background: var(--green-dim); color: #000; font-weight: 900; letter-spacing: 3px; padding: 12px; font-size: 13px; text-align: center; text-transform: uppercase;
+            background: var(--green-dim); color: #000; font-weight: 900; letter-spacing: 3px; padding: 12px; font-size: 12px; text-align: center; text-transform: uppercase;
         }
-        .pop-content { padding: 25px 20px; display: flex; flex-direction: column; gap: 15px; }
-        .pop-loader { color: var(--green); font-size: 13px; text-align: center; animation: blink 1s infinite; margin: 15px 0; font-weight: bold; letter-spacing: 2px;}
+        .pop-content { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .pop-loader { color: var(--green); font-size: 13px; text-align: center; animation: blink 1s infinite; font-weight: bold; letter-spacing: 2px; margin: 10px 0;}
         .sys-info-box {
-            background: #03060a; border: 1px solid #0f2215; padding: 15px; border-radius: 4px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 0 15px rgba(61,252,160,0.03);
+            background: #050a08; border: 1px solid #0f2215; padding: 15px; border-radius: 4px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 0 10px rgba(61,252,160,0.05);
         }
-        .sys-row { display: flex; justify-content: space-between; font-size: 11px; align-items: flex-start; border-bottom: 1px dashed #0a140f; padding-bottom: 6px; }
+        .sys-row { display: flex; justify-content: space-between; font-size: 11px; align-items: flex-start; border-bottom: 1px dashed #111a22; padding-bottom: 6px; }
         .sys-row:last-child { border-bottom: none; padding-bottom: 0; }
         .sys-row .lbl { color: #3a8a5a; font-weight: bold; width: 90px; flex-shrink: 0; letter-spacing: 1px;}
-        .sys-row .val { color: var(--green); text-align: right; max-width: 70%; word-break: break-word; text-shadow: 0 0 5px rgba(61,252,160,0.3); }
+        .sys-row .val { color: var(--green); text-align: right; word-break: break-word; text-shadow: 0 0 5px rgba(61,252,160,0.2); line-height: 1.4; }
         .sys-row .val.warn { color: var(--amber); text-shadow: 0 0 5px rgba(245,200,66,0.3); }
-        .pop-disclaimer { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; padding: 5px 10px; border: 1px solid #111; background: #050a10; border-radius: 4px; }
-        .pop-btn { background: transparent; color: var(--green); border: 1px solid var(--green); padding: 14px; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; text-transform: uppercase; }
-        .pop-btn:hover { background: var(--green); color: #000; box-shadow: 0 0 20px rgba(61,252,160,0.4); }
-
-        #initScreen{
-          position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;
-        }
-        .init-btn {
-          background: rgba(61,252,160,0.05); border: 1px solid var(--green); color: var(--green); padding: 16px 32px; font-size: 13px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; border-radius: 4px; box-shadow: 0 0 15px rgba(61,252,160,0.15); transition: 0.3s; cursor: pointer; font-family: inherit; animation: pulseInit 1.5s infinite alternate;
-        }
-        .init-btn:hover { background: var(--green); color: #000; box-shadow: 0 0 30px rgba(61,252,160,0.5); text-shadow: none; animation: none;}
-        @keyframes pulseInit{ from{box-shadow: 0 0 15px rgba(61,252,160,0.3); text-shadow: 0 0 8px var(--green);} to{box-shadow: 0 0 5px rgba(61,252,160,0.1); text-shadow: 0 0 2px var(--green);} }
+        .pop-disclaimer { font-size: 9px; color: var(--muted); text-align: center; line-height: 1.5; padding: 8px; border: 1px solid #111; background: #080c10; border-radius: 4px; text-transform: uppercase; }
+        .pop-btn { background: transparent; color: var(--green); border: 1px solid var(--green); padding: 14px; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; text-transform: uppercase; }
+        .pop-btn:hover { background: var(--green); color: #000; box-shadow: 0 0 15px rgba(61,252,160,0.4); }
 
         #bootOverlay{
           position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden;
@@ -225,10 +215,10 @@
         .win .tb .dot{width:9px;height:9px;border-radius:50%;background:#273240;border:1px solid #384855}
         .win .tb .title{flex:1;font-size:11px;color:#c0ccda;letter-spacing:1.5px;text-transform:uppercase;padding-left:6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none;}
         .win .tb .ctl{display:flex;gap:6px; z-index:50;}
-        .win .tb .ctl button{width:24px;height:22px;border:1px solid var(--line2);background:#0e161e;color:#8a9aaa;border-radius:3px;font-size:12px;line-height:1;cursor:pointer;}
+        .win .tb .ctl button{width:24px;height:22px;border:1px solid var(--line2);background:#0e161e;color:#8a9aaa;border-radius:3px;font-size:12px;line-height:1;cursor:pointer; display:flex; align-items:center; justify-content:center; padding-bottom: 2px;}
         .win .tb .ctl button:hover{background:#182230;color:#fff}
         .win .tb .ctl .x:hover{background:var(--red);color:#fff;border-color:var(--red)}
-        .win .body{flex:1;overflow:auto;background:var(--panel);color:var(--text);font-size:13px;display:flex;flex-direction:column; -webkit-overflow-scrolling: touch;}
+        .win .body{flex:1;overflow:auto;background:var(--panel);color:var(--text);font-size:13px;display:flex;flex-direction:column; -webkit-overflow-scrolling: touch; position: relative;}
         .win.focus{box-shadow:0 30px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(46,224,255,.28)}
         .win.focus .tb{background:linear-gradient(180deg,#182534,#101e2c)}
         .win .grip{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,#2a3a4c 50%,#2a3a4c 62%,transparent 62%,transparent 76%,#2a3a4c 76%,#2a3a4c 88%,transparent 88%);}
@@ -257,24 +247,24 @@
         #timerDisplay .t-bar{width:60px;height:3px;background:#1a2030;border-radius:2px;overflow:hidden}
         #timerDisplay .t-bar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--amber));border-radius:2px;transition:width .9s linear}
 
-        .app{display:flex;height:100%;color:#d5dce5;flex:1;}
-        .sidebar{width:210px;background:#090f16;border-right:1px solid var(--line2);overflow-y:auto;flex-shrink:0}
-        .sidebar .head{padding:10px 14px;font-size:9px;letter-spacing:2.5px;color:var(--muted);border-bottom:1px solid var(--line);text-transform:uppercase}
-        .list{display:flex;flex-direction:column}
+        .app{display:flex;height:100%;color:#d5dce5;flex:1;position:absolute;inset:0;width:100%;}
+        .sidebar{width:210px;background:#090f16;border-right:1px solid var(--line2);display:flex;flex-direction:column;flex-shrink:0}
+        .sidebar .head{padding:10px 14px;font-size:9px;letter-spacing:2.5px;color:var(--muted);border-bottom:1px solid var(--line);text-transform:uppercase;flex-shrink:0}
+        .list{display:flex;flex-direction:column;flex:1;overflow-y:auto;min-height:0;}
         .row{display:flex;gap:10px;align-items:center;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;color:#b8c4d0;}
         .row:hover{background:#0e1820}
         .row.active{background:#132030;color:#fff;border-left:2px solid var(--cyan);padding-left:11px}
         .row .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1c2836,#0c131e);display:grid;place-items:center;font-weight:900;color:#c8d4e0;flex-shrink:0;border:1px solid var(--line2);font-size:12px;}
-        .row .meta{flex:1;overflow:hidden;pointer-events:none;}
+        .row .meta{flex:1;overflow:hidden;}
         .row .meta .n{font-size:12px;color:#dce5ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .row .meta .p{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-        .row .time{font-size:9px;color:var(--muted);white-space:nowrap;pointer-events:none;}
+        .row .time{font-size:9px;color:var(--muted);white-space:nowrap;}
         .unread{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);flex-shrink:0}
-        .pane{flex:1;display:flex;flex-direction:column;min-width:0}
+        .pane{flex:1;display:flex;flex-direction:column;min-width:0;height:100%;}
         .pane .ph{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--line2);background:#090f16;font-size:11px;letter-spacing:1px;flex-shrink:0;}
         .back{background:#0e1820;color:var(--cyan);border:1px solid var(--cyan);padding:4px 10px;border-radius:3px;font-size:10px;letter-spacing:1px;}
         .back:hover{background:var(--cyan);color:#000}
-        .pane .pc{flex:1;overflow-y:auto;padding:14px}
+        .pane .pc{flex:1;overflow-y:auto;padding:14px;min-height:0;}
         .empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:11px;letter-spacing:1px;text-align:center;padding:20px}
         .bub{max-width:78%;padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.55;margin-bottom:8px;word-wrap:break-word}
         .bub.them{background:#142030;color:#d5dde6;border-bottom-left-radius:2px}
@@ -476,14 +466,12 @@
         ::-webkit-scrollbar-thumb:hover{background:#283a50}
 
         @media (max-width: 768px) {
-            #initScreen .init-text { padding: 12px 20px; font-size: 11px; }
-
             .app.has-sidebar { flex-direction: column; }
             .app.has-sidebar.has-active .sidebar { display: none !important; }
             .app.has-sidebar:not(.has-active) .pane { display: none !important; }
             
-            .sidebar { width: 100% !important; border-right: none; border-bottom: none; flex: 1; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-            .pane { flex: 1; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .sidebar { width: 100% !important; border-right: none; border-bottom: none; flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .pane { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
             .wall-big { font-size: 38px; right: 15px; top: 15px; letter-spacing: 4px; }
             .wall-big span { font-size: 16px; letter-spacing: 6px; }
@@ -535,18 +523,20 @@
 <body>
 
 <div id="devicePopup">
-    <div class="box">
-        <h2 id="devicePopupTitle">WERYFIKACJA SYSTEMU</h2>
-        <div class="pop-loader" id="popupLoader">SKANOWANIE ŚRODOWISKA...</div>
-        <div class="sys-info-box" id="sysInfoBox" style="display:none;">
-            <div class="sys-row"><span class="lbl">PLATFORMA:</span><span class="val" id="popType">...</span></div>
-            <div class="sys-row"><span class="lbl">SYSTEM:</span><span class="val" id="popOS">...</span></div>
-            <div class="sys-row"><span class="lbl">SPRZĘT:</span><span class="val" id="popHW">...</span></div>
-            <div class="sys-row"><span class="lbl">EKRAN:</span><span class="val" id="popRes">...</span></div>
-            <div class="sys-row"><span class="lbl">LOKALIZACJA:</span><span class="val warn" id="popGeo">Trwa ustalanie trasy...</span></div>
+    <div class="pop-box">
+        <div class="pop-header">SKANER ŚRODOWISKA</div>
+        <div class="pop-content">
+            <div id="popLoader" class="pop-loader">TRWA IDENTYFIKACJA...</div>
+            <div id="sysInfoBox" class="sys-info-box" style="display:none;">
+                <div class="sys-row"><span class="lbl">TYP:</span><span class="val" id="popType">...</span></div>
+                <div class="sys-row"><span class="lbl">SYSTEM:</span><span class="val" id="popOS">...</span></div>
+                <div class="sys-row"><span class="lbl">MODEL:</span><span class="val" id="popHW">...</span></div>
+                <div class="sys-row"><span class="lbl">EKRAN:</span><span class="val" id="popRes">...</span></div>
+                <div class="sys-row"><span class="lbl">LOKALIZACJA:</span><span class="val warn" id="popGeo">Szukanie tras...</span></div>
+            </div>
+            <div class="pop-disclaimer">Spokojnie. To tylko efekt wizualny. Twoje dane nigdzie nie są zapisywane ani wysyłane.</div>
+            <button id="popBtn" class="pop-btn" style="display:none;" onclick="window.acceptDevicePopup()">WEJDŹ DO SYSTEMU</button>
         </div>
-        <div class="pop-disclaimer">Zabezpieczenia prywatności aktywne.<br>Twoje dane są przetwarzane lokalnie i nie zostaną użyte ani zapisane.</div>
-        <button id="popBtn" onclick="acceptDevicePopup()" style="display:none;">[ ZAAKCEPTUJ I KONTYNUUJ ]</button>
     </div>
 </div>
 
@@ -587,7 +577,7 @@
             else hw = "Smartfon Android";
         }
         if (/iPhone|iPad|iPod/.test(ua)) {
-            os = "iOS (Apple)";
+            os = "iOS";
             if(/iPhone/.test(ua)) {
                 const w = window.screen.width;
                 const h = window.screen.height;
@@ -622,31 +612,32 @@
         document.getElementById('popRes').innerText = resStr;
 
         setTimeout(() => {
-            document.getElementById('popupLoader').style.display = 'none';
+            document.getElementById('popLoader').style.display = 'none';
             document.getElementById('sysInfoBox').style.display = 'flex';
             document.getElementById('popBtn').style.display = 'block';
-        }, 800);
+        }, 1200);
 
         try {
             let resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
             let data = await resp.json();
-            let geoString = (data.ip || "") + " / " + (data.city || "") + ", " + (data.country || "");
-            document.getElementById("popGeo").innerText = geoString;
+            let geoString = "";
+            if(data.city) geoString += data.city;
+            if(data.region && data.region !== data.city) geoString += ", " + data.region;
+            if(data.country) geoString += "<br>" + data.country;
+            if(data.ip) geoString += "<br>[" + data.ip + "]";
+            document.getElementById("popGeo").innerHTML = geoString || "Lokalizacja ukryta";
         } catch(e) {
-            document.getElementById("popGeo").innerText = "Błąd / Ukryte przez VPN";
+            document.getElementById("popGeo").innerHTML = "Błąd / Ukryte przez VPN";
         }
     }
     
     window.acceptDevicePopup = function() {
         document.getElementById("devicePopup").style.display = "none";
+        window.runBoot();
     }
 
     checkDevice();
 </script>
-
-<div id="initScreen">
-  <button class="init-btn" onclick="runBoot(event)">[ INICJALIZACJA SYSTEMU ]</button>
-</div>
 
 <div id="bootOverlay" style="display:none">
   <div id="stagePower">
@@ -697,7 +688,7 @@
     <div id="loginBar"><div id="loginBarFill"></div></div>
     <div id="loginStatus"></div>
   </div>
-  <button id="bootSkip" onclick="skipBoot()">POMIŃ &gt;&gt;</button>
+  <button id="bootSkip" onclick="window.skipBoot()">POMIŃ &gt;&gt;</button>
 </div>
 
 <div id="desktop">
@@ -1351,7 +1342,7 @@ PIĄTEK — POWRÓT URZĄDZENIA
 [SYS] 3 pliki odzyskane z /temp (patrz: /odzyskane/)`,
 };
 
-function openTrash(){
+window.openTrash = function(){
   trackObj("start");
   const w=makeWindow("trash","Kosz","",{w:520,h:380});
   w.body.innerHTML=`
@@ -1360,7 +1351,8 @@ function openTrash(){
        <div class="file" onclick="window.openTrashFile()"><div class="n">📄 dziennik_kopia_robocza.txt</div><div class="d">Usunięto: Wtorek 23:14</div></div>
      </div>
   `;
-}
+};
+
 window.openTrashFile = function(){
   const w=makeWindow("trash_file","dziennik_kopia_robocza.txt","",{w:500,h:400});
   w.body.innerHTML=`<pre class="term">Wtorek.
@@ -1377,7 +1369,7 @@ window.toggleIgComments = function(id){
   }
 };
 
-function openIG(){
+window.openIG = function(){
   if(!STATE.igUnlocked){
     const w = makeWindow("ig_lock", "Instantgram — Blokada", "", {w:300, h:200});
     w.body.innerHTML = `
@@ -1470,14 +1462,14 @@ function openIG(){
       </div>
     </div>
   `;
-}
+};
 
 window.checkIGPin = function(){
   const val = document.getElementById("igPin").value;
   if(val === "8042"){
     STATE.igUnlocked = true;
     window.closeWin("ig_lock");
-    openIG();
+    window.openIG();
   } else {
     document.getElementById("igError").textContent = "NIEPRAWIDŁOWY KOD";
     setTimeout(()=>document.getElementById("igError").textContent="", 2000);
@@ -1485,19 +1477,19 @@ window.checkIGPin = function(){
 };
 
 const APPS=[
-  {id:"vchat",   name:"V-Chat",      glyph:"V",   open:openVChat},
-  {id:"echo",    name:"EchoTrade",   glyph:"🏷",   open:openEcho},
-  {id:"mail",    name:"Skrzynka",    glyph:"✉",   open:openMail},
-  {id:"notes",   name:"Notatki",     glyph:"📝",  open:openNotes},
-  {id:"browser", name:"Przeglądarka",glyph:"⌬",   open:openBrowser},
-  {id:"files",   name:"Pliki",       glyph:"▣",   open:openFiles},
-  {id:"logs",    name:"Logi systemu",glyph:"⚠",   open:openLogs, locked:true},
-  {id:"ig",      name:"Instantgram", glyph:"📷",  open:openIG},
-  {id:"trash",   name:"Kosz",        glyph:"🗑️",   open:openTrash},
-  {id:"snake",   name:"Snake.exe",   glyph:"🐍",  open:openSnake, game:true},
-  {id:"ttt",     name:"Kółko-Krzyżyk",glyph:"✕", open:openTicTacToe, game:true},
-  {id:"rps",     name:"Kamień Nożyce",glyph:"✊", open:openRPS, game:true},
-  {id:"readme",  name:"README",      glyph:"?",   open:openReadme},
+  {id:"vchat",   name:"V-Chat",      glyph:"V",   open:()=>window.openVChat()},
+  {id:"echo",    name:"EchoTrade",   glyph:"🏷",   open:()=>window.openEcho()},
+  {id:"mail",    name:"Skrzynka",    glyph:"✉",   open:()=>window.openMail()},
+  {id:"notes",   name:"Notatki",     glyph:"📝",  open:()=>window.openNotes()},
+  {id:"browser", name:"Przeglądarka",glyph:"⌬",   open:()=>window.openBrowser()},
+  {id:"files",   name:"Pliki",       glyph:"▣",   open:()=>window.openFiles()},
+  {id:"logs",    name:"Logi systemu",glyph:"⚠",   open:()=>window.openLogs(), locked:true},
+  {id:"ig",      name:"Instantgram", glyph:"📷",  open:()=>window.openIG()},
+  {id:"trash",   name:"Kosz",        glyph:"🗑️",   open:()=>window.openTrash()},
+  {id:"snake",   name:"Snake.exe",   glyph:"🐍",  open:()=>window.openSnake(), game:true},
+  {id:"ttt",     name:"Kółko-Krzyżyk",glyph:"✕", open:()=>window.openTicTacToe(), game:true},
+  {id:"rps",     name:"Kamień Nożyce",glyph:"✊", open:()=>window.openRPS(), game:true},
+  {id:"readme",  name:"README",      glyph:"?",   open:()=>window.openReadme()},
 ];
 
 const OBJECTIVES=[
@@ -1553,15 +1545,15 @@ window.runBoot = function(e){
     showStage("stageBios");
     runBios();
   },800);
-}
+};
 
-function skipBoot(){
+window.skipBoot = function(){
   initSnd();
   document.getElementById("bootOverlay").remove();
   const btn = document.getElementById("bootSkip");
   if(btn) btn.remove();
   revealDesktop();
-}
+};
 
 function showStage(id){
   ["stagePower","stageBios","stageLogo","stageLoading","stageLogin"].forEach(s=>{
@@ -1972,8 +1964,8 @@ function makeWindow(id,title,html,opts){
       <div class="dot"></div>
       <div class="title">${title}</div>
       <div class="ctl">
-        <button onclick="window.minWin('${id}'); event.stopPropagation();">_</button>
-        <button class="x" onclick="window.closeWin('${id}'); event.stopPropagation();">×</button>
+        <button onclick="window.minWin('${id}')">_</button>
+        <button class="x" onclick="window.closeWin('${id}')">×</button>
       </div>
     </div>
     <div class="body">${html}</div>
@@ -1996,7 +1988,7 @@ function bindDrag(el){
   const tb=el.querySelector(".tb");
   let sx,sy,ox,oy,drag=false;
   const start=(e)=>{
-    if(e.target.tagName==="BUTTON" || e.target.closest('button')) return;
+    if(e.target.closest('.ctl')) return;
     drag=true;
     const pt=e.touches?e.touches[0]:e;
     sx=pt.clientX;sy=pt.clientY;ox=el.offsetLeft;oy=el.offsetTop;
@@ -2008,14 +2000,13 @@ function bindDrag(el){
     const nx=Math.max(0,Math.min(window.innerWidth-60,ox+pt.clientX-sx));
     const ny=Math.max(0,Math.min(window.innerHeight-80,oy+pt.clientY-sy));
     el.style.left=nx+"px";el.style.top=ny+"px";
-    if(e.cancelable) e.preventDefault();
   };
   const end=()=>{drag=false;};
 
   tb.addEventListener("mousedown",start);
-  tb.addEventListener("touchstart",start,{passive:false});
+  tb.addEventListener("touchstart",start,{passive:true});
   window.addEventListener("mousemove",move);
-  window.addEventListener("touchmove",move,{passive:false});
+  window.addEventListener("touchmove",move,{passive:true});
   window.addEventListener("mouseup",end);
   window.addEventListener("touchend",end);
 }
@@ -2035,14 +2026,13 @@ function bindResize(el){
     const pt=e.touches?e.touches[0]:e;
     el.style.width=Math.max(280,sw+pt.clientX-sx)+"px";
     el.style.height=Math.max(200,sh+pt.clientY-sy)+"px";
-    if(e.cancelable) e.preventDefault();
   };
   const end=()=>{rs=false;};
 
   g.addEventListener("mousedown",start);
-  g.addEventListener("touchstart",start,{passive:false});
+  g.addEventListener("touchstart",start,{passive:true});
   window.addEventListener("mousemove",move);
-  window.addEventListener("touchmove",move,{passive:false});
+  window.addEventListener("touchmove",move,{passive:true});
   window.addEventListener("mouseup",end);
   window.addEventListener("touchend",end);
 }
@@ -2078,7 +2068,7 @@ function trackObj(id){
   renderObjectives();
 }
 
-function openVChat(){
+window.openVChat = function(){
   trackObj("vchat");
   if(STATE.activeChat === "unknown"){
       STATE.vchatUnread = 0;
@@ -2086,7 +2076,8 @@ function openVChat(){
   }
   const w=makeWindow("vchat","V-Chat — Komunikator","",{w:740,h:500});
   renderVChat(w);
-}
+};
+
 function renderVChat(w){
   const rows=DATA.contacts.map(c=>`<div class="row${STATE.activeChat===c.id?" active":""}" onclick="window.selectChat('${c.id}')">
     <div class="av">${c.name[0]}</div>
@@ -2117,7 +2108,7 @@ function renderVChat(w){
         <span style="color:#e0eaf0">${esc(c.name)}</span>
         <span style="color:var(--muted);margin-left:auto;font-size:10px">${c.msgs.length} wiadomości</span>
       </div>
-      <div class="pc" style="flex:1;overflow-y:auto;">${bub}</div>
+      <div class="pc" style="flex:1;overflow-y:auto;min-height:0;">${bub}</div>
       ${optionsHtml}`;
   }
   w.body.innerHTML=`<div class="app has-sidebar ${STATE.activeChat ? 'has-active' : ''}">
@@ -2139,11 +2130,11 @@ window.selectChat=id=>{
 };
 window.backChat=()=>{STATE.activeChat=null;renderVChat(STATE.windows.vchat);};
 
-function openEcho(){
+window.openEcho = function(){
   trackObj("vchat");
   const w=makeWindow("echo","EchoTrade — Rynek","",{w:720,h:480});
   renderEcho(w);
-}
+};
 function renderEcho(w){
   if(!STATE.activeAd){
     const g=DATA.ads.map(m=>`<div class="ad-item" onclick="window.selectAd('${m.id}')">
@@ -2177,11 +2168,11 @@ function renderEcho(w){
 window.selectAd=id=>{STATE.activeAd=id;STATE.adRead[id]=true;renderEcho(STATE.windows.echo);};
 window.backAd=()=>{STATE.activeAd=null;renderEcho(STATE.windows.echo);};
 
-function openMail(){
+window.openMail = function(){
   trackObj("mail");
   const w=makeWindow("mail",`Skrzynka — Odebrane (${DATA.mails.length})`,"",{w:780,h:500});
   renderMail(w);
-}
+};
 function renderMail(w){
   const rows=DATA.mails.map(m=>`<div class="row${STATE.activeMail===m.id?" active":""}" onclick="window.selectMail('${m.id}')">
     <div class="meta mail-row" style="padding:0">
@@ -2215,15 +2206,15 @@ function renderMail(w){
 window.selectMail=id=>{STATE.activeMail=id;STATE.mailRead[id]=true;renderMail(STATE.windows.mail);};
 window.backMail=()=>{STATE.activeMail=null;renderMail(STATE.windows.mail);};
 
-function openNotes(){
+window.openNotes = function(){
   const w=makeWindow("notes","Notatki.txt","",{w:520,h:420});
   w.body.innerHTML=`<textarea id="notesArea" spellcheck="false" placeholder="Twoje notatki śledcze..."></textarea>`;
   const ta=w.body.querySelector("#notesArea");
   ta.value=STATE.notes;
   ta.addEventListener("input",()=>{STATE.notes=ta.value;});
-}
+};
 
-function openBrowser(){
+window.openBrowser = function(){
   trackObj("start");
   const w=makeWindow("browser","Przeglądarka — Historia","",{w:660,h:460});
   let html=`<div class="app brw"><div class="pane"><div class="url">📁 about:historia &nbsp; <b>jakub.w</b> &nbsp; — ostatnie 14 dni</div><div class="pc" style="padding:0">`;
@@ -2235,9 +2226,9 @@ function openBrowser(){
   });
   html+=`</div></div></div>`;
   w.body.innerHTML=html;
-}
+};
 
-function openFiles(){
+window.openFiles = function(){
   trackObj("files");
   const w=makeWindow("files","Pliki — Główny katalog","",{w:560,h:420});
   let html=`<div class="list">`;
@@ -2249,7 +2240,7 @@ function openFiles(){
   });
   html+=`</div>`;
   w.body.innerHTML=html;
-}
+};
 window.openFile=(k)=>{
   const fname=DATA.files.flatMap(f=>f.items).find(i=>i.x===k)?.n||k;
   const id="file_"+k;
@@ -2265,12 +2256,12 @@ window.openFile=(k)=>{
   w.body.innerHTML=`<pre class="term">${esc(content)}</pre>`;
 };
 
-function openLogs(){
+window.openLogs = function(){
   if(!STATE.logsUnlocked){window.openMinigame();return;}
   trackObj("logs");
   const w=makeWindow("logs","Logi systemowe — ODBLOKOWANE","",{w:700,h:480});
   w.body.innerHTML=`<pre class="term">${DATA.logs}</pre>`;
-}
+};
 
 const MINIGAME_PUZZLES=[
   {
@@ -2449,7 +2440,7 @@ window.retryMg=function(){
   renderMgPuzzle(STATE.windows.mg);
 };
 
-function openSnake(){
+window.openSnake = function(){
   const w=makeWindow("snake","Snake.exe","",{w:420,h:550});
   let snakeState="waiting";
   let px=10,py=10,xv=0,yv=0,trail=[],tail=5,score=0;
@@ -2542,9 +2533,9 @@ function openSnake(){
     drawFrame();setTimeout(snkLoop,85);
   };
   render();setTimeout(drawFrame,50);
-}
+};
 
-function openTicTacToe(){
+window.openTicTacToe = function(){
   window.killTTT=false;
   const w=makeWindow("ttt","Kółko i Krzyżyk","",{w:360,h:500});
   let board=Array(9).fill(null);
@@ -2633,9 +2624,9 @@ function openTicTacToe(){
   window.tttReset=()=>resetGame();
   window.tttDiff=d=>{difficulty=d;resetGame();};
   render();
-}
+};
 
-function openRPS(){
+window.openRPS = function(){
   const w=makeWindow("rps","Kamień Nożyce Papier","",{w:400,h:520});
   let scores={W:0,L:0,D:0};
   let choosing=true;
@@ -2685,9 +2676,9 @@ function openRPS(){
   window.rpsPlay=i=>play(i);
   window.rpsReset=()=>{scores={W:0,L:0,D:0};choosing=true;render();};
   render();
-}
+};
 
-function openReadme(){
+window.openReadme = function(){
   trackObj("start");
   const w=makeWindow("readme","INFORMACJA POUFNA — PRZECZYTAJ NAJPIERW","",{w:580,h:500});
   w.body.innerHTML=`<div class="readme">
@@ -2723,7 +2714,7 @@ Ten obraz dysku został przechwycony na podstawie nakazu awaryjnego o 08:47 rano
 
 <div class="case-id">SPRAWA #4471 // HOWLORA.OS v5.0 // ZASTRZEŻONE</div>
 </div>`;
-}
+};
 
 window.openVerdict = function(){
   STATE.verdictStage=1;
@@ -2845,10 +2836,10 @@ Miałeś właściwe elementy. Złożyłeś je nieprawidłowo.
 
 Sprawa zostaje przydzielona ponownie.`;
   }
-  showEnding(who+how+why,stamp,cls==="win"?"win":"lose",txt);
+  window.showEnding(who+how+why,stamp,cls==="win"?"win":"lose",txt);
 };
 
-function showEnding(key,stamp,winLose,txt){
+window.showEnding=function(key,stamp,winLose,txt){
   const e=document.getElementById("ending");
   const s=document.getElementById("endStamp");
   const t=document.getElementById("endTxt");
