@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<title>HOWLORA.OS v7.0 // Sprawa #9004 — Antek R.</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+:root{
+  --bg:#05070a;
+  --panel:#0b111a;
+  --panel2:#121a2f;
+  --line:#1f2b40;
+  --line2:#2d405e;
+  --text:#d1dce8;
+  --muted:#667b96;
+  --green:#00ffaa;
+  --amber:#f9a826;
+  --red:#ff003c;
+  --cyan:#66fcf1;
+  --magenta:#ff007f;
+  --violet:#9d4edd;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-family:"Consolas","SFMono-Regular",ui-monospace,monospace;user-select:none}
+button{font-family:inherit;cursor:pointer;outline:none}
+a{color:var(--cyan)}
+input,textarea,select{font-family:inherit;outline:none}
+
+#initScreen{
+  position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;
+  color:var(--magenta);font-size:16px;letter-spacing:6px;font-weight:900;cursor:pointer;
+  animation:pulseInit 1.5s infinite alternate;
+  text-transform:uppercase;
+}
+@keyframes pulseInit{
+  from{opacity:1;text-shadow:0 0 15px var(--magenta), 0 0 5px var(--cyan);}
+  to{opacity:0.3;text-shadow:0 0 2px var(--magenta);}
+}
+
+#bootOverlay{
+  position:fixed;inset:0;background:#020305;z-index:9999;overflow:hidden;
+}
+#stagePower{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:20px;
+}
+#powerLed{width:16px;height:4px;background:var(--cyan);box-shadow:0 0 20px var(--cyan);animation:ledBlink .15s steps(2) infinite}
+@keyframes ledBlink{50%{opacity:0}}
+#powerText{color:var(--cyan);font-size:11px;letter-spacing:8px;text-transform:uppercase;opacity:0.6}
+#stageBios{
+  position:absolute;inset:0;display:none;padding:50px;background:#020305;
+}
+#biosText{font-size:12px;color:var(--muted);line-height:1.6;text-shadow:none}
+#biosText .ok{color:var(--cyan)}
+#biosText .fail{color:var(--magenta)}
+
+#stageLogo{
+  position:absolute;inset:0;display:none;background:#05070a;
+  flex-direction:column;align-items:center;justify-content:center;gap:0;
+}
+#stageLogoInner{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  animation:logoFadeIn .8s cubic-bezier(0.2, 1, 0.3, 1);
+}
+@keyframes logoFadeIn{from{opacity:0;transform:scale(1.2)}to{opacity:1;transform:scale(1)}}
+.boot-logo-mark{position:relative;width:130px;height:130px;margin-bottom:24px;}
+.boot-logo-mark svg{width:130px;height:130px;display:block;}
+.boot-wordmark{font-size:40px;font-weight:900;letter-spacing:15px;color:#fff;text-shadow:0 0 15px var(--cyan), 0 0 30px var(--magenta);text-transform:uppercase;}
+.boot-sub{font-size:10px;letter-spacing:10px;color:var(--cyan);margin-top:12px;text-transform:uppercase;font-weight:bold;opacity:0.8}
+
+#stageLoading{
+  position:absolute;inset:0;display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:0;
+}
+#loadLore{max-width:700px;color:var(--text);font-size:16px;line-height:1.9;text-align:center;min-height:90px;margin-bottom:40px;padding:0 20px;text-shadow:0 0 10px rgba(102,252,241,0.2)}
+#loadLore .caret{display:inline-block;width:12px;height:20px;background:var(--magenta);vertical-align:-4px;margin-left:6px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+#loadLines{font-size:11px;color:var(--cyan);line-height:1.8;text-shadow:0 0 8px rgba(102,252,241,.4);min-height:150px;text-align:left;width:600px;max-width:85vw;padding:0 5px}
+#loadBarWrap{width:600px;max-width:85vw;margin-top:30px}
+#loadBarLabel{font-size:10px;color:var(--muted);letter-spacing:4px;margin-bottom:10px;text-transform:uppercase}
+#loadBar{width:100%;height:2px;background:var(--line);overflow:hidden}
+#loadBarFill{height:100%;width:0;background:linear-gradient(90deg, var(--magenta), var(--cyan));transition:width .1s ease;box-shadow:0 0 15px var(--cyan)}
+
+#stageLogin{
+  position:absolute;inset:0;display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:24px;
+}
+.login-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#1f2b40,#0b111a);border:3px solid var(--magenta);display:grid;place-items:center;font-size:36px;font-weight:900;color:var(--text);box-shadow:0 0 40px rgba(255,0,127,.3)}
+.login-name{font-size:18px;color:#fff;letter-spacing:8px;text-transform:uppercase;text-shadow:0 0 10px var(--cyan)}
+.login-role{font-size:10px;color:var(--cyan);letter-spacing:4px;text-transform:uppercase}
+#loginBar{width:240px;height:2px;background:var(--line);overflow:hidden;margin-top:12px}
+#loginBarFill{height:100%;width:0;background:var(--magenta);transition:width 1.8s cubic-bezier(0.2, 1, 0.3, 1)}
+#loginStatus{font-size:10px;color:var(--magenta);letter-spacing:5px;text-transform:uppercase;min-height:20px;text-align:center}
+
+#desktopReveal{animation:revealDesktop .8s cubic-bezier(0.1, 0.8, 0.2, 1)}
+@keyframes revealDesktop{from{opacity:0;filter:blur(15px);transform:scale(1.1)}to{opacity:1;filter:blur(0);transform:scale(1)}}
+
+#bootSkip{position:fixed;bottom:20px;right:20px;color:var(--muted);font-size:10px;background:none;border:1px solid var(--line);padding:8px 16px;letter-spacing:3px;z-index:10000;text-transform:uppercase}
+#bootSkip:hover{color:var(--cyan);border-color:var(--cyan);background:rgba(102,252,241,0.1)}
+
+#desktop{position:fixed;inset:0;display:none;flex-direction:column;
+  background:
+    radial-gradient(circle at 15% 50%, rgba(255,0,127,0.05), transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(102,252,241,0.06), transparent 50%),
+    linear-gradient(180deg,#030508 0%,#010203 100%);
+}
+#desktop.on{display:flex}
+#desktop::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0 1px,transparent 1px 3px);
+  z-index:0;
+}
+
+.wall-big{position:absolute;left:40px;bottom:80px;text-align:left;color:rgba(102,252,241,0.05);font-size:110px;font-weight:900;letter-spacing:15px;line-height:.8;pointer-events:none;z-index:1;text-shadow:0 0 20px rgba(102,252,241,0.02)}
+.wall-big span{color:rgba(255,0,127,0.05);font-size:48px;letter-spacing:20px;display:block;margin-top:8px}
+.wall-sub{position:absolute;right:40px;top:40px;color:var(--muted);font-size:10px;letter-spacing:6px;text-transform:uppercase;pointer-events:none;z-index:1;text-align:right}
+.wall-info{position:absolute;right:40px;top:70px;color:var(--text);font-size:10px;letter-spacing:2px;line-height:2;text-transform:uppercase;pointer-events:none;z-index:1;text-align:right;opacity:0.8}
+.wall-info b{color:var(--cyan)}
+
+#objPanel{
+  position:absolute;top:40px;left:40px;width:300px;z-index:10;pointer-events:none;
+  background:rgba(11,17,26,0.8);border:1px solid var(--line);padding:20px;backdrop-filter:blur(5px);
+  display: flex; flex-direction: column;
+}
+#objPanel .obj-head{font-size:11px;letter-spacing:5px;color:var(--magenta);text-transform:uppercase;margin-bottom:15px;font-weight:bold;border-bottom:1px solid var(--line);padding-bottom:10px}
+#objPanel .obj-item{
+  font-size:11px;color:var(--muted);line-height:1.6;padding:6px 0;
+  border-left:2px solid transparent;padding-left:12px;margin-bottom:6px;
+  letter-spacing:1px;transition:all .3s;text-transform:uppercase;
+}
+#objPanel .obj-item.done{color:var(--green);text-decoration:line-through;opacity:0.6}
+#objPanel .obj-item.active{color:var(--cyan);border-color:var(--cyan);background:rgba(102,252,241,0.08);text-shadow:0 0 5px rgba(102,252,241,0.3)}
+#objPanel .obj-caret{display:inline-block;width:6px;height:12px;background:var(--cyan);vertical-align:-2px;margin-left:6px;animation:blink 1s steps(2) infinite}
+
+#icons{position:absolute;inset:0;pointer-events:none;z-index:2;}
+.icon{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:8px;width:120px;padding:15px 10px;border:1px solid transparent;border-radius:8px;cursor:pointer;text-align:center;transition:all .2s;}
+.icon:hover{background:rgba(102,252,241,.05);border-color:rgba(102,252,241,.2);transform:translateY(-3px)}
+.icon.launching{animation:iconLaunch .3s cubic-bezier(0.2, 1, 0.3, 1)}
+@keyframes iconLaunch{0%{transform:scale(1)}50%{transform:scale(.9);opacity:0.7}100%{transform:scale(1)}}
+.icon .glyph{position:relative;width:60px;height:60px;border-radius:12px;display:grid;place-items:center;font-size:28px;font-weight:800;background:linear-gradient(135deg,#121a2f,#0b111a);border:1px solid var(--line2);box-shadow:inset 0 0 10px rgba(0,0,0,0.5), 0 8px 15px rgba(0,0,0,.6);color:var(--cyan);text-shadow:0 0 12px rgba(102,252,241,.6);}
+.icon.locked .glyph{color:var(--red);text-shadow:0 0 12px rgba(255,0,60,.6);border-color:var(--red)}
+.icon.game .glyph{color:var(--magenta);text-shadow:0 0 12px rgba(255,0,127,.6)}
+.icon.lore-app .glyph{color:var(--violet);text-shadow:0 0 12px rgba(157,78,221,.6)}
+.icon .lbl{font-size:10px;color:var(--text);letter-spacing:1.5px;text-transform:uppercase}
+
+.icon-badge {
+  position: absolute; top: -6px; right: -6px;
+  background: var(--red); color: #fff;
+  font-size: 11px; font-weight: 900;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 10px rgba(255,0,60,0.8); z-index: 10;
+  border: 2px solid #05070a;
+}
+
+.icon.readme-hl { position: relative; }
+.icon.readme-hl .glyph{
+  box-shadow: 0 0 30px var(--cyan), inset 0 0 15px var(--cyan);
+  border-color: var(--cyan); color: #fff;
+  animation: pulseReadme 1s infinite alternate;
+}
+.icon.readme-hl::after {
+  content: "URUCHOM"; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%); color: var(--cyan); font-size: 10px;
+  font-weight: 900; letter-spacing: 3px; text-shadow: 0 0 10px var(--cyan);
+  animation: readmeBounce 0.8s infinite alternate; pointer-events: none; margin-top: 8px;
+}
+@keyframes pulseReadme { from { transform: scale(1); box-shadow: 0 0 15px var(--cyan); } to { transform: scale(1.1); box-shadow: 0 0 35px var(--cyan); } }
+@keyframes readmeBounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(6px); } }
+
+.win{position:absolute;min-width:400px;min-height:250px;background:rgba(11,17,26,0.95);backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:10px;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(102,252,241,.1);overflow:hidden;transform-origin:center;animation:winOpen .2s cubic-bezier(0.2, 1, 0.3, 1);}
+@keyframes winOpen{from{opacity:0;transform:scale(.9) translateY(15px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.win.closing{animation:winClose .15s ease-in forwards}
+@keyframes winClose{to{opacity:0;transform:scale(.95) translateY(-10px)}}
+.win.minimized{display:none}
+.win .tb{height:40px;display:flex;align-items:center;gap:12px;padding:0 15px;background:linear-gradient(90deg, #121a2f, #0b111a);border-bottom:1px solid var(--line);cursor:move;flex-shrink:0;}
+.win .tb .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.win .tb .title{flex:1;font-size:11px;color:var(--text);letter-spacing:3px;text-transform:uppercase;font-weight:bold}
+.win .tb .ctl{display:flex;gap:10px}
+.win .tb .ctl button{width:24px;height:24px;border:none;background:transparent;color:var(--muted);border-radius:4px;font-size:14px;line-height:1;transition:all 0.2s}
+.win .tb .ctl button:hover{background:var(--line);color:var(--cyan)}
+.win .tb .ctl .x:hover{background:var(--magenta);color:#fff;box-shadow:0 0 10px var(--magenta)}
+.win .body{flex:1;overflow:auto;background:transparent;color:var(--text);font-size:13px;display:flex;flex-direction:column;}
+.win.focus{box-shadow:0 35px 80px rgba(0,0,0,1), 0 0 0 1px rgba(102,252,241,.3);border-color:var(--cyan)}
+.win.focus .tb{background:linear-gradient(90deg, #1f2b40, #121a2f);}
+.win .grip{position:absolute;right:2px;bottom:2px;width:12px;height:12px;cursor:nwse-resize;background:radial-gradient(circle at 100% 100%, var(--cyan) 20%, transparent 30%);opacity:0.5}
+
+#taskbar{position:absolute;left:0;right:0;bottom:0;height:46px;background:rgba(5,7,10,0.9);backdrop-filter:blur(10px);border-top:1px solid var(--line2);display:flex;align-items:center;gap:15px;padding:0 15px;z-index:50;}
+#start{display:flex;align-items:center;gap:10px;padding:6px 14px;border:1px solid var(--cyan);border-radius:6px;background:rgba(102,252,241,0.05);cursor:pointer;transition:all 0.2s}
+#start:hover{background:rgba(102,252,241,0.15);box-shadow:0 0 15px rgba(102,252,241,0.3)}
+#start .logo-tb{font-size:11px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);}
+#start .dot{width:6px;height:6px;border-radius:50%;background:var(--magenta);box-shadow:0 0 10px var(--magenta);animation:pulse 1.2s infinite;flex-shrink:0}
+@keyframes pulse{50%{opacity:.3}}
+#tasks{display:flex;gap:8px;flex:1;overflow:hidden;margin-left:5px}
+.task{display:flex;align-items:center;gap:8px;height:32px;padding:0 15px;font-size:10px;color:var(--muted);background:#0b111a;border:1px solid var(--line);border-radius:4px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:1px;text-transform:uppercase}
+.task:hover{background:#121a2f;color:var(--text);border-color:var(--line2)}
+.task.active{border-color:var(--cyan);color:var(--cyan);background:#121a2f;box-shadow:0 0 10px rgba(102,252,241,0.1)}
+#clock-area{color:var(--cyan);font-size:11px;padding:0 15px;border-left:1px solid var(--line2);height:30px;display:flex;align-items:center;letter-spacing:2px;white-space:nowrap}
+#verdictBtn{height:32px;padding:0 20px;background:var(--magenta);color:#fff;font-weight:900;letter-spacing:3px;font-size:10px;border:none;border-radius:4px;box-shadow:0 0 15px rgba(255,0,127,.5);animation:glow 2s infinite alternate;text-transform:uppercase;cursor:pointer}
+#verdictBtn:hover{background:#ff3399;box-shadow:0 0 25px rgba(255,0,127,0.8)}
+@keyframes glow{from{box-shadow:0 0 10px rgba(255,0,127,.3)} to{box-shadow:0 0 20px rgba(255,0,127,0.8)}}
+
+#timerDisplay{display:flex;align-items:center;gap:12px;padding:0 15px;border-left:1px solid var(--line2);height:30px;}
+#timerDisplay .t-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+#timerDisplay .t-val{font-size:15px;font-weight:900;letter-spacing:3px;color:var(--cyan);font-variant-numeric:tabular-nums;text-shadow:0 0 10px rgba(102,252,241,0.5);}
+#timerDisplay.urgent .t-val{color:var(--magenta);text-shadow:0 0 15px var(--magenta);animation:tpulse .4s infinite alternate}
+@keyframes tpulse{from{opacity:.4}to{opacity:1}}
+#timerDisplay .t-bar{width:70px;height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+#timerDisplay .t-bar-fill{height:100%;background:linear-gradient(90deg, var(--cyan), var(--magenta));transition:width 1s linear;box-shadow:0 0 8px var(--magenta)}
+
+.app{display:flex;height:100%;color:var(--text);flex:1;background:rgba(5,7,10,0.5)}
+.sidebar{width:220px;background:rgba(11,17,26,0.8);border-right:1px solid var(--line2);overflow-y:auto;flex-shrink:0}
+.sidebar .head{padding:15px;font-size:9px;letter-spacing:4px;color:var(--magenta);border-bottom:1px solid var(--line);text-transform:uppercase;font-weight:bold}
+.list{display:flex;flex-direction:column}
+.row{display:flex;gap:12px;align-items:center;padding:12px 15px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;color:var(--muted);transition:all 0.2s}
+.row:hover{background:rgba(31,43,64,0.5);color:var(--text)}
+.row.active{background:rgba(102,252,241,0.1);color:#fff;border-left:3px solid var(--cyan);padding-left:12px}
+.row .av{width:34px;height:34px;border-radius:8px;background:#121a2f;display:grid;place-items:center;font-weight:900;color:var(--cyan);flex-shrink:0;border:1px solid var(--line2);font-size:13px;}
+.row .meta{flex:1;overflow:hidden}
+.row .meta .n{font-size:12px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:bold;letter-spacing:1px}
+.row .meta .p{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+.row .time{font-size:9px;color:var(--muted);white-space:nowrap}
+.pane{flex:1;display:flex;flex-direction:column;min-width:0}
+.pane .ph{display:flex;align-items:center;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line2);background:rgba(11,17,26,0.6);font-size:11px;letter-spacing:2px;flex-shrink:0;}
+.back{background:transparent;color:var(--cyan);border:1px solid var(--cyan);padding:5px 12px;border-radius:4px;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+.back:hover{background:var(--cyan);color:#000;box-shadow:0 0 10px rgba(102,252,241,0.4)}
+.pane .pc{flex:1;overflow-y:auto;padding:20px;}
+.empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:11px;letter-spacing:3px;text-align:center;padding:20px;text-transform:uppercase}
+.bub{max-width:75%;padding:10px 14px;border-radius:8px;font-size:12px;line-height:1.6;margin-bottom:12px;word-wrap:break-word;position:relative}
+.bub.them{background:#121a2f;color:var(--text);border-bottom-left-radius:0;border:1px solid var(--line)}
+.bub.me{background:rgba(102,252,241,0.1);color:#fff;margin-left:auto;border-bottom-right-radius:0;border:1px solid var(--cyan)}
+.bub.flagged{background:rgba(255,0,127,0.1);border:1px solid var(--magenta);color:#fff}
+.bub .ts{display:block;font-size:9px;color:var(--muted);margin-top:6px;letter-spacing:1px;text-align:right}
+
+.mail-row{padding:12px 15px}
+.mail-row .from{font-size:12px;color:#fff;font-weight:700;letter-spacing:1px}
+.mail-row .sub{font-size:11px;color:var(--cyan);margin-top:4px}
+.mail-row .pv{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mail-view h3{font-size:15px;color:#fff;margin-bottom:10px;letter-spacing:1px;text-transform:uppercase}
+.mail-view .meta{font-size:11px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:18px;line-height:1.8}
+.mail-view .body-txt{font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap}
+
+.match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px;padding:15px}
+.ad-item{background:#0b111a;border:1px solid var(--line2);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s;display:flex;}
+.ad-item:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 5px 15px rgba(102,252,241,0.2)}
+.ad-item .pic{width:80px;background:#121a2f;display:grid;place-items:center;font-size:28px;color:var(--magenta);text-shadow:0 0 10px rgba(255,0,127,.5);border-right:1px solid var(--line2)}
+.ad-item .info{padding:12px;font-size:12px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.ad-item .info .n{color:#fff;font-weight:bold;margin-bottom:4px;line-height:1.3}
+.ad-item .info .p{color:var(--cyan);font-weight:900;font-size:14px;margin-bottom:4px;letter-spacing:1px}
+.ad-item .info .a{color:var(--muted);font-size:10px}
+.ad-item .info .sold{color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-top:6px;font-weight:bold}
+.ad-item .info .sold.yes{color:var(--magenta)}
+
+#notesArea{width:100%;height:100%;background:transparent;border:none;color:var(--cyan);padding:20px;font-family:"Consolas",monospace;font-size:13px;line-height:1.8;outline:none;resize:none;}
+
+.brw .url{padding:12px 15px;border-bottom:1px solid var(--line2);background:#0b111a;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.brw .url b{color:var(--magenta)}
+.hist-row{padding:10px 15px;border-bottom:1px solid var(--line);font-size:12px;display:flex;justify-content:space-between;align-items:center}
+.hist-row .left{display:flex;flex-direction:column;gap:4px}
+.hist-row .t{color:#fff}
+.hist-row .u{color:var(--cyan);font-size:10px}
+.hist-row .ts{color:var(--muted);font-size:10px;}
+.hist-cat{padding:8px 15px;font-size:9px;letter-spacing:4px;color:var(--magenta);background:#121a2f;text-transform:uppercase;border-bottom:1px solid var(--line);font-weight:bold}
+
+.file{padding:12px 15px;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:all 0.2s}
+.file:hover{background:rgba(102,252,241,0.05);padding-left:20px;border-left:2px solid var(--cyan)}
+.file .n{color:var(--text);font-weight:bold}
+.file .d{color:var(--muted);font-size:10px}
+.file-folder{padding:10px 15px;font-size:10px;letter-spacing:3px;color:var(--cyan);background:#121a2f;text-transform:uppercase;border-bottom:1px solid var(--line);font-weight:bold}
+pre.term{padding:20px;background:#05070a;color:var(--text);font-size:12px;line-height:1.8;white-space:pre-wrap;font-family:"Consolas",monospace;height:100%;overflow-y:auto;}
+pre.term .hl{color:var(--magenta);text-shadow:0 0 8px rgba(255,0,127,.6);font-weight:bold}
+pre.term .ok{color:var(--cyan);text-shadow:0 0 5px rgba(102,252,241,.4)}
+
+.readme{padding:25px;font-size:13px;line-height:1.8;color:var(--text);overflow-y:auto}
+.readme h2{color:var(--cyan);letter-spacing:5px;margin-bottom:15px;font-size:15px;text-transform:uppercase;border-bottom:1px solid var(--line2);padding-bottom:10px;font-weight:900}
+.readme h3{color:var(--magenta);margin:20px 0 10px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:bold}
+.readme p{margin-bottom:15px;color:#a0b2c6}
+.readme .stamp{margin-top:25px;padding:15px;border:1px solid var(--magenta);background:rgba(255,0,127,0.05);font-size:11px;color:var(--text);letter-spacing:1px;line-height:1.7;box-shadow:inset 0 0 15px rgba(255,0,127,.1)}
+.readme .stamp::before{content:"[ CRITICAL ] ";color:var(--magenta);font-weight:bold;}
+.readme hr{border:none;border-top:1px dashed var(--line2);margin:20px 0}
+.readme .case-id{font-size:9px;letter-spacing:6px;color:var(--muted);text-align:right;margin-top:30px}
+
+/* Mini-games Styles */
+#snakeCanvas{background:#05070a;border:1px solid var(--cyan);display:block;margin:0 auto;box-shadow:0 0 20px rgba(102,252,241,.1)}
+.snake-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;}
+.snake-ui{color:var(--text);font-size:11px;margin-bottom:15px;letter-spacing:3px;width:100%;max-width:380px;display:flex;justify-content:space-between;font-weight:bold}
+
+.ttt-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;gap:15px}
+.ttt-header{color:var(--cyan);font-size:12px;letter-spacing:5px;text-align:center;font-weight:bold}
+.ttt-score{display:flex;gap:25px;font-size:10px;letter-spacing:2px;color:var(--muted)}
+.ttt-score b{color:var(--magenta);font-size:13px}
+.ttt-board{display:grid;grid-template-columns:repeat(3,80px);grid-template-rows:repeat(3,80px);gap:5px}
+.ttt-cell{background:#121a2f;border:1px solid var(--line2);border-radius:6px;display:grid;place-items:center;font-size:32px;font-weight:900;cursor:pointer;transition:all .2s;color:var(--cyan)}
+.ttt-cell:hover:empty{background:#1f2b40;box-shadow:inset 0 0 10px rgba(102,252,241,.2)}
+.ttt-cell.X{color:var(--cyan);text-shadow:0 0 10px rgba(102,252,241,.6)}
+.ttt-cell.O{color:var(--magenta);text-shadow:0 0 10px rgba(255,0,127,.6)}
+.ttt-cell.win-line{background:rgba(102,252,241,0.2);border-color:var(--cyan);}
+.ttt-status{font-size:12px;color:#fff;letter-spacing:2px;min-height:20px;text-align:center;text-transform:uppercase}
+.ttt-btn{padding:8px 18px;background:transparent;border:1px solid var(--line2);color:var(--text);border-radius:4px;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+.ttt-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(102,252,241,.1)}
+.ttt-diff{display:flex;gap:8px;font-size:10px}
+.ttt-diff button{padding:5px 12px;background:#0b111a;border:1px solid var(--line2);color:var(--muted);border-radius:4px;letter-spacing:2px;font-size:9px;text-transform:uppercase;cursor:pointer}
+.ttt-diff button.active{border-color:var(--magenta);color:var(--magenta);background:rgba(255,0,127,0.1)}
+
+.rps-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;gap:15px}
+.rps-score{display:flex;gap:25px;font-size:11px;letter-spacing:2px;border:1px solid var(--line2);padding:10px 20px;background:#0b111a;border-radius:6px}
+.rps-score .rs{color:var(--cyan)}.rps-score .ls{color:var(--magenta)}.rps-score .ds{color:var(--muted)}
+.rps-score b{font-size:15px}
+.rps-arena{display:flex;align-items:center;gap:25px;padding:15px 0}
+.rps-side{display:flex;flex-direction:column;align-items:center;gap:10px}
+.rps-hand{font-size:55px;transition:transform .2s;min-height:70px;display:flex;align-items:center;filter:drop-shadow(0 0 8px rgba(102,252,241,.3))}
+.rps-hand.shake{animation:rpsShake .4s infinite}
+@keyframes rpsShake{0%,100%{transform:translateY(0)}25%{transform:translateY(-10px)}75%{transform:translateY(8px)}}
+.rps-label{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;font-weight:bold}
+.rps-vs{color:var(--magenta);font-size:16px;font-weight:900;letter-spacing:4px}
+.rps-choices{display:flex;gap:12px}
+.rps-choice{width:70px;height:70px;border-radius:12px;border:2px solid var(--line2);background:#121a2f;font-size:32px;display:grid;place-items:center;cursor:pointer;transition:all .2s;}
+.rps-choice:hover{border-color:var(--cyan);background:#1f2b40;transform:translateY(-5px);box-shadow:0 8px 15px rgba(102,252,241,.2)}
+.rps-choice:disabled{cursor:not-allowed;opacity:.4;transform:none;box-shadow:none}
+.rps-result{font-size:14px;letter-spacing:4px;min-height:20px;text-align:center;font-weight:900;text-transform:uppercase}
+.rps-result.win{color:var(--cyan);text-shadow:0 0 10px rgba(102,252,241,.8)}
+.rps-result.lose{color:var(--magenta);text-shadow:0 0 10px rgba(255,0,127,.8)}
+.rps-result.draw{color:var(--text);text-shadow:0 0 5px rgba(255,255,255,.3)}
+
+/* Modal and Hacking */
+#verdictModal{position:fixed;inset:0;background:rgba(5,7,10,.95);z-index:200;display:none;align-items:center;justify-content:center;animation:fadeIn .3s;backdrop-filter:blur(8px)}
+#verdictModal.on{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#verdictModal .box{width:680px;max-width:95vw;max-height:90vh;background:#0b111a;border:1px solid var(--magenta);border-radius:12px;padding:30px;box-shadow:0 0 60px rgba(255,0,127,.3);overflow-y:auto;}
+#verdictModal h2{color:var(--magenta);letter-spacing:5px;font-size:16px;margin-bottom:8px;text-transform:uppercase;text-align:center;text-shadow:0 0 10px rgba(255,0,127,.4)}
+#verdictModal .vd-sub{color:var(--muted);font-size:11px;text-align:center;margin-bottom:25px;line-height:1.6;letter-spacing:1px}
+.vd-stage{margin-bottom:20px;display:none}
+.vd-stage.active{display:block;animation:stageIn .3s ease-out}
+@keyframes stageIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.vd-stage-head{font-size:10px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:15px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.vd-stage-head .s-num{width:22px;height:22px;border-radius:50%;background:rgba(102,252,241,0.1);border:1px solid var(--cyan);display:grid;place-items:center;font-size:11px;font-weight:900;color:var(--cyan);box-shadow:0 0 8px rgba(102,252,241,.3)}
+.vd-stage-head .s-label{color:var(--text);font-weight:bold;font-size:12px;letter-spacing:3px}
+.v-opts{display:flex;flex-direction:column;gap:10px}
+.v-opt{display:flex;align-items:flex-start;gap:12px;background:#121a2f;border:1px solid var(--line2);border-radius:6px;padding:12px 15px;cursor:pointer;transition:all .2s}
+.v-opt:hover{background:#1f2b40;border-color:var(--cyan);transform:translateX(4px)}
+.v-opt input{width:16px;height:16px;accent-color:var(--cyan);cursor:pointer;flex-shrink:0;margin-top:2px}
+.v-opt .v-opt-body span{font-size:13px;color:#fff;display:block;font-weight:bold;letter-spacing:1px;margin-bottom:4px}
+.v-opt .v-opt-body small{display:block;color:var(--muted);font-size:10px;line-height:1.5}
+#verdictModal .v-actions{display:flex;gap:10px;margin-top:25px;border-top:1px solid var(--line);padding-top:20px}
+#verdictModal .v-next{flex:2;padding:12px;background:var(--cyan);color:#000;border:none;border-radius:6px;font-weight:900;letter-spacing:3px;font-size:11px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+#verdictModal .v-next:hover{background:#8bfdf3;box-shadow:0 0 15px rgba(102,252,241,.5)}
+#verdictModal .v-submit{flex:2;padding:12px;background:var(--magenta);color:#fff;border:none;border-radius:6px;font-weight:900;letter-spacing:3px;font-size:11px;text-transform:uppercase;cursor:pointer;transition:all .2s;box-shadow:0 0 10px rgba(255,0,127,.4)}
+#verdictModal .v-submit:hover{background:#ff3399;box-shadow:0 0 25px rgba(255,0,127,.7)}
+#verdictModal .v-cancel{flex:1;padding:12px;background:transparent;color:var(--muted);border:1px solid var(--line2);border-radius:6px;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+#verdictModal .v-cancel:hover{color:#fff;border-color:var(--text);background:rgba(255,255,255,0.05)}
+.vd-breadcrumb{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:15px;text-transform:uppercase;background:#121a2f;padding:8px 12px;border-radius:4px;border-left:3px solid var(--magenta)}
+.vd-breadcrumb .sel{color:var(--text);font-weight:bold}
+
+#ending{position:fixed;inset:0;background:#020305;z-index:300;display:none;overflow-y:auto;padding:60px 20px;text-align:center;animation:fadeIn .4s;}
+#ending.on{display:block;}
+#ending .stamp{display:inline-block;white-space:nowrap;font-size:36px;font-weight:900;letter-spacing:8px;padding:15px 30px;border:5px solid;border-radius:8px;transform:rotate(-3deg);margin:0 auto 40px auto;text-transform:uppercase;animation:stampIn .5s cubic-bezier(.2,.9,.3,1.4);position:relative;z-index:20;}
+@keyframes stampIn{from{opacity:0;transform:rotate(-3deg) scale(2)} to{opacity:1;transform:rotate(-3deg) scale(1)}}
+#ending .stamp.win{color:var(--cyan);border-color:var(--cyan);text-shadow:0 0 20px rgba(102,252,241,.5);box-shadow:0 0 40px rgba(102,252,241,.2)}
+#ending .stamp.lose{color:var(--magenta);border-color:var(--magenta);text-shadow:0 0 20px rgba(255,0,127,.5);box-shadow:0 0 40px rgba(255,0,127,.2)}
+#ending .txt{display:block;max-width:720px;margin:0 auto 30px auto;font-size:15px;line-height:1.9;color:var(--text);text-align:left;letter-spacing:.5px;z-index:10;position:relative;padding:25px;background:rgba(11,17,26,0.8);border:1px solid var(--line2);border-radius:8px;}
+#ending .txt .crt{display:inline-block;width:8px;height:16px;background:var(--cyan);vertical-align:-3px;margin-left:4px;animation:blink 1s steps(2) infinite}
+#ending button.end-btn{display:inline-block;margin:20px auto;padding:14px 30px;background:rgba(255,0,127,0.1);color:var(--magenta);border:2px solid var(--magenta);border-radius:6px;font-size:12px;letter-spacing:4px;font-weight:900;text-transform:uppercase;cursor:pointer;transition:all .2s;box-shadow:0 0 15px rgba(255,0,127,.2)}
+#ending button.end-btn:hover{background:var(--magenta);color:#fff;box-shadow:0 0 25px rgba(255,0,127,.6);transform:translateY(-2px)}
+
+#toasts{position:fixed;left:20px;bottom:60px;display:flex;flex-direction:column;gap:8px;z-index:150;pointer-events:none}
+.toast{background:rgba(11,17,26,0.95);backdrop-filter:blur(5px);border:1px solid var(--magenta);border-left:4px solid var(--magenta);color:#fff;padding:10px 15px;font-size:11px;letter-spacing:1px;border-radius:4px;box-shadow:0 5px 15px rgba(255,0,127,.2);animation:toastIn .25s ease-out;min-width:240px;}
+.toast.vchat-toast{border-color:var(--cyan);border-left-color:var(--cyan);box-shadow:0 5px 20px rgba(102,252,241,.3);}
+@keyframes toastIn{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* Reworked Hack Overlay */
+#hackOverlay{
+  position:fixed;inset:0;background:rgba(15,0,5,0.85);z-index:25000;display:none;
+  backdrop-filter: blur(5px);
+}
+.hack-scanline {
+  position:absolute; inset:0; background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 127, 0.08) 51%); background-size: 100% 4px; pointer-events: none; z-index:25001; animation: scanlineScroll 10s linear infinite;
+}
+@keyframes scanlineScroll { from { background-position: 0 0; } to { background-position: 0 100%; } }
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
+
+/* Start Menu */
+#startMenu {
+  display: none; position: absolute; bottom: 55px; left: 15px; width: 250px; background: rgba(11,17,26,0.95);
+  border: 1px solid var(--cyan); border-radius: 8px; backdrop-filter: blur(10px); flex-direction: column;
+  padding: 10px; z-index: 100; box-shadow: 0 0 20px rgba(102,252,241,0.2);
+}
+.sm-item {
+  padding: 10px 12px; font-size: 11px; color: var(--text); cursor: pointer; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s;
+}
+.sm-item:hover { background: rgba(102,252,241,0.1); color: var(--cyan); }
+</style>
+</head>
+<body>
+
+<div id="initScreen" onclick="runBoot()">
+  [ ZAINICJUJ NEURALNY ODCZYT PAMIĘCI ]
+</div>
+
+<div id="bootOverlay" style="display:none">
+  <div id="stagePower">
+    <div id="powerLed"></div>
+    <div id="powerText">NIGHTSHADE FORENSICS</div>
+  </div>
+  <div id="stageBios">
+    <div id="biosText"></div>
+  </div>
+  <div id="stageLogo">
+    <div id="stageLogoInner">
+      <div class="boot-logo-mark">
+        <svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lg1" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ff007f"/>
+              <stop offset="100%" stop-color="#66fcf1"/>
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <path d="M65,10 L120,40 L120,90 L65,120 L10,90 L10,40 Z" fill="none" stroke="url(#lg1)" stroke-width="2" filter="url(#glow)"/>
+          <path d="M65,30 L100,50 L100,80 L65,100 L30,80 L30,50 Z" fill="none" stroke="url(#lg1)" stroke-width="1" opacity="0.5"/>
+          <circle cx="65" cy="65" r="10" fill="url(#lg1)"/>
+          <line x1="65" y1="10" x2="65" y2="30" stroke="url(#lg1)" stroke-width="1.5"/>
+          <line x1="120" y1="40" x2="100" y2="50" stroke="url(#lg1)" stroke-width="1.5"/>
+          <line x1="120" y1="90" x2="100" y2="80" stroke="url(#lg1)" stroke-width="1.5"/>
+          <line x1="65" y1="120" x2="65" y2="100" stroke="url(#lg1)" stroke-width="1.5"/>
+          <line x1="10" y1="90" x2="30" y2="80" stroke="url(#lg1)" stroke-width="1.5"/>
+          <line x1="10" y1="40" x2="30" y2="50" stroke="url(#lg1)" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="boot-wordmark">HOWLORA</div>
+      <div class="boot-sub">OS v7.0 // NIGHTSHADE</div>
+    </div>
+  </div>
+  <div id="stageLoading">
+    <div id="loadLore"></div>
+    <div id="loadLines"></div>
+    <div id="loadBarWrap">
+      <div id="loadBarLabel">DEKRYPTACJA SEKTORA PRYWATNEGO</div>
+      <div id="loadBar"><div id="loadBarFill"></div></div>
+    </div>
+  </div>
+  <div id="stageLogin">
+    <div class="login-avatar">A</div>
+    <div class="login-name">antek_r</div>
+    <div class="login-role">STATUS KONTA: ZABEZPIECZONE KRYMINALISTYCZNIE</div>
+    <div id="loginBar"><div id="loginBarFill"></div></div>
+    <div id="loginStatus"></div>
+  </div>
+  <button id="bootSkip" onclick="skipBoot()">POMIŃ &gt;&gt;</button>
+</div>
+
+<div id="desktop">
+  <div class="wall-big">HOWLORA<span>v7.0</span></div>
+  <div class="wall-sub">SPRAWA #9004 // HOMICIDE</div>
+  <div class="wall-info">
+    <b>>></b> CEL: ANTEK_R_PC.img<br>
+    <b>>></b> STATUS: TYLKO ODCZYT<br>
+    <b>>></b> OPERATOR: [ LOKALNY ]
+  </div>
+  <div id="objPanel"></div>
+  <div id="icons"></div>
+  
+  <div id="startMenu">
+    <div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:10px;border-bottom:1px solid var(--line2);padding-bottom:5px">SZYBKI DOSTĘP</div>
+    <div class="sm-item" onclick="launchApp(APPS.find(a=>a.id==='readme'));toggleStartMenu()">📄 Instrukcja Śledcza</div>
+    <div class="sm-item" onclick="launchApp(APPS.find(a=>a.id==='logs'));toggleStartMenu()">🏠 Dekryptacja Smart Home</div>
+    <div class="sm-item" style="color:var(--red)" onclick="openVerdict();toggleStartMenu()">🚨 Zakończ Śledztwo</div>
+  </div>
+
+  <div id="taskbar">
+    <div id="start" onclick="toggleStartMenu()"><span class="dot"></span><span class="logo-tb">MENU</span></div>
+    <div id="tasks"></div>
+    <div id="timerDisplay">
+      <div>
+        <div class="t-label">POZOSTAŁO</div>
+        <div class="t-val" id="timerVal">15:00</div>
+      </div>
+      <div>
+        <div class="t-bar"><div class="t-bar-fill" id="timerBarFill" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div id="clock-area"></div>
+    <button id="verdictBtn" onclick="openVerdict()">ZAKOŃCZ ŚLEDZTWO</button>
+  </div>
+  <div id="toasts"></div>
+</div>
+
+<div id="hackOverlay">
+  <div class="hack-scanline"></div>
+  <div id="hackBoxContainer"></div>
+</div>
+
+<div id="verdictModal">
+  <div class="box">
+    <h2>RAPORT KOŃCOWY SPRAWY #9004</h2>
+    <div class="vd-sub">Określ fakty dotyczące zdarzenia w salonie. Twój raport wpłynie bezpośrednio na śledztwo. Błędy nie będą tolerowane.</div>
+    <div class="vd-breadcrumb" id="vdBreadcrumb">Krok 1 z 3</div>
+    <div class="vd-stage active" id="vdStage1">
+      <div class="vd-stage-head"><div class="s-num">1</div><div class="s-label">KTO JEST WINNY</div><span style="color:var(--muted);font-size:9px">— Wybierz sprawcę</span></div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="who" value="antek"><div class="v-opt-body"><span>Antek R. (Właściciel dysku)</span><small>Chłopak poszkodowanej. Posiadał ukryte długi, ukrywał wypadek przed windykatorem i policją.</small></div></label>
+        <label class="v-opt"><input type="radio" name="who" value="kruk"><div class="v-opt-body"><span>Ludzie "Kruka" (Windykatorzy)</span><small>Osoby u których właściciel dysku miał ogromne zadłużenie. Grozili w wiadomościach.</small></div></label>
+        <label class="v-opt"><input type="radio" name="who" value="kamil"><div class="v-opt-body"><span>Kamil (Najlepszy przyjaciel)</span><small>Próbował zdalnie wyczyścić dysk, miał wiedzę o sytuacji w mieszkaniu.</small></div></label>
+        <label class="v-opt"><input type="radio" name="who" value="unknown"><div class="v-opt-body"><span>Brak osób trzecich</span><small>Był to nieszczęśliwy splot okoliczności w samotności.</small></div></label>
+      </div>
+    </div>
+    <div class="vd-stage" id="vdStage2">
+      <div class="vd-stage-head"><div class="s-num">2</div><div class="s-label">CO SIĘ STAŁO</div><span style="color:var(--muted);font-size:9px">— Wskaż przebieg zdarzenia</span></div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="how" value="execution"><div class="v-opt-body"><span>Celowe działanie grupy przestępczej</span><small>Włamanie i zbrodnia jako zapłata za niespłacone długi w kasynie.</small></div></label>
+        <label class="v-opt"><input type="radio" name="how" value="fight"><div class="v-opt-body"><span>Fizyczna konfrontacja w domu</span><small>Zdarzenie nastąpiło podczas gwałtownej kłótni, co skutkowało pchnięciem i upadkiem na stół.</small></div></label>
+        <label class="v-opt"><input type="radio" name="how" value="poison"><div class="v-opt-body"><span>Działanie z ukrycia</span><small>Ofiara została przygotowana na upozorowanie naturalnego zasłabnięcia.</small></div></label>
+        <label class="v-opt"><input type="radio" name="how" value="unknown"><div class="v-opt-body"><span>Brak wystarczających dowodów</span><small>Mechanika wypadku jest niemożliwa do odtworzenia.</small></div></label>
+      </div>
+    </div>
+    <div class="vd-stage" id="vdStage3">
+      <div class="vd-stage-head"><div class="s-num">3</div><div class="s-label">MOTYW</div><span style="color:var(--muted);font-size:9px">— Określ motyw działania</span></div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="why" value="debt"><div class="v-opt-body"><span>Windykacja i zastraszenie</span><small>Zdarzenie było efektem nieuregulowanych pożyczek u "Kruka".</small></div></label>
+        <label class="v-opt"><input type="radio" name="why" value="escalation"><div class="v-opt-body"><span>Eskalacja napięcia o pieniądze</span><small>Odkrycie przepuszczonych oszczędności na hazard i wybuch agresji bez uprzedniego planowania zabójstwa.</small></div></label>
+        <label class="v-opt"><input type="radio" name="why" value="jealousy"><div class="v-opt-body"><span>Zazdrość o relacje</span><small>Partner odkrył zdradę z przyjacielem i postanowił się zemścić.</small></div></label>
+        <label class="v-opt"><input type="radio" name="why" value="unknown"><div class="v-opt-body"><span>Motyw niemożliwy do ustalenia</span><small>Dowody na dysku są w całości spreparowane.</small></div></label>
+      </div>
+    </div>
+    <div class="v-actions">
+      <button class="v-cancel" onclick="closeVerdict()">COFNIJ</button>
+      <button class="v-next" id="vdNextBtn" onclick="verdictNext()">DALEJ</button>
+      <button class="v-submit" id="vdSubmitBtn" onclick="submitVerdict()" style="display:none">ZATWIERDŹ WYNIK</button>
+    </div>
+  </div>
+</div>
+
+<div id="ending">
+  <div class="stamp" id="endStamp"></div>
+  <div class="txt" id="endTxt"></div>
+  <div id="endBtns"></div>
+</div>
+
+<script>
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx;
+
+function initSnd(){
+  if(!actx) actx = new AudioCtx();
+  if(actx && actx.state === 'suspended') actx.resume();
+  
+  if(!window.ambientStarted){
+    window.ambientStarted = true;
+    try {
+      const osc = actx.createOscillator();
+      const osc2 = actx.createOscillator();
+      const lfo = actx.createOscillator();
+      const filter = actx.createBiquadFilter();
+      const gain = actx.createGain();
+
+      osc.type = 'sine'; osc.frequency.value = 55;
+      osc2.type = 'triangle'; osc2.frequency.value = 56;
+      lfo.type = 'sine'; lfo.frequency.value = 0.1;
+      filter.type = 'lowpass'; filter.frequency.value = 150;
+
+      const lfoGain = actx.createGain();
+      lfoGain.gain.value = 10;
+      lfo.connect(lfoGain);
+      lfoGain.connect(filter.frequency);
+
+      gain.gain.value = 0.015; // Bardzo cichy, mroczny ambient
+
+      osc.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gain);
+      gain.connect(actx.destination);
+
+      osc.start(); osc2.start(); lfo.start();
+    } catch(e) {}
+  }
+}
+
+function sndType(){
+  if(!actx || actx.state !== 'running') return;
+  const osc = actx.createOscillator();
+  const gain = actx.createGain();
+  osc.type = "square";
+  osc.frequency.setValueAtTime(100 + Math.random()*40, actx.currentTime);
+  gain.gain.setValueAtTime(0.002, actx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.03);
+  osc.connect(gain);
+  gain.connect(actx.destination);
+  osc.start();
+  osc.stop(actx.currentTime + 0.03);
+}
+
+function sndApp(){
+  if(!actx || actx.state !== 'running') return;
+  const osc = actx.createOscillator();
+  const gain = actx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(400, actx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(800, actx.currentTime + 0.1);
+  gain.gain.setValueAtTime(0.01, actx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.1);
+  osc.connect(gain);
+  gain.connect(actx.destination);
+  osc.start();
+  osc.stop(actx.currentTime + 0.1);
+}
+
+function sndNotif(){
+  if(!actx || actx.state !== 'running') return;
+  const osc = actx.createOscillator();
+  const gain = actx.createGain();
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(700, actx.currentTime);
+  osc.frequency.setValueAtTime(1000, actx.currentTime + 0.05);
+  gain.gain.setValueAtTime(0.015, actx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.15);
+  osc.connect(gain);
+  gain.connect(actx.destination);
+  osc.start();
+  osc.stop(actx.currentTime + 0.15);
+}
+
+function toggleStartMenu() {
+  const sm = document.getElementById("startMenu");
+  if (sm.style.display === "none") {
+    sm.style.display = "flex";
+  } else {
+    sm.style.display = "none";
+  }
+}
+
+const STATE={
+  windows:{},
+  zTop:100,
+  notes:"",
+  logsUnlocked:false,
+  igUnlocked:false,
+  contactsRead:{},
+  mailRead:{},
+  adRead:{},
+  activeChat:null,
+  activeAd:null,
+  activeMail:null,
+  endGameDone:false,
+  verdictStage:1,
+  verdictWho:null,
+  verdictHow:null,
+  objectives:{opened:new Set(),mailOpened:false,logsOpened:false},
+  timerStart:null,
+  totalSecs:15*60,
+  readmeOpened:false,
+  vchatUnread:0,
+  creepyStage:0,
+  creepyWaiting:false,
+  creepyNextTimer:null,
+  creepyWarnedGame:false,
+  creepyWarnedGame2:false,
+  hackInt:null,
+  hackTime:0,
+  hackCode:""
+};
+
+const DATA={
+  contacts:[
+    {id:"kamil",name:"Kamil (Brat)",sub:"Odbierz wreszcie!",time:"Czw 21:32",
+      msgs:[
+        {t:"Wt 14:15",f:"them",x:"Stary, uspokój się. Nie możesz na nią tak krzyczeć, sąsiedzi znowu się skarżyli."},
+        {t:"Wt 14:20",f:"me",x:"Ja już nie wytrzymam. Ciągle drze się o kasę."},
+        {t:"Wt 14:22",f:"them",x:"Zostaw ją po prostu. Wyprowadź się."},
+        {t:"Wt 14:25",f:"me",x:"Nie mogę. Zabrałem trochę oszczędności żeby się odkuć u Kruka, jest wściekła."},
+        {t:"Wt 14:26",f:"me",x:"Kiedyś wybuchnę, przysięgam."},
+        {t:"Czw 21:30",f:"me",x:"Kamil. Wymknęło mi się to spod kontroli. Leży w salonie."},
+        {t:"Czw 21:31",f:"them",x:"O czym ty gadasz?! Kto?!"},
+        {t:"Czw 21:32",f:"them",x:"Antek odbierz wreszcie! Dzwonię na pogotowie!"}
+      ]},
+    {id:"nika",name:"Nika 🖤",sub:"Nie wracaj dzisiaj.",time:"Czw 20:45",
+      msgs:[
+        {t:"Pon 09:00",f:"them",x:"Gdzie moje 2000 zł z konta oszczędnościowego?!"},
+        {t:"Pon 09:15",f:"me",x:"Pożyczyłem. Oddam w piątek, mam pewniaka."},
+        {t:"Pon 09:30",f:"them",x:"Znowu grałeś?! Mieliśmy opłacić czynsz!"},
+        {t:"Śr 18:00",f:"them",x:"Ktoś stał pod naszym blokiem. Jakiś łysy typ."},
+        {t:"Śr 18:05",f:"me",x:"Przejebana akcja, zignoruj. To pewnie windykatorzy"},
+        {t:"Czw 20:45",f:"them",x:"Nie wracaj dzisiaj. Mam dość. Znalazłam wezwania do zapłaty. Pakuję twoje rzeczy."}
+      ]},
+    {id:"kruk",name:"Kruk Finanse",sub:"Twój czas minął.",time:"Czw 21:15",
+      msgs:[
+        {t:"Śr 14:00",f:"them",x:"Wisisz nam 15 kół. Odsetki rosną."},
+        {t:"Śr 14:05",f:"me",x:"W piątek będę miał całość. Dajcie mi dwa dni."},
+        {t:"Śr 14:10",f:"them",x:"Wiemy gdzie pracujesz i o której Nika wraca do domu."},
+        {t:"Czw 21:15",f:"them",x:"Termin minął wczoraj. Widzieliśmy że laska weszła do mieszkania sama. Jutro rano wchodzimy po nią jeśli nie będzie przelewu."}
+      ]},
+  ],
+  ads:[
+    {id:"kasyno",title:"SharkLoan Portal — Twoje Saldo",price:"-45,300 PLN",seller:"System",glyph:"🎰",
+      msgs:[
+        {t:"Wt 20:04",f:"them",x:"Witaj Antek! Twój depozyt 2000 PLN został przetworzony."},
+        {t:"Wt 21:00",f:"them",x:"Przegrana: Ruletka VIP. Aktualne saldo: 0 PLN."},
+        {t:"Wt 21:15",f:"me",x:"Chcę wziąć chwilówkę na 5000 z konta VIP."},
+        {t:"Śr 10:00",f:"them",x:"Odmowa. Przekroczyłeś limit zadłużenia zewnętrznego u brokera KRUK_FIN."},
+      ],sold:true},
+  ],
+  mails:[
+    {id:"m_wlasciciel",from:"wynajem@poczta.pl",sub:"OSTATECZNE WEZWANIE DO ZAPŁATY CZYNSZU",time:"Śr 08:22",
+      body:"Panie Antoni,\n\nTo jest trzecie i ostateczne wezwanie. Zalegacie państwo z czynszem za dwa miesiące.\nJeśli do piątku nie będzie pieniędzy, wzywam służby.\n\nZarządca budynku."},
+    {id:"m_kamil",from:"kamil@secure.net",sub:"Zdalny Wipe — Czytaj!",time:"Pt 01:00",
+      body:"Stary, nie wiem coś ty odwalił i nie chcę wiedzieć. Napisałem skrypt, który wyczyści ci cały dysk z naszych rozmów i z twoich historii wyszukiwania. Odpali się rano. Uciekaj póki możesz."},
+    {id:"m_szpital",from:"kredyt@finanse.pl",sub:"Decyzja windykacyjna - nakaz eksmisji",time:"Czw 12:00",
+      body:"Informujemy, że wniosek o przedłużenie spłaty zadłużenia mieszkaniowego został odrzucony. Dziś zostanie wysłane do Państwa zawiadomienie pocztowe do rąk własnych z trybem eksmisji."},
+  ],
+  history:[
+    {cat:"PRZEGLĄDARKA",entries:[
+      {t:"jak wygrać w ruletkę system martingala",u:"kasyno-forum.net",ts:"Czw 20:55"},
+      {t:"SmartHome - log z drzwi",u:"home.local/logs",ts:"Czw 21:00"},
+      {t:"nieumyślne spowodowanie wypadku konsekwencje",u:"prawo.pl",ts:"Czw 21:12"},
+      {t:"jak usunąć ślady z jasnych paneli",u:"porady-domowe.pl",ts:"Czw 21:14"},
+      {t:"jak zgłosić incydent anonimowo",u:"policja.gov.pl",ts:"Czw 21:20"},
+      {t:"bilety lotnicze do Londynu na jutro",u:"loty.pl",ts:"Czw 21:40"},
+    ]},
+  ],
+  files:[
+    {folder:"DOKUMENTY",items:[
+      {n:"dziennik.txt",d:"1 KB — zmodyfikowany Czw 21:25",x:"szkic"},
+      {n:"długi.xlsx",d:"Wymaga dekryptacji",x:"dlugi"},
+    ]},
+    {folder:"ODZYSKANE (KOSZ)",items:[
+      {n:"notatki.txt",d:"<1 KB — usunięty Czw 21:50",x:"plan"},
+    ]},
+  ],
+  fileContents:{
+    szkic:`Japierdole ale wipe.`,
+
+    plan:`[PLIK ODZYSKANY Z KOSZA]
+
+Zadania na noc:
+1. Wybielacz (panele w salonie, blat).
+2. Śrubokręt -> uszkodzić mocno zamek w drzwiach (żeby policja myślała, że było wejście siłowe).
+3. Rzeka (Jej telefon - PIN 6820 - utopić, żeby nikt nie sprawdził historii banku).
+4. U Kamila muszę być przed północą, niech myśli, że przyszedłem na piwo. Wtedy do niego rano "zadzwoni policja".`,
+
+    dlugi:`[PLIK ZASZYFROWANY]
+Przejdź przez moduł dekryptacji, aby odblokować logi Smart Home (zapis z inteligentnego domu z godziny zdarzenia).`,
+  },
+  logs:`[SYS] NIGHTSHADE FORENSICS — Moduł Dowodowy
+[SYS] Inicjalizacja strumienia zdarzeń...
+
+<span class="dim">=======================================================
+OŚ CZASU — CZWARTEK WIECZÓR
+=======================================================</span>
+[APP] 20:45 — Otrzymano wiadomość od "Nika": "Nie wracaj dzisiaj. Mam dość..."
+[SYS] 20:55 — Użytkownik przegląda fora hazardowe.
+[SMART] 21:00 — Zamek elektroniczny otwarty. Nika wraca do mieszkania.
+[SMART] 21:05 — Wykryto podniesiony ton głosu w salonie. Nagłe skoki decybeli.
+[SMART] 21:08 — Wykryto dźwięk tłuczonego szkła.
+<span class="hl">[SMART] 21:10 — SmartWatch Niki przesyła alert zdrowotny. Utrata sygnału życiowego.</span>
+[APP] 21:12 — Użytkownik szuka w sieci konsekwencji prawnych za wypadek.
+[APP] 21:14 — Użytkownik szuka sposobów na czyszczenie śladów.
+<span class="ok">[APP] 21:15 — Otrzymano wiadomość od "Kruk Finanse": "Jutro rano wchodzimy po nią..."</span>
+[APP] 21:20 — Szukanie anonimowego zgłaszania incydentów.
+[APP] 21:30 — Wysłano wiadomość do "Kamil": "Wymknęło mi się to spod kontroli. Leży w salonie."
+[SYS] 21:50 — Plik "notatki.txt" usunięty.
+
+[Wniosek systemu]
+Zdarzenie nastąpiło o 21:10 podczas fizycznej kłótni. Wiadomość od windykatorów przyszła o 21:15, wykluczając ich udział na miejscu. Użytkownik próbował upozorować włamanie.`,
+};
+
+function toggleIgComments(id){
+  const el = document.getElementById("ig_com_"+id);
+  if(el){
+    el.style.display = el.style.display === "none" ? "block" : "none";
+  }
+}
+
+function openIG(){
+  if(!STATE.igUnlocked){
+    const w = makeWindow("ig_lock", "SnapLife — Autoryzacja", "", {w:300, h:220});
+    w.body.innerHTML = `
+      <div style="padding:20px;text-align:center;display:flex;flex-direction:column;gap:12px;justify-content:center;height:100%">
+        <div style="color:var(--magenta);font-size:32px;text-shadow:0 0 10px var(--magenta)">📸</div>
+        <div style="font-size:10px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase">PODAJ PIN PAMIĘCI</div>
+        <input type="password" id="igPin" maxlength="4" style="background:#05070a;border:1px solid var(--magenta);color:var(--text);padding:10px;text-align:center;font-size:20px;letter-spacing:15px;width:150px;margin:0 auto;box-shadow:inset 0 0 10px rgba(255,0,127,.2)" autocomplete="off">
+        <button onclick="checkIGPin()" style="padding:12px 20px;background:var(--cyan);color:#000;border:none;border-radius:4px;font-size:11px;margin-top:10px;font-weight:900;letter-spacing:3px;text-transform:uppercase">ODBLOKUJ</button>
+        <div id="igError" style="color:var(--red);font-size:10px;min-height:16px;font-weight:bold;letter-spacing:1px"></div>
+      </div>
+    `;
+    return;
+  }
+  const w = makeWindow("ig", "SnapLife // Feed", "", {w:420, h:560});
+  w.body.innerHTML = `
+    <div class="ig-feed" style="background:#05070a;height:100%;overflow-y:auto;padding-bottom:20px">
+      <div style="padding:15px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:15px;background:#0b111a;position:sticky;top:0;z-index:10">
+         <div style="font-size:22px;color:var(--magenta)">📸</div>
+         <div style="font-size:14px;font-weight:900;color:var(--cyan);letter-spacing:3px">SNAPLIFE</div>
+      </div>
+
+      <div style="margin-bottom:20px;border-bottom:1px solid var(--line)">
+        <div style="padding:15px;display:flex;align-items:center;gap:12px">
+          <div style="width:36px;height:36px;background:var(--magenta);border-radius:50%;display:grid;place-items:center;font-size:14px;color:#fff;font-weight:bold">N</div>
+          <div style="font-size:13px;font-weight:bold;color:#fff">Nika_M <span style="color:var(--cyan)">✓</span></div>
+        </div>
+        <div style="width:100%;height:200px;background:linear-gradient(135deg, #121a2f, #05070a);display:grid;place-items:center;font-size:40px;color:var(--muted)">🧳🚫</div>
+        <div style="padding:12px 15px;font-size:12px;color:var(--text);line-height:1.6">
+          <b style="color:#fff">Nika_M</b> To koniec. Znów zniknęły pieniądze z konta. 2000 zł wyparowało. Przysięgam, że jeśli to znowu poszło na zakłady, to się wyprowadzam. Wracam do domu i przeprowadzam z nim ostateczną rozmowę.
+        </div>
+        <div style="padding:0 15px 15px;display:flex;gap:20px;color:var(--muted);font-size:10px;font-weight:bold;cursor:pointer;letter-spacing:1px" onclick="toggleIgComments('nika1')">
+          <span>❤️ 1,240</span><span>💬 Zobacz komentarze (2)</span>
+        </div>
+        <div id="ig_com_nika1" style="display:none;padding:0 15px 15px;font-size:11px;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px;">
+          <div style="margin-bottom:8px"><b style="color:var(--cyan)">Kamil_Brat:</b> Nika, daj mu szansę, on ma problem.</div>
+          <div style="margin-bottom:8px"><b style="color:var(--magenta)">Antek_R (Ty):</b> Nie rób z nas pośmiewiska w sieci!</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;border-bottom:1px solid var(--line)">
+        <div style="padding:15px;display:flex;align-items:center;gap:12px">
+          <div style="width:36px;height:36px;background:var(--magenta);border-radius:50%;display:grid;place-items:center;font-size:14px;color:#fff;font-weight:bold">N</div>
+          <div style="font-size:13px;font-weight:bold;color:#fff">Nika_M <span style="color:var(--cyan)">✓</span></div>
+        </div>
+        <div style="width:100%;height:200px;background:linear-gradient(135deg, #121a2f, #05070a);display:grid;place-items:center;font-size:40px;color:var(--muted)">🍰</div>
+        <div style="padding:12px 15px;font-size:12px;color:var(--text);line-height:1.6">
+          <b style="color:#fff">Nika_M</b> Piekę ciasto żeby zająć czymś głowę 🍰 Może za bardzo panikuję? Zobaczymy co powie wieczorem, ale mam strasznie złe przeczucia.
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;border-bottom:1px solid var(--line)">
+        <div style="padding:15px;display:flex;align-items:center;gap:12px">
+          <div style="width:36px;height:36px;background:var(--magenta);border-radius:50%;display:grid;place-items:center;font-size:14px;color:#fff;font-weight:bold">N</div>
+          <div style="font-size:13px;font-weight:bold;color:#fff">Nika_M <span style="color:var(--cyan)">✓</span></div>
+        </div>
+        <div style="width:100%;height:200px;background:linear-gradient(135deg, #121a2f, #05070a);display:grid;place-items:center;font-size:40px;color:var(--muted)">📉</div>
+        <div style="padding:12px 15px;font-size:12px;color:var(--text);line-height:1.6">
+          <b style="color:#fff">Nika_M</b> Mam tego dość. Ktoś znów pukał w nocy do drzwi. Boję się własnego cienia przez te jego windykacyjne "inwestycje".
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+window.checkIGPin = function(){
+  const val = document.getElementById("igPin").value;
+  if(val === "6820"){ 
+    STATE.igUnlocked = true;
+    closeWin("ig_lock");
+    openIG();
+  } else {
+    document.getElementById("igError").textContent = "BŁĘDNY KOD ODCISKU";
+    setTimeout(()=>document.getElementById("igError").textContent="", 2000);
+  }
+};
+
+const APPS=[
+  {id:"vchat",   name:"N-Crypt",         glyph:"N",   open:openVChat},
+  {id:"echo",    name:"BetCrypto",       glyph:"🎰",   open:openEcho},
+  {id:"mail",    name:"Poczta OS",       glyph:"✉",   open:openMail},
+  {id:"notes",   name:"Notatnik",        glyph:"📝",  open:openNotes},
+  {id:"browser", name:"Nawigator",       glyph:"🌐",   open:openBrowser},
+  {id:"files",   name:"Katalogi",        glyph:"📁",   open:openFiles},
+  {id:"logs",    name:"Smart Home",      glyph:"🏠",   open:openLogs, locked:true},
+  {id:"ig",      name:"SnapLife",        glyph:"📸",  open:openIG},
+  {id:"trash",   name:"Kosz",            glyph:"🗑️",   open:openTrash},
+  {id:"snake",   name:"Data-Crawler",    glyph:"💻",  open:openSnake, game:true},
+  {id:"ttt",     name:"Node-Breaker",    glyph:"✖",  open:openTicTacToe, game:true},
+  {id:"rps",     name:"Sys-Clash",       glyph:"⚠️",  open:openRPS, game:true},
+  {id:"readme",  name:"KRYMINAL",        glyph:"!",   open:openReadme},
+];
+
+const OBJECTIVES=[
+  {id:"start",   text:"Inicjalizacja systemu"},
+  {id:"readme",  text:"Przeczytaj instrukcję śledczą"},
+  {id:"vchat",   text:"Analiza rozmów N-Crypt"},
+  {id:"mail",    text:"Zebranie dowodów pocztowych"},
+  {id:"files",   text:"Przegląd plików i logów"},
+  {id:"logs",    text:"Dekryptacja Smart Home"},
+  {id:"verdict", text:"Zamknięcie śledztwa"},
+];
+
+let bootFinished=false;
+
+function skipBoot(){
+  if(bootFinished)return;
+  initSnd();
+  bootFinished=true;
+  document.getElementById("bootOverlay").remove();
+  const btn = document.getElementById("bootSkip");
+  if(btn) btn.remove();
+  revealDesktop();
+}
+
+function runBoot(){
+  initSnd();
+  const init = document.getElementById("initScreen");
+  if(init) init.remove();
+  document.getElementById("bootOverlay").style.display = "block";
+  setTimeout(()=>{
+    showStage("stageBios");
+    runBios();
+  },800);
+}
+
+function showStage(id){
+  ["stagePower","stageBios","stageLogo","stageLoading","stageLogin"].forEach(s=>{
+    const el=document.getElementById(s);
+    if(el){
+      el.style.display=(s===id)?"flex":"none";
+    }
+  });
+}
+
+function runBios(){
+  const biosEl=document.getElementById("biosText");
+  const lines=[
+    {t:"NIGHTSHADE FORENSICS KERNEL v7.0",c:"ok"},
+    {t:"Moduł Pamięci: Odczyt kryminalistyczny ... OK",c:"ok"},
+    {t:"Sieć: Izolacja włączona (Air-Gap) ... OK",c:"ok"},
+    {t:"Wykryto skrypt czyszczący (Kamil_Wipe).",c:"fail"},
+    {t:"Ładowanie profilu użytkownika...",c:""},
+  ];
+  let i=0;
+  const addLine=()=>{
+    if(bootFinished)return;
+    if(i>=lines.length){
+      setTimeout(()=>{if(!bootFinished)showLogoStage();},500);
+      return;
+    }
+    const div=document.createElement("div");
+    const l=lines[i];
+    div.innerHTML=l.c==="ok"?`<span class="ok">${esc(l.t)}</span>`:l.c==="fail"?`<span class="fail">${esc(l.t)}</span>`:esc(l.t);
+    biosEl.appendChild(div);
+    i++;
+    setTimeout(addLine,120+Math.random()*80);
+    // Hidden Chat Tag in logs silently
+    if(i===2) console.log("3950863804");
+  };
+  addLine();
+}
+
+function showLogoStage(){
+  if(bootFinished)return;
+  showStage("stageLogo");
+  setTimeout(()=>{if(!bootFinished)showLoadingStage();},1800);
+}
+
+function showLoadingStage(){
+  if(bootFinished)return;
+  showStage("stageLoading");
+  const lore=document.getElementById("loadLore");
+  const LORE_PL="Nika została znaleziona martwa w swoim mieszkaniu.\nWszystko wskazuje na mafijne porachunki związane z długami.\nZabezpieczyliśmy dysk podejrzanego.\nMasz mało czasu, by odkryć prawdę przed skryptem czyszczącym.";
+  typeLore(lore,LORE_PL,()=>{
+    if(bootFinished)return;
+    const log=document.getElementById("loadLines");
+    const fill=document.getElementById("loadBarFill");
+    let i=0;
+    const BOOT_LINES_PL=[
+      "Montowanie partycji zaszyfrowanej...",
+      "Omijanie zapory użytkownika...",
+      "Odtwarzanie plików usuniętych...",
+      "Wykryto niespójności z logami domowymi...",
+      "Inicjacja NIGHTSHADE OS...",
+    ];
+    const step=()=>{
+      if(bootFinished)return;
+      if(i>=BOOT_LINES_PL.length){
+        fill.style.width="100%";
+        setTimeout(()=>{if(!bootFinished)showLoginStage();},600);
+        return;
+      }
+      const div=document.createElement("div");
+      div.textContent="> "+BOOT_LINES_PL[i];
+      log.appendChild(div);
+      log.scrollTop=log.scrollHeight;
+      fill.style.width=((i+1)/BOOT_LINES_PL.length*100)+"%";
+      i++;
+      setTimeout(step,150+Math.random()*150);
+    };
+    setTimeout(step,400);
+  });
+}
+
+function showLoginStage(){
+  if(bootFinished)return;
+  showStage("stageLogin");
+  const barFill=document.getElementById("loginBarFill");
+  const status=document.getElementById("loginStatus");
+  const msgs=["WERYFIKACJA SYSTEMU","DEKRYPTACJA PROFILU","BLOKOWANIE SKRYPTÓW","DOSTĘP UZYSKANY"];
+  let i=0;
+  setTimeout(()=>{barFill.style.width="100%";},150);
+  const tick=()=>{
+    if(bootFinished)return;
+    if(i>=msgs.length){
+      setTimeout(()=>{if(!bootFinished)finishBoot();},700);
+      return;
+    }
+    status.textContent=msgs[i++];
+    setTimeout(tick,600);
+  };
+  setTimeout(tick,500);
+}
+
+function typeLore(el,text,cb){
+  let i=0;
+  el.innerHTML='<span class="caret"></span>';
+  const tick=()=>{
+    if(bootFinished&&cb){cb();return;}
+    if(i>=text.length){if(cb)setTimeout(cb,600);return;}
+    const ch=text[i++];
+    el.innerHTML=text.slice(0,i).replace(/\n/g,"<br>")+'<span class="caret"></span>';
+    if(ch!==" " && ch!=="\n") sndType();
+    setTimeout(tick,ch==="\n"?500:(Math.random()*30+40));
+  };
+  tick();
+}
+
+function finishBoot(){
+  if(bootFinished)return;
+  bootFinished=true;
+  const overlay=document.getElementById("bootOverlay");
+  const skip=document.getElementById("bootSkip");
+  if(overlay){overlay.style.transition="opacity .6s";overlay.style.opacity="0";setTimeout(()=>{overlay.remove();if(skip)skip.remove();},620);}
+  revealDesktop();
+}
+
+const creepyConvo = [
+  {
+    msg: "System wykrywa obcą obecność. Kto to czyta?",
+    opts: ["Twój problem.", "Sprawiedliwość."],
+    replies: ["Policja nie ma tu nic. Skrypt zaraz to spali.", "Sprawiedliwość to kwestia odpowiedniej sumy."]
+  },
+  {
+    msg: "Wiesz, że ten skrypt usunie wszystko za parę minut?",
+    opts: ["Zatrzymam to.", "Mam już wszystko."],
+    replies: ["Nikt tego nie zatrzyma. Jestem sprytniejszy.", "Dowody na co? Przecież widziałeś wiadomości Kruka."]
+  },
+  {
+    msg: "Czas ucieka detektywie.",
+    opts: ["Prawda wyjdzie na jaw.", "Jesteś skończony."],
+    replies: ["Zobaczymy kto jest sprytniejszy.", "Logi płoną."]
+  }
+];
+
+function scheduleCreepy(delay){
+   STATE.creepyNextTimer = setTimeout(triggerCreepyPhase, delay);
+}
+
+function triggerCreepyPhase(){
+    let isGame = (STATE.windows.snake && !STATE.windows.snake.el.classList.contains("minimized")) ||
+                 (STATE.windows.ttt && !STATE.windows.ttt.el.classList.contains("minimized")) ||
+                 (STATE.windows.rps && !STATE.windows.rps.el.classList.contains("minimized"));
+
+    if (isGame && !STATE.creepyWarnedGame) {
+       STATE.creepyWarnedGame = true;
+       receiveCreepyMessage("Grasz w gry podczas gdy dowody znikają? Jesteś żałosny.");
+       scheduleCreepy(50000);
+       return;
+    }
+
+    const left = Math.max(0, STATE.totalSecs - Math.floor((Date.now()-STATE.timerStart)/1000));
+    if (isGame && left < 300 && !STATE.creepyWarnedGame2) {
+       STATE.creepyWarnedGame2 = true;
+       receiveCreepyMessage("Twój czas się kończy. Gierki cię nie uratują.");
+       scheduleCreepy(50000);
+       return;
+    }
+
+    if(STATE.creepyStage >= creepyConvo.length) return;
+    const stageData = creepyConvo[STATE.creepyStage];
+    receiveCreepyMessage(stageData.msg);
+    STATE.creepyWaiting = true;
+    if(STATE.windows.vchat) renderVChat(STATE.windows.vchat);
+}
+
+function receiveCreepyMessage(text){
+    sndNotif();
+    let c = DATA.contacts.find(x => x.id === "unknown");
+    if(!c){
+      c = {id:"unknown",name:"SKRYPT_WIPE.exe",sub:"",time:"Teraz",msgs:[]};
+      DATA.contacts.unshift(c);
+    } else {
+      DATA.contacts = DATA.contacts.filter(x => x.id !== "unknown");
+      DATA.contacts.unshift(c);
+    }
+    c.msgs.push({t:"Teraz", f:"them", x:text, flag:true});
+    c.sub = text;
+    c.time = "Teraz";
+
+    const vchatWin = STATE.windows.vchat;
+    const isActive = vchatWin && STATE.activeChat === "unknown" && !vchatWin.el.classList.contains("minimized");
+
+    if(!isActive){
+        STATE.vchatUnread++;
+    } else {
+        STATE.vchatUnread = 0;
+    }
+    renderIcons();
+
+    if(vchatWin) renderVChat(vchatWin);
+
+    const t = document.createElement("div");
+    t.className = "toast vchat-toast";
+    t.innerHTML = '<div style="color:var(--magenta);font-weight:900;margin-bottom:6px;font-size:11px;letter-spacing:2px">⚠ OSTRZEŻENIE SYSTEMU</div><div style="color:#fff;font-size:12px">'+esc(text)+'</div>';
+    document.getElementById("toasts").appendChild(t);
+    setTimeout(()=>{t.style.transition="opacity .4s";t.style.opacity="0";setTimeout(()=>t.remove(),500);},7000);
+}
+
+window.replyCreepy = function(optIdx){
+    STATE.creepyWaiting = false;
+    const stageData = creepyConvo[STATE.creepyStage];
+    const myText = stageData.opts[optIdx];
+    const hisReply = stageData.replies[optIdx];
+
+    let c = DATA.contacts.find(x => x.id === "unknown");
+    c.msgs.push({t:"Teraz", f:"me", x:myText});
+    if(STATE.windows.vchat) renderVChat(STATE.windows.vchat);
+
+    setTimeout(() => {
+        receiveCreepyMessage(hisReply);
+        STATE.creepyStage++;
+        scheduleCreepy(50000);
+    }, 4000);
+};
+
+function startCreepyMessages(){
+    scheduleCreepy(45000);
+}
+
+function startHackAttack(){
+   if(STATE.endGameDone) return;
+   
+   const overlay = document.getElementById("hackOverlay");
+   overlay.style.display="block";
+   
+   // Create a terminal style container
+   const container = document.getElementById("hackBoxContainer");
+   if(container) {
+     container.innerHTML = `
+     <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:540px; background:#050005; border:1px solid var(--magenta); box-shadow:0 0 40px rgba(255,0,127,.3); z-index:30000; display:flex; flex-direction:column; font-family:Consolas,monospace;">
+       <div style="background:var(--magenta); color:#000; padding:10px; font-weight:bold; font-size:12px; letter-spacing:2px; display:flex; justify-content:space-between;">
+          <span>⚠ ZAGROŻENIE WIPE_SCRIPT.exe</span>
+          <span>ROOT_ACCESS</span>
+       </div>
+       <div style="padding:24px;text-align:center;color:var(--text);">
+         <h2 style="letter-spacing:5px;font-weight:900;color:var(--magenta);text-shadow:0 0 10px var(--magenta)">INTRUZ W SYSTEMIE</h2>
+         <p style="margin:16px 0;font-size:13px;color:var(--muted)">Skrypt niszczący wykrył aktywność. Trwa agresywne usuwanie logów.</p>
+         <div style="font-size:36px;font-weight:900;margin:24px 0;color:var(--red);text-shadow:0 0 15px var(--red)" id="hackTimer">00:40</div>
+         <p style="font-size:10px;color:var(--cyan);margin-bottom:10px;letter-spacing:3px;text-transform:uppercase">WPISZ KOD PRZERYWAJĄCY:</p>
+         <div style="font-size:22px;letter-spacing:8px;color:#fff;margin-bottom:20px;font-weight:bold" id="hackCodeDisp"></div>
+         <input type="text" id="hackInput" style="background:#020305;color:var(--cyan);border:2px solid var(--magenta);padding:12px;text-align:center;font-size:18px;width:80%;letter-spacing:3px;text-transform:uppercase" autocomplete="off">
+         <button onclick="checkHack()" style="margin-top:20px;padding:12px 24px;background:var(--cyan);color:#000;border:none;font-weight:900;letter-spacing:3px;cursor:pointer;text-transform:uppercase;box-shadow:0 0 15px rgba(102,252,241,.6)">PRZERWIJ CZYSZCZENIE</button>
+       </div>
+     </div>
+     `;
+   }
+   
+   sndNotif(); setTimeout(sndNotif, 200); setTimeout(sndNotif, 400);
+   
+   STATE.hackTime = 40;
+   STATE.hackCode = "KAMIL-STOP";
+   document.getElementById("hackCodeDisp").textContent = STATE.hackCode;
+   
+   STATE.hackInt = setInterval(()=>{
+     STATE.hackTime--;
+     const ht = document.getElementById("hackTimer");
+     if(ht) ht.textContent = "00:"+(STATE.hackTime<10?"0":"")+STATE.hackTime;
+     if(STATE.hackTime<=0){
+        clearInterval(STATE.hackInt);
+        hackFailed();
+     }
+   },1000);
+}
+
+window.checkHack = function(){
+   const input = document.getElementById("hackInput");
+   if(!input) return;
+   const val = input.value.trim().toUpperCase();
+   if(val === STATE.hackCode){
+      clearInterval(STATE.hackInt);
+      document.getElementById("hackOverlay").style.display="none";
+      const container = document.getElementById("hackBoxContainer");
+      if(container) container.innerHTML = "";
+      toast("ZAPORA SYSTEMOWA: Skrypt zablokowany.");
+   } else {
+      input.value = "";
+      input.style.borderColor = "var(--red)";
+      sndNotif();
+   }
+};
+
+function hackFailed(){
+   document.getElementById("hackOverlay").style.display="none";
+   const container = document.getElementById("hackBoxContainer");
+   if(container) container.innerHTML = "";
+   STATE.timerStart -= 180000;
+   toast("OSTRZEŻENIE: Skrypt usunął 3 minuty logów!");
+}
+
+function revealDesktop(){
+  trackObj("start");
+  const d=document.getElementById("desktop");
+  d.classList.add("on","desktopReveal");
+  renderIcons();
+  startClock();
+  startTimer();
+  renderObjectives();
+  startCreepyMessages();
+  setTimeout(startHackAttack, 240000);
+  setTimeout(()=>toast("OS gotowy. Dysk zabezpieczony przez system Nightshade."),800);
+  setTimeout(()=>toast("Plik plan.txt odzyskany z Kosza."),2500);
+  setTimeout(()=>toast("Przeczytaj plik KRYMINAL na pulpicie by rozpocząć."),4000);
+}
+
+function renderIcons(){
+  const c=document.getElementById("icons");
+  c.innerHTML="";
+  const iconW=120, iconH=120, gap=20;
+  const cols=Math.min(6, APPS.length);
+  const totalW=cols*iconW+(cols-1)*gap;
+  const startX=Math.max(40, (window.innerWidth-totalW)/2);
+  const startY=Math.max(40, (window.innerHeight-46)/2 - 80);
+
+  APPS.forEach((a,i)=>{
+    const locked=a.locked&&!STATE.logsUnlocked;
+    const d=document.createElement("div");
+    d.className="icon"+(locked?" locked":"")+(a.game?" game":"")+(a.id==="readme"&&!STATE.readmeOpened?" readme-hl":"");
+    let badgeHtml = "";
+    if(a.id === "vchat" && STATE.vchatUnread > 0){
+        badgeHtml = `<div class="icon-badge">${STATE.vchatUnread}</div>`;
+    }
+    d.innerHTML=`<div class="glyph" style="position:relative">${locked?"🔒":a.glyph}${badgeHtml}</div><div class="lbl">${a.name}</div>`;
+    d.style.position="absolute";
+    d.style.left=startX+(i%cols)*(iconW+gap)+"px";
+    d.style.top=startY+Math.floor(i/cols)*(iconH+gap)+"px";
+    c.appendChild(d);
+    bindIconDrag(d, a);
+  });
+}
+
+function bindIconDrag(el, a){
+  let sx,sy,ox,oy,drag=false,moved=false;
+  el.addEventListener("mousedown",(e)=>{
+    if(e.button !== 0) return;
+    drag=true; moved=false; sx=e.clientX; sy=e.clientY; ox=el.offsetLeft; oy=el.offsetTop;
+    el.style.zIndex=100;
+  });
+  window.addEventListener("mousemove",(e)=>{
+    if(!drag)return;
+    e.preventDefault();
+    if(Math.abs(e.clientX-sx)>5||Math.abs(e.clientY-sy)>5) moved=true;
+    if(moved){
+      el.style.left=(ox+e.clientX-sx)+"px";
+      el.style.top=(oy+e.clientY-sy)+"px";
+    }
+  });
+  window.addEventListener("mouseup",(e)=>{
+    if(!drag)return;
+    drag=false; el.style.zIndex="";
+    if(!moved){
+       launchApp(a);
+    }
+  });
+}
+
+function launchApp(a){
+  sndApp();
+  const iconEl=document.querySelector(`#icons .icon:nth-child(${APPS.indexOf(a)+1})`);
+  if(iconEl){iconEl.classList.add("launching");setTimeout(()=>iconEl.classList.remove("launching"),300);}
+  if(a.id==="readme"){
+     if(iconEl) iconEl.classList.remove("readme-hl");
+     STATE.readmeOpened = true;
+  }
+  a.open();
+}
+
+function startClock(){
+  const el=document.getElementById("clock-area");
+  const upd=()=>{
+    const d=new Date();
+    el.textContent=`SYS.TIME // ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+  };
+  upd();setInterval(upd,1000);
+}
+
+function startTimer(){
+  STATE.timerStart=Date.now();
+  const total=STATE.totalSecs;
+  const val=document.getElementById("timerVal");
+  const fill=document.getElementById("timerBarFill");
+  const disp=document.getElementById("timerDisplay");
+  const upd=()=>{
+    const elapsed=Math.floor((Date.now()-STATE.timerStart)/1000);
+    const left=Math.max(0,total-elapsed);
+    const m=Math.floor(left/60);
+    const s=left%60;
+    val.textContent=`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+    fill.style.width=(left/total*100)+"%";
+    if(left<=180) disp.classList.add("urgent");
+    if(left<=0&&!STATE.endGameDone){
+      STATE.endGameDone=true;
+      showEnding("timeout","CZAS MINĄŁ","lose",
+        "Skrypt Kamila wyczyścił dysk Antka do zera.\n\nPolicja znajduje pusty komputer. Z braku dowodów obciążających, teoria Antka o windykatorach zostaje oficjalnie przyjęta.\n\nAntek R. wyjeżdża z kraju z pieniędzmi z ubezpieczenia z życia Niki.\n\nZawiodłeś. Prawda zniknęła na zawsze.");
+    }
+  };
+  upd();setInterval(upd,1000);
+}
+
+function toast(msg){
+  const t=document.createElement("div");
+  t.className="toast";t.textContent=msg;
+  document.getElementById("toasts").appendChild(t);
+  setTimeout(()=>{t.style.transition="opacity .4s";t.style.opacity="0";setTimeout(()=>t.remove(),400);},4000);
+}
+
+function makeWindow(id,title,html,opts){
+  opts=opts||{};
+  if(STATE.windows[id]){
+    const w=STATE.windows[id];
+    w.el.classList.remove("minimized");
+    focusWindow(id);
+    if(opts.replaceBody)w.body.innerHTML=html;
+    return w;
+  }
+  const el=document.createElement("div");
+  el.className="win";el.dataset.id=id;
+  const w=opts.w||720,h=opts.h||480;
+  const cx=Math.max(30,(window.innerWidth-w)/2+(Math.random()*80-40));
+  const cy=Math.max(30,(window.innerHeight-h-50)/2+(Math.random()*60-30));
+  el.style.left=cx+"px";el.style.top=cy+"px";
+  el.style.width=w+"px";el.style.height=h+"px";
+  el.innerHTML=`
+    <div class="tb">
+      <div class="dot"></div>
+      <div class="title">${title}</div>
+      <div class="ctl">
+        <button onclick="minWin('${id}')" title="Ukryj">_</button>
+        <button class="x" onclick="closeWin('${id}')" title="Zamknij">×</button>
+      </div>
+    </div>
+    <div class="body">${html}</div>
+    <div class="grip"></div>
+  `;
+  document.getElementById("desktop").appendChild(el);
+  const body=el.querySelector(".body");
+  const obj={el,body,id,title};
+  STATE.windows[id]=obj;
+  bindDrag(el);bindResize(el);
+  el.addEventListener("mousedown",()=>focusWindow(id));
+  focusWindow(id);
+  renderTasks();
+  return obj;
+}
+
+function bindDrag(el){
+  const tb=el.querySelector(".tb");
+  let sx,sy,ox,oy,drag=false;
+  tb.addEventListener("mousedown",(e)=>{
+    if(e.target.tagName==="BUTTON")return;
+    drag=true;sx=e.clientX;sy=e.clientY;ox=el.offsetLeft;oy=el.offsetTop;
+    document.body.style.userSelect="none";
+  });
+  window.addEventListener("mousemove",(e)=>{
+    if(!drag)return;
+    const nx=Math.max(0,Math.min(window.innerWidth-70,ox+e.clientX-sx));
+    const ny=Math.max(0,Math.min(window.innerHeight-90,oy+e.clientY-sy));
+    el.style.left=nx+"px";el.style.top=ny+"px";
+  });
+  window.addEventListener("mouseup",()=>{drag=false;document.body.style.userSelect="";});
+}
+function bindResize(el){
+  const g=el.querySelector(".grip");
+  if(!g)return;
+  let sx,sy,sw,sh,rs=false;
+  g.addEventListener("mousedown",(e)=>{
+    rs=true;sx=e.clientX;sy=e.clientY;sw=el.offsetWidth;sh=el.offsetHeight;
+    e.stopPropagation();document.body.style.userSelect="none";
+  });
+  window.addEventListener("mousemove",(e)=>{
+    if(!rs)return;
+    el.style.width=Math.max(400,sw+e.clientX-sx)+"px";
+    el.style.height=Math.max(250,sh+e.clientY-sy)+"px";
+  });
+  window.addEventListener("mouseup",()=>{rs=false;document.body.style.userSelect="";});
+}
+function focusWindow(id){
+  Object.values(STATE.windows).forEach(w=>w.el.classList.remove("focus"));
+  const w=STATE.windows[id];if(!w)return;
+  w.el.classList.add("focus");
+  STATE.zTop++;w.el.style.zIndex=STATE.zTop;
+  renderTasks();
+}
+function closeWin(id){
+  const w=STATE.windows[id];if(!w)return;
+  if(id==="notes"){const ta=w.body.querySelector("#notesArea");if(ta)STATE.notes=ta.value;}
+  w.el.classList.add("closing");
+  if(id==="snake" && window._snakeKeyPush) document.removeEventListener("keydown", window._snakeKeyPush);
+  window.killSnake=true;
+  window.killTTT=true;
+  setTimeout(()=>{w.el.remove();delete STATE.windows[id];renderTasks();},150);
+}
+function minWin(id){
+  const w=STATE.windows[id];if(!w)return;
+  if(id==="notes"){const ta=w.body.querySelector("#notesArea");if(ta)STATE.notes=ta.value;}
+  w.el.classList.add("minimized");renderTasks();
+}
+function renderTasks(){
+  const c=document.getElementById("tasks");c.innerHTML="";
+  Object.values(STATE.windows).forEach(w=>{
+    const b=document.createElement("button");b.className="task";
+    const active=!w.el.classList.contains("minimized")&&w.el.classList.contains("focus");
+    if(active)b.classList.add("active");
+    b.textContent="[ "+w.title+" ]";
+    b.onclick=()=>{
+      if(w.el.classList.contains("minimized")){w.el.classList.remove("minimized");focusWindow(w.id);}
+      else if(active){minWin(w.id);}
+      else focusWindow(w.id);
+    };
+    c.appendChild(b);
+  });
+}
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function trackObj(id){
+  STATE.objectives.opened.add(id);
+  renderObjectives();
+}
+
+function renderObjectives() {
+  try {
+    const panel = document.getElementById("objPanel");
+    if (!panel) return;
+    const completed = new Set(Array.from(STATE.objectives.opened));
+    if (STATE.logsUnlocked) completed.add("logs");
+    
+    let html = '<div class="obj-head">CELE ŚLEDZTWA</div>';
+    
+    let nextObj = null;
+    for (let i = 0; i < OBJECTIVES.length; i++) {
+      if (!completed.has(OBJECTIVES[i].id) || OBJECTIVES[i].id === "verdict") {
+        nextObj = OBJECTIVES[i];
+        break;
+      }
+    }
+    
+    OBJECTIVES.forEach(o => {
+      const done = completed.has(o.id) && o.id !== "verdict";
+      const cur = !done && nextObj && o.id === nextObj.id;
+      let cls = "obj-item" + (done ? " done" : cur ? " active" : "");
+      html += '<div class="' + cls + '">' + (done ? "[X] " : cur ? "[>] " : "[ ] ") + o.text + (cur && !done ? '<span class="obj-caret"></span>' : "") + '</div>';
+    });
+    
+    panel.innerHTML = html;
+  } catch(e) {
+    console.error("renderObjectives error:", e);
+  }
+}
+
+function openVChat(){
+  trackObj("vchat");
+  if(STATE.activeChat === "unknown"){
+      STATE.vchatUnread = 0;
+      renderIcons();
+  }
+  const w=makeWindow("vchat","N-Crypt // Kanał P2P","",{w:780,h:520});
+  renderVChat(w);
+}
+function renderVChat(w){
+  const rows=DATA.contacts.map(c=>`<div class="row${STATE.activeChat===c.id?" active":""}" onclick="selectChat('${c.id}')">
+    <div class="av">${c.name[0]}</div>
+    <div class="meta"><div class="n">${esc(c.name)}</div><div class="p">${esc(c.sub)}</div></div>
+    <div class="time">${c.time}</div>
+  </div>`).join("");
+  let right;
+  if(!STATE.activeChat){
+    right=`<div class="ph"><span style="color:var(--muted);letter-spacing:3px">N-CRYPT // WĘZEŁ ROZŁĄCZONY</span></div>
+      <div class="empty">Zaznacz log rozmowy aby odszyfrować pakiet.</div>`;
+  }else{
+    const c=DATA.contacts.find(x=>x.id===STATE.activeChat);
+    const bub=c.msgs.map(m=>`<div class="bub ${m.f}${m.flag?' flagged':''}">${esc(m.x)}<span class="ts">${m.t}</span></div>`).join("");
+    
+    let optionsHtml = "";
+    if(c.id === "unknown" && STATE.creepyWaiting && STATE.creepyStage < creepyConvo.length){
+        const opts = creepyConvo[STATE.creepyStage].opts;
+        optionsHtml = `
+          <div class="chat-opts" style="display:flex;gap:12px;padding:15px;background:rgba(5,7,10,0.8);border-top:1px solid var(--line2);flex-shrink:0;">
+             <button onclick="replyCreepy(0)" style="flex:1;padding:12px;background:transparent;border:1px solid var(--magenta);color:var(--magenta);border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:2px;font-weight:900;transition:all 0.2s;text-transform:uppercase">${esc(opts[0])}</button>
+             <button onclick="replyCreepy(1)" style="flex:1;padding:12px;background:transparent;border:1px solid var(--magenta);color:var(--magenta);border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:2px;font-weight:900;transition:all 0.2s;text-transform:uppercase">${esc(opts[1])}</button>
+          </div>
+        `;
+    }
+    
+    right=`<div class="ph">
+        <button class="back" onclick="backChat()">WRÓĆ</button>
+        <span style="color:var(--cyan);font-weight:bold">${esc(c.name)}</span>
+        <span style="color:var(--muted);margin-left:auto;font-size:10px;text-transform:uppercase">${c.msgs.length} PAKIETÓW</span>
+      </div>
+      <div class="pc" style="flex:1;overflow-y:auto;">${bub}</div>
+      ${optionsHtml}`;
+  }
+  w.body.innerHTML=`<div class="app">
+    <div class="sidebar"><div class="head">KONTAKTY ZASZYFROWANE</div><div class="list">${rows}</div></div>
+    <div class="pane" style="display:flex;flex-direction:column;flex:1;">${right}</div>
+  </div>`;
+  if(STATE.activeChat){
+    const pc=w.body.querySelector(".pc");
+    if(pc)pc.scrollTop=pc.scrollHeight;
+  }
+}
+window.selectChat=id=>{
+  STATE.activeChat=id;
+  if(id === "unknown"){
+      STATE.vchatUnread = 0;
+      renderIcons();
+  }
+  renderVChat(STATE.windows.vchat);
+};
+window.backChat=()=>{STATE.activeChat=null;renderVChat(STATE.windows.vchat);};
+
+function openEcho(){
+  trackObj("vchat");
+  const w=makeWindow("echo","BetCrypto // Saldo Użytkownika","",{w:760,h:500});
+  renderEcho(w);
+}
+function renderEcho(w){
+  if(!STATE.activeAd){
+    const g=DATA.ads.map(m=>`<div class="ad-item" onclick="selectAd('${m.id}')">
+      <div class="pic">${m.glyph}</div>
+      <div class="info">
+        <div class="n">${esc(m.title)}</div>
+        <div class="p" style="color:var(--red)">${m.price}</div>
+        <div class="a">Broker: ${esc(m.seller)}</div>
+        <div class="sold ${m.sold?"yes":""}">${m.sold?"[ ZABLOKOWANE ]":"[ DOSTĘPNE ]"}</div>
+      </div>
+    </div>`).join("");
+    w.body.innerHTML=`<div class="app"><div class="pane">
+      <div class="ph"><span style="color:var(--magenta);letter-spacing:3px">BETCRYPTO // TWOJE KONTO</span></div>
+      <div class="pc"><div class="match-grid">${g}</div></div>
+    </div></div>`;
+  }else{
+    const m=DATA.ads.find(x=>x.id===STATE.activeAd);
+    const bub=m.msgs.map(x=>`<div class="bub ${x.f}">${esc(x.x)}<span class="ts">${x.t}</span></div>`).join("");
+    const notice=`<div style="margin-top:16px;padding:15px;border:1px dashed var(--red);background:rgba(255,0,127,0.1);color:var(--red);font-size:12px;letter-spacing:1px;font-weight:bold;text-align:center;border-radius:6px">⚠ KONTO ZABLOKOWANE: Zbyt duże zadłużenie.</div>`;
+    w.body.innerHTML=`<div class="app"><div class="pane">
+      <div class="ph">
+        <button class="back" onclick="backAd()">WRÓĆ</button>
+        <span style="color:#fff;font-weight:bold">${esc(m.title)}</span>
+        <span style="color:var(--red);margin-left:auto;font-size:12px;font-weight:bold">${m.price} | ${esc(m.seller)}</span>
+      </div>
+      <div class="pc">${bub}${notice}</div>
+    </div></div>`;
+    const pc=w.body.querySelector(".pc");if(pc)pc.scrollTop=pc.scrollHeight;
+  }
+}
+window.selectAd=id=>{STATE.activeAd=id;STATE.adRead[id]=true;renderEcho(STATE.windows.echo);};
+window.backAd=()=>{STATE.activeAd=null;renderEcho(STATE.windows.echo);};
+
+function openMail(){
+  trackObj("mail");
+  const w=makeWindow("mail",`Poczta OS // Skrzynka (${DATA.mails.length})`,"",{w:800,h:520});
+  renderMail(w);
+}
+function renderMail(w){
+  const rows=DATA.mails.map(m=>`<div class="row${STATE.activeMail===m.id?" active":""}" onclick="selectMail('${m.id}')">
+    <div class="meta mail-row" style="padding:0">
+      <div class="from">${esc(m.from)}</div>
+      <div class="sub">${esc(m.sub)}</div>
+      <div class="pv">${esc(m.body.slice(0,60))}…</div>
+    </div>
+    <div class="time" style="white-space:nowrap;font-size:10px;padding-left:10px">${m.time}</div>
+  </div>`).join("");
+  let right;
+  if(!STATE.activeMail){
+    right=`<div class="ph"><span style="color:var(--muted);letter-spacing:3px">SKRZYNKA POCZTOWA // ${DATA.mails.length} WPISÓW</span></div>
+      <div class="empty">Zaznacz e-mail by wywołać treść.</div>`;
+  }else{
+    const m=DATA.mails.find(x=>x.id===STATE.activeMail);
+    right=`<div class="ph">
+        <button class="back" onclick="backMail()">WRÓĆ</button>
+        <span style="color:var(--cyan);font-weight:bold">${esc(m.sub)}</span>
+      </div>
+      <div class="pc mail-view">
+        <h3>${esc(m.sub)}</h3>
+        <div class="meta">Od: <b style="color:#fff">${esc(m.from)}</b><br>Do: antek.r@local.net<br>Czas: ${m.time}</div>
+        <div class="body-txt">${esc(m.body)}</div>
+      </div>`;
+  }
+  w.body.innerHTML=`<div class="app">
+    <div class="sidebar" style="width:300px"><div class="head">ODEBRANE WIADOMOŚCI</div><div class="list">${rows}</div></div>
+    <div class="pane">${right}</div>
+  </div>`;
+}
+window.selectMail=id=>{STATE.activeMail=id;STATE.mailRead[id]=true;renderMail(STATE.windows.mail);};
+window.backMail=()=>{STATE.activeMail=null;renderMail(STATE.windows.mail);};
+
+function openNotes(){
+  const w=makeWindow("notes","Notatnik (Lokalny)","",{w:560,h:460});
+  w.body.innerHTML=`<textarea id="notesArea" spellcheck="false" placeholder="Wpisz tu swoje wnioski detektywistyczne..."></textarea>`;
+  const ta=w.body.querySelector("#notesArea");
+  ta.value=STATE.notes;
+  ta.addEventListener("input",()=>{STATE.notes=ta.value;});
+}
+
+function openBrowser(){
+  trackObj("start"); 
+  const w=makeWindow("browser","Nawigator // Historia URL","",{w:680,h:480});
+  let html=`<div class="app brw"><div class="pane"><div class="url">LOKALIZACJA: os://historia_wyszukiwania &nbsp; <b style="color:var(--cyan)">antek_r</b></div><div class="pc" style="padding:0">`;
+  DATA.history.forEach(g=>{
+    html+=`<div class="hist-cat">${g.cat}</div>`;
+    g.entries.forEach(h=>{
+      html+=`<div class="hist-row">
+        <div class="left"><div class="t">${esc(h.t)}</div><div class="u">↳ ${esc(h.u)}</div></div>
+        <div class="ts">${h.ts}</div>
+      </div>`;
+    });
+  });
+  html+=`</div></div></div>`;
+  w.body.innerHTML=html;
+}
+
+function openFiles(){
+  trackObj("files");
+  const w=makeWindow("files","Katalogi Systemowe","",{w:580,h:440});
+  let html=`<div class="list">`;
+  DATA.files.forEach(folder=>{
+    html+=`<div class="file-folder">DYSK: ${folder.folder}</div>`;
+    folder.items.forEach(item=>{
+      html+=`<div class="file" onclick="openFile('${item.x}')"><div class="n">PLIK: ${esc(item.n)}</div><div class="d">${esc(item.d)}</div></div>`;
+    });
+  });
+  html+=`</div>`;
+  w.body.innerHTML=html;
+}
+window.openFile = (k) => {
+  const content = DATA.fileContents[k];
+  if (!content) return;
+  
+  let fname = k;
+  for (let i = 0; i < DATA.files.length; i++) {
+    const folder = DATA.files[i];
+    for (let j = 0; j < folder.items.length; j++) {
+      if (folder.items[j].x === k) {
+        fname = folder.items[j].n;
+      }
+    }
+  }
+  
+  const id = "file_" + k;
+  const w = makeWindow(id, "Podgląd: " + fname, "", {w:580,h:420});
+  w.body.innerHTML = `<pre class="term">${esc(content)}</pre>`;
+};
+
+function openTrash(){
+  trackObj("files");
+  const w=makeWindow("trash","Kosz","",{w:520,h:380});
+  w.body.innerHTML=`
+     <div class="list">
+       <div class="file-folder">USUNIĘTE POZYCJE</div>
+       <div class="file" onclick="openFile('plan')"><div class="n">notatki.txt</div><div class="d">Usunięto: Czw 21:50</div></div>
+     </div>
+  `;
+}
+
+function openLogs(){
+  if(!STATE.logsUnlocked){openMinigame();return;}
+  trackObj("logs");
+  const w=makeWindow("logs","Smart Home / Logi — ODBLOKOWANE","",{w:740,h:500});
+  w.body.innerHTML=`<pre class="term">${DATA.logs}</pre>`;
+}
+
+function openReadme(){
+  trackObj("readme");
+  const w=makeWindow("readme","KRYMINALNA INSTRUKCJA (Sprawa 9004)","",{w:640,h:550});
+  w.body.innerHTML=`<div class="readme">
+<h2>NIGHTSHADE FORENSICS OS</h2>
+<p>Sygnatura awaryjna: <b>#9004</b><br>Podmiot: Nika M., znaleziona martwa w swoim salonie po uderzeniu głową.<br>Status maszyny: Obraz dyskowy podejrzanego (Antek R.), Tryb Air-Gap.</p>
+
+<hr>
+
+<p>Uzyskałeś zdalny dostęp do urządzenia partnera ofiary. Ze względu na złośliwy skrypt czyszczący, którego celem jest zniszczenie logów domowych i archiwum przeglądarki, masz bardzo mało czasu na znalezienie prawdy.</p>
+
+<h3>Cel Śledztwa</h3>
+<p>Musisz wskazać <b>Sprawcę (KTO)</b>, <b>Metodę (CO SIĘ STAŁO)</b> oraz <b>Motyw (DLACZEGO)</b>. Obrońcy oskarżonego twierdzą, że zbrodni dokonała lokalna grupa windykacyjna (Kruk) w ramach kary za niespłacone długi hazardowe.</p>
+
+<h3>Zasoby</h3>
+<p>Dysk zawiera komunikator, historię wyszukiwań, portal kasyna (BetCrypto) oraz odzyskane pliki tekstowe. Najważniejszym dowodem są logi z systemu 'Smart Home', które musisz odszyfrować.</p>
+
+<p>Kluczem do tej zagadki jest <b>oś czasu</b>. Uważnie porównuj moment, w którym pojawiają się wiadomości, ze wskaźnikami medycznymi ze SmartWatcha ofiary zapisanymi w logach domu.</p>
+
+<h3>Zagrożenie</h3>
+<p>Wykryto kod 'Wipe'. Zabezpieczenie Nightshade tymczasowo go blokuje, ale spodziewaj się ataku w trakcie analizy, próbującego odciąć dostęp.</p>
+
+<hr>
+
+<p>Gdy będziesz gotowy, kliknij 'ZAKOŃCZ ŚLEDZTWO' w menu dolnym.</p>
+
+<div class="stamp">OSTRZEŻENIE: Szukaj dowodów, nie domysłów. Groźby to nie dowody, chyba że potwierdza je czas.</div>
+
+<div class="case-id">OBIEKT #9004 // NIGHTSHADE CLEARANCE // LOCAL</div>
+</div>`;
+}
+
+// Randomizer for options
+function shuffleOptions(p) {
+  if (p.shuffled) return;
+  const arr = p.opts.map((opt, i) => ({ opt, originalIndex: i }));
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  p.opts = arr.map(a => a.opt);
+  p.answer = arr.findIndex(a => a.originalIndex === p.answer);
+  p.shuffled = true;
+}
+
+const MINIGAME_PUZZLES=[
+  {
+    desc:"System inteligentnego domu zarejestrował ruch. Czas wejścia ofiary należy powiązać z pierwszym głośnym szumem.",
+    log:`[SMART] 21:00 — Zamek otwarty kodem: Nika M.\n[SMART] 21:03 — Światła włączone.\n[SMART] ??:?? — Mikrofony wykryły nagły skok decybeli (>85dB).\n[SMART] 21:08 — Tłuczone szkło.`,
+    question:"O której godzinie najprawdopodobniej rozpoczęła się awantura przed stłuczeniem szkła?",
+    opts:["20:55", "21:05", "21:10", "21:15"],
+    answer:1, 
+    hint:"Zdarzyło się to krótko po zapaleniu świateł, a przed dźwiękiem rozbijanego szkła."
+  },
+  {
+    desc:"Logi biometryczne SmartWatcha ofiary. Połączenie zostało nagle przerwane.",
+    log:`[NET] 21:08:40 - Pakiet audio z salonu.\n[WATCH] 21:09:12 - Skok tętna (140 BPM).\n[WATCH] ??:??:?? - Sygnał przerwany. Tętno: 0 BPM.\n[APP] 21:12:00 - Szukanie haseł prawnych w przeglądarce.`,
+    question:"O której godzinie ustały funkcje życiowe ofiary (upadek i brak tętna)?",
+    opts:["21:08:00", "21:15:00", "21:10:00", "21:20:00"],
+    answer:2, 
+    hint:"Śmierć nastąpiła tuż po szczytowym tętnie, a przed panicznym szukaniem hasła prawnego o 21:12."
+  },
+  {
+    desc:"Alibi Antka opiera się na tym, że windykatorzy rzekomo byli wtedy w domu.",
+    log:`[N-CRYPT] "Kruk Finanse" wysyła pakiet.\n[TXT] ??:?? — "Jutro rano wchodzimy po nią..."\n[WATCH] Czas zgonu: 21:10.`,
+    question:"O której godzinie windykatorzy wysłali wiadomość o planowanym zajściu na kolejny dzień?",
+    opts:["21:15", "21:00", "21:05", "20:45"],
+    answer:0, 
+    hint:"Wiadomość z pogróżkami o wejściu JUTRO przyszła po faktycznej śmierci Niki, co obala alibi."
+  },
+  {
+    desc:"Analiza ukrytych zamiarów użytkownika na bazie odzyskanego pliku z kosza.",
+    log:`[SYS] Użytkownik przeniósł plik do Kosza.\n[FILE] Nazwa: notatki.txt\n[TXT] Punkt 2: Zostawić ???????? ???????? na oścież, żeby wyglądało na włamanie.\n[TXT] Punkt 5: Zrzucenie winy.`,
+    question:"Co zaplanowano zrobić z mieszkaniem, aby wyglądało to na włamanie mafii?",
+    opts:["Rozbicie okna", "Spalenie dywanów", "Uszkodzić zamek drzwi", "Otwarty sejf"],
+    answer:2, 
+    hint:"Chodziło o to, by wejście z zewnątrz (złamany zamek) było dla policji oczywistym tropem."
+  },
+  {
+    desc:"Eskalacja napięcia – motyw został wzmocniony na chwilę przed awanturą. Dziennik wskazuje trigger kłótni.",
+    log:`[N-CRYPT] Nika: "Gdzie moje 2000 zł?!"\n[N-CRYPT] Antek: "Kiedyś wybuchnę, przysięgam."\n[DZIENNIK] 21:25 - "Zobaczyła ??????????? z ??????? na moim telefonie..."`,
+    question:"Co dokładnie Nika zobaczyła na telefonie Antka, wchodząc do mieszkania?",
+    opts:["Wiadomości od innej kobiety", "Aplikację kasyna", "Bilety lotnicze", "Zdjęcia z wakacji"],
+    answer:1, 
+    hint:"Zajrzyj do szkicu wiadomości. Zobaczyła aplikację kasyna, gdzie przegrał jej pieniądze."
+  }
+];
+
+// Shuffle all mini-game questions once at init
+MINIGAME_PUZZLES.forEach(p => shuffleOptions(p));
+
+let mgPuzzleIdx=0;
+let mgCorrect=0;
+let mgWrong=0;
+let mgTimer=null;
+let mgTimeLeft=60;
+
+function openMinigame(){
+  mgPuzzleIdx=0;mgCorrect=0;mgWrong=0;
+  MINIGAME_PUZZLES.forEach(p => { p.shuffled = false; shuffleOptions(p); }); // reshuffle
+  const w=makeWindow("mg","DEKRYPTACJA: Logi Smart Home","",{w:620,h:580});
+  renderMgPuzzle(w);
+}
+
+function renderMgPuzzle(w){
+  if(!STATE.windows.mg)return;
+  clearInterval(mgTimer);
+  if(mgPuzzleIdx>=MINIGAME_PUZZLES.length){
+    if(mgCorrect>=3){
+      w.body.innerHTML=`<div class="mg" style="justify-content:center;align-items:center;text-align:center;gap:18px">
+        <div style="color:var(--cyan);font-size:20px;letter-spacing:6px;font-weight:900;text-shadow:0 0 15px var(--cyan)">DEKRYPTACJA ZAKOŃCZONA</div>
+        <div style="color:var(--magenta);font-size:13px">Poziom precyzji: ${mgCorrect}/${MINIGAME_PUZZLES.length}. Oś czasu scalona.</div>
+        <div style="color:var(--text);font-size:14px;margin-top:10px">Odszyfrowane logi domu inteligentnego zostały udostępnione.</div>
+      </div>`;
+      setTimeout(()=>{
+        STATE.logsUnlocked=true;
+        closeWin("mg");
+        renderIcons();
+        toast("SUKCES: Zrekonstruowano oryginalne logi inteligentnego domu.");
+        openLogs();
+        trackObj("logs");
+        renderObjectives();
+      },2200);
+    }else{
+      w.body.innerHTML=`<div class="mg" style="justify-content:center;align-items:center;text-align:center;gap:18px">
+        <div style="color:var(--red);font-size:20px;letter-spacing:6px;font-weight:900;text-shadow:0 0 15px var(--red)">BŁĄD PARSOWANIA DANYCH</div>
+        <div style="color:var(--muted);font-size:13px">Zbyt niska dokładność odczytu: ${mgCorrect}/${MINIGAME_PUZZLES.length}. Wymagane minimum 3.</div>
+        <button style="margin-top:20px;padding:12px 24px;background:var(--magenta);color:#fff;border:none;border-radius:6px;font-size:12px;letter-spacing:4px;font-weight:bold;text-transform:uppercase;cursor:pointer" onclick="retryMg()">RESTART ALGORYTMU</button>
+      </div>`;
+    }
+    return;
+  }
+  mgTimeLeft=60;
+  const p=MINIGAME_PUZZLES[mgPuzzleIdx];
+  const pips=MINIGAME_PUZZLES.map((_,i)=>{
+    let cls="mg-pip";
+    if(i<mgPuzzleIdx)cls+=" done";
+    else if(i===mgPuzzleIdx)cls+=" cur";
+    return `<div class="${cls}"></div>`;
+  }).join("");
+  const opts=p.opts.map((o,i)=>`<button class="mg-opt" onclick="mgAnswer(${i})">${esc(o)}</button>`).join("");
+  w.body.innerHTML=`<div class="mg">
+    <div class="mg-head">REKONSTRUKCJA: Segment ${mgPuzzleIdx+1} / ${MINIGAME_PUZZLES.length}</div>
+    <div class="mg-progress">${pips}</div>
+    <div class="mg-desc">${esc(p.desc)}</div>
+    <div class="mg-puzzle">${p.log.replace(/████████/g,'<span class="corrupt">████████</span>').replace(/██/g,'<span class="corrupt">██</span>').replace(/\?\?\?\?\?\?\?\?/g,'<span class="corrupt">????????</span>').replace(/\?\?:\?\?/g,'<span class="corrupt">??:??</span>')}</div>
+    <div style="font-size:12px;color:var(--magenta);letter-spacing:1px;font-weight:bold">${esc(p.question)}</div>
+    <div class="mg-opts">${opts}</div>
+    <div class="mg-timer" id="mgT">T-${mgTimeLeft}s</div>
+    <div class="mg-status" id="mgStatus">ANALIZUJ OPCJE...</div>
+  </div>`;
+  mgTimer=setInterval(()=>{
+    if(!STATE.windows.mg){clearInterval(mgTimer);return;}
+    mgTimeLeft--;
+    const t=document.getElementById("mgT");
+    if(t){t.textContent="T-"+mgTimeLeft+"s";if(mgTimeLeft<=15)t.classList.add("warn");}
+    if(mgTimeLeft<=0){
+      clearInterval(mgTimer);
+      mgWrong++;
+      const st=document.getElementById("mgStatus");
+      if(st){st.textContent="[ BŁĄD: PRZEKROCZONO CZAS ]";st.style.color="var(--red)";}
+      setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},1000);
+    }
+  },1000);
+}
+
+window.mgAnswer=function(idx){
+  clearInterval(mgTimer);
+  const p=MINIGAME_PUZZLES[mgPuzzleIdx];
+  const opts=document.querySelectorAll(".mg-opt");
+  const st=document.getElementById("mgStatus");
+  if(idx===p.answer){
+    mgCorrect++;
+    if(opts[idx])opts[idx].classList.add("correct");
+    if(st){st.textContent="[ DEKODOWANIE POPRAWNE ]";st.style.color="var(--cyan)";}
+    setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},1000);
+  }else{
+    mgWrong++;
+    if(opts[idx])opts[idx].classList.add("wrong");
+    if(opts[p.answer])opts[p.answer].classList.add("correct");
+    if(st){st.textContent=`[ BŁĄD ] WSKAZÓWKA: ${p.hint}`;st.style.color="var(--magenta)";}
+    setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},1800);
+  }
+};
+
+window.retryMg=function(){
+  mgPuzzleIdx=0;mgCorrect=0;mgWrong=0;
+  MINIGAME_PUZZLES.forEach(p => { p.shuffled = false; shuffleOptions(p); }); // reshuffle
+  renderMgPuzzle(STATE.windows.mg);
+};
+
+function openSnake(){
+  const w=makeWindow("snake","Data-Crawler","",{w:460,h:550});
+  let snakeState="waiting";
+  let px=10,py=10,xv=0,yv=0,trail=[],tail=5,score=0;
+  const GS=18,TC=24;
+  window.killSnake=false;
+  let ax=Math.floor(Math.random()*TC),ay=Math.floor(Math.random()*TC);
+  const render=()=>{
+    w.body.innerHTML=`<div class="snake-wrap">
+      <div class="snake-ui">
+        <span>PAKIETY: <b id="snkScore" style="color:var(--cyan)">${score}</b></span>
+        <span style="color:var(--magenta)">DATA-CRAWLER</span>
+        <span>MAX: <b id="snkBest" style="color:var(--muted)">${window._snakeBest||0}</b></span>
+      </div>
+      <canvas id="snakeCanvas" width="${TC*GS}" height="${TC*GS}"></canvas>
+      <div id="snakeMsg"></div>
+    </div>`;
+    drawFrame();
+  };
+  const drawFrame=()=>{
+    const canvas=document.getElementById("snakeCanvas");
+    if(!canvas)return;
+    const ctx=canvas.getContext("2d");
+    ctx.fillStyle="#05070a";
+    ctx.fillRect(0,0,TC*GS,TC*GS);
+    ctx.fillStyle="rgba(102,252,241,.03)";
+    for(let i=0;i<TC;i++)for(let j=0;j<TC;j++){if((i+j)%2===0)ctx.fillRect(i*GS,j*GS,GS,GS);}
+    trail.forEach((seg,i)=>{
+      const alpha=0.3+0.7*(i/trail.length);
+      ctx.fillStyle=`rgba(102,252,241,${alpha})`;
+      ctx.shadowColor="rgba(102,252,241,.6)";ctx.shadowBlur=10;
+      ctx.fillRect(seg.x*GS+1,seg.y*GS+1,GS-2,GS-2);
+    });
+    ctx.shadowBlur=0;
+    ctx.fillStyle="#ff007f";ctx.shadowColor="rgba(255,0,127,.8)";ctx.shadowBlur=12;
+    ctx.fillRect(ax*GS+2,ay*GS+2,GS-4,GS-4);ctx.shadowBlur=0;
+    if(snakeState==="waiting"){
+      ctx.fillStyle="rgba(5,7,10,.8)";ctx.fillRect(0,0,TC*GS,TC*GS);
+      ctx.fillStyle="#66fcf1";ctx.font="bold 16px Consolas,monospace";ctx.textAlign="center";
+      ctx.fillText("NACIŚNIJ KIERUNEK BY GRAĆ",TC*GS/2,TC*GS/2);
+      ctx.fillStyle="#ff007f";ctx.font="12px Consolas,monospace";
+      ctx.fillText("Pobieraj klastry danych (różowe pola).",TC*GS/2,TC*GS/2+24);
+    }
+    if(snakeState==="over"){
+      ctx.fillStyle="rgba(5,7,10,.9)";ctx.fillRect(0,0,TC*GS,TC*GS);
+      ctx.fillStyle="#ff003c";ctx.font="900 20px Consolas,monospace";ctx.textAlign="center";
+      ctx.fillText("POŁĄCZENIE ZERWANE",TC*GS/2,TC*GS/2-10);
+      ctx.fillStyle="#66fcf1";ctx.font="13px Consolas,monospace";
+      ctx.fillText(`Pakiety: ${score}`,TC*GS/2,TC*GS/2+16);
+      ctx.fillStyle="#667b96";
+      ctx.fillText("Klawisz kierunku aby spróbować ponownie.",TC*GS/2,TC*GS/2+36);
+    }
+  };
+  const keyPush=(e)=>{
+    const map={37:[-1,0],38:[0,-1],39:[1,0],40:[0,1]};
+    if(!map[e.keyCode])return;
+    e.preventDefault(); // Zatrzymuje scroll okna
+    const [nx,ny]=map[e.keyCode];
+    if(nx!==-xv||ny!==-yv){xv=nx;yv=ny;}
+    if(snakeState==="waiting"){snakeState="running";px=Math.floor(TC/2);py=Math.floor(TC/2);trail=[{x:px,y:py}];tail=5;score=0;const s=document.getElementById("snkScore");if(s)s.textContent=score;snkLoop();}
+    if(snakeState==="over"){snakeState="running";px=Math.floor(TC/2);py=Math.floor(TC/2);xv=nx;yv=ny;trail=[{x:px,y:py}];tail=5;score=0;const s=document.getElementById("snkScore");if(s)s.textContent=score;snkLoop();}
+  };
+  
+  if(window._snakeKeyPush){ document.removeEventListener("keydown", window._snakeKeyPush); }
+  window._snakeKeyPush = keyPush;
+  document.addEventListener("keydown", window._snakeKeyPush, {passive: false});
+  
+  const snkLoop=()=>{
+    if(window.killSnake){document.removeEventListener("keydown",window._snakeKeyPush);return;}
+    if(snakeState!=="running"){setTimeout(snkLoop,100);return;}
+    px+=xv;py+=yv;
+    if(px<0)px=TC-1;if(px>=TC)px=0;if(py<0)py=TC-1;if(py>=TC)py=0;
+    const hit=trail.some((s,i)=>i<trail.length-1&&s.x===px&&s.y===py);
+    if(hit){snakeState="over";if(!window._snakeBest||score>window._snakeBest)window._snakeBest=score;drawFrame();return;}
+    trail.push({x:px,y:py});while(trail.length>tail)trail.shift();
+    if(ax===px&&ay===py){tail++;score+=1;const s=document.getElementById("snkScore");if(s)s.textContent=score;do{ax=Math.floor(Math.random()*TC);ay=Math.floor(Math.random()*TC);}while(trail.some(s=>s.x===ax&&s.y===ay));}
+    drawFrame();setTimeout(snkLoop,75);
+  };
+  render();setTimeout(drawFrame,50);
+}
+
+function openTicTacToe(){
+  window.killTTT=false;
+  const w=makeWindow("ttt","Node-Breaker","",{w:390,h:550});
+  let board=Array(9).fill(null);
+  let playerTurn=true;
+  let scores={W:0,L:0,D:0};
+  let difficulty="medium";
+  let gameOver=false;
+
+  function checkWinner(b){
+    const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,x,c] of lines){if(b[a]&&b[a]===b[x]&&b[a]===b[c])return{winner:b[a],line:[a,x,c]};}
+    if(b.every(Boolean))return{winner:"D"};
+    return null;
+  }
+
+  function minimax(b,isMax,depth){
+    const res=checkWinner(b);
+    if(res){if(res.winner==="O")return 10-depth;if(res.winner==="X")return depth-10;return 0;}
+    if(isMax){let best=-Infinity;for(let i=0;i<9;i++){if(!b[i]){b[i]="O";best=Math.max(best,minimax(b,false,depth+1));b[i]=null;}}return best;}
+    else{let best=Infinity;for(let i=0;i<9;i++){if(!b[i]){b[i]="X";best=Math.min(best,minimax(b,true,depth+1));b[i]=null;}}return best;}
+  }
+
+  function aiMove(){
+    if(gameOver||playerTurn)return;
+    const empty=board.map((v,i)=>v?null:i).filter(v=>v!==null);
+    if(!empty.length)return;
+    let idx = empty[Math.floor(Math.random()*empty.length)]; 
+    
+    if(difficulty==="hard"){
+       for(let i of empty){ board[i]="O"; if(checkWinner(board)?.winner==="O"){idx=i; board[i]=null; break;} board[i]=null; }
+       for(let i of empty){ board[i]="X"; if(checkWinner(board)?.winner==="X"){idx=i; board[i]=null; break;} board[i]=null; }
+    } else if(difficulty==="medium"){
+       if(Math.random()>0.5){
+           for(let i of empty){ board[i]="O"; if(checkWinner(board)?.winner==="O"){idx=i; board[i]=null; break;} board[i]=null; }
+       }
+    }
+    
+    board[idx]="O";
+    playerTurn=true;
+    const res=checkWinner(board);
+    if(res){gameOver=true;if(res.winner==="O")scores.L++;else if(res.winner==="D")scores.D++;}
+    render();
+  }
+
+  window._tttClick = function(i){
+    if(gameOver||!playerTurn||board[i])return;
+    board[i]="X";
+    playerTurn=false;
+    const res=checkWinner(board);
+    if(res){gameOver=true;if(res.winner==="X")scores.W++;else if(res.winner==="D")scores.D++;render();return;}
+    render();
+    setTimeout(()=>{if(!window.killTTT)aiMove();},400);
+  };
+
+  window._tttReset = function(){board=Array(9).fill(null);playerTurn=true;gameOver=false;render();};
+  window._tttDiff = function(d){difficulty=d; window._tttReset();};
+
+  function render(){
+    if(window.killTTT)return;
+    const result=checkWinner(board);
+    const winLine=result?.line||[];
+    let status="TWOJA KOLEJ (WIRUS)";
+    if(result){
+      if(result.winner==="X")status="[ SYSTEM PRZEJĘTY ]";
+      else if(result.winner==="O")status="[ ODCZYT ZABLOKOWANY ]";
+      else status="[ REMIS SYSTEMOWY ]";
+    }else if(!playerTurn)status="ZAPORA OBLICZA...";
+    
+    const cells=board.map((v,i)=>{
+      const wl=winLine.includes(i)?" win-line":"";
+      const icon = v==="X"?"🦠":v==="O"?"🛡️":"";
+      return `<div class="ttt-cell${v?" "+v:""}${wl}" onclick="window._tttClick(${i})">${icon}</div>`;
+    }).join("");
+    w.body.innerHTML=`<div class="ttt-wrap">
+      <div class="ttt-header">NODE-BREAKER</div>
+      <div class="ttt-score"><span>Przejęte: <b>${scores.W}</b></span><span>Zablokowane: <b style="color:var(--magenta)">${scores.L}</b></span></div>
+      <div class="ttt-diff">
+        <button class="ttt-btn${difficulty==="easy"?" active":""}" onclick="window._tttDiff('easy')">LVL.1</button>
+        <button class="ttt-btn${difficulty==="medium"?" active":""}" onclick="window._tttDiff('medium')">LVL.2</button>
+        <button class="ttt-btn${difficulty==="hard"?" active":""}" onclick="window._tttDiff('hard')">LVL.3</button>
+      </div>
+      <div class="ttt-board">${cells}</div>
+      <div class="ttt-status" style="color:${result?result.winner==="X"?'var(--cyan)':result.winner==="O"?'var(--magenta)':'var(--text)':'#fff'}">${status}</div>
+      <button class="ttt-btn" onclick="window._tttReset()">RESTART WĘZŁÓW</button>
+    </div>`;
+  }
+  render();
+}
+
+function openRPS(){
+  const w=makeWindow("rps","Sys-Clash","",{w:460,h:540});
+  let scores={W:0,L:0,D:0};
+  let choosing=true;
+  // DDoS (0) niszczy Firewall (1). Firewall (1) blokuje Proxy (2). Proxy (2) omija DDoS (0).
+  const choices=["💥","🛡️","🎭"];
+  const names=["DDoS","Firewall","Proxy"];
+  
+  window._rpsPlay = function(pi){
+    if(!choosing)return;
+    choosing=false;
+    const ci=Math.floor(Math.random()*3);
+    let result,rclass;
+    if(pi===ci){result="ZDERZENIE PAKIETÓW";rclass="draw";scores.D++;}
+    else if((pi===0&&ci===1)||(pi===1&&ci===2)||(pi===2&&ci===0)){result="ATAK UDANY!";rclass="win";scores.W++;}
+    else{result="ODRZUCONO";rclass="lose";scores.L++;}
+    render(pi,ci,result,rclass);
+    setTimeout(()=>{choosing=true;render();},1800);
+  };
+  
+  window._rpsReset = function(){scores={W:0,L:0,D:0};choosing=true;render();};
+
+  function render(pi,ci,result,rclass){
+    if(!STATE.windows.rps) return;
+    const ph=pi!==undefined?choices[pi]:"❓";
+    const ch=ci!==undefined?choices[ci]:"❓";
+    const pName=pi!==undefined?names[pi]:"Oczekuje";
+    const cName=ci!==undefined?names[ci]:"System";
+    const res=result?`<div class="rps-result ${rclass||''}">${result}</div>`:`<div class="rps-result"></div>`;
+    const btns=choices.map((c,i)=>`<button class="rps-choice" onclick="window._rpsPlay(${i})" ${!choosing?"disabled":""}>${c}</button>`).join("");
+    w.body.innerHTML=`<div class="rps-wrap">
+      <div class="ttt-header">DDoS 💥 > Firewall 🛡️ > Proxy 🎭 > DDoS 💥</div>
+      <div class="rps-score">
+        <span class="rs">Przełamania <b>${scores.W}</b></span>
+        <span class="ds">Kolizje <b>${scores.D}</b></span>
+        <span class="ls">Blokady <b>${scores.L}</b></span>
+      </div>
+      <div class="rps-arena">
+        <div class="rps-side">
+          <div class="rps-hand${!choosing?" shake":""}">${ph}</div>
+          <div class="rps-label">${pName}</div>
+        </div>
+        <div class="rps-vs">//</div>
+        <div class="rps-side">
+          <div class="rps-hand${!choosing?" shake":""}">${ch}</div>
+          <div class="rps-label">${cName}</div>
+        </div>
+      </div>
+      ${res}
+      <div class="rps-choices">${btns}</div>
+      <button class="ttt-btn" onclick="window._rpsReset()">WYCZYŚĆ LOGI</button>
+    </div>`;
+  }
+  render();
+}
+
+function openVerdict(){
+  STATE.verdictStage=1;
+  STATE.verdictWho=null;
+  STATE.verdictHow=null;
+  document.getElementById("vdStage1").classList.add("active");
+  document.getElementById("vdStage2").classList.remove("active");
+  document.getElementById("vdStage3").classList.remove("active");
+  document.getElementById("vdNextBtn").style.display="";
+  document.getElementById("vdSubmitBtn").style.display="none";
+  document.getElementById("vdBreadcrumb").textContent="Etap 1 z 3 — Wybór sprawcy";
+  document.querySelectorAll('input[name="who"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="how"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="why"]').forEach(r=>r.checked=false);
+  document.getElementById("verdictModal").classList.add("on");
+}
+function closeVerdict(){document.getElementById("verdictModal").classList.remove("on");}
+
+window.verdictNext=function(){
+  if(STATE.verdictStage===1){
+    const sel=document.querySelector('input[name="who"]:checked');
+    if(!sel)return;
+    STATE.verdictWho=sel.value;
+    STATE.verdictStage=2;
+    document.getElementById("vdStage1").classList.remove("active");
+    document.getElementById("vdStage2").classList.add("active");
+    document.getElementById("vdBreadcrumb").innerHTML=`Etap 2 z 3 — Mechanika zbrodni &nbsp;|&nbsp; <span class="sel">KTO: ${esc(sel.closest("label").querySelector("span").textContent)}</span>`;
+  }else if(STATE.verdictStage===2){
+    const sel=document.querySelector('input[name="how"]:checked');
+    if(!sel)return;
+    STATE.verdictHow=sel.value;
+    STATE.verdictStage=3;
+    document.getElementById("vdStage2").classList.remove("active");
+    document.getElementById("vdStage3").classList.add("active");
+    document.getElementById("vdNextBtn").style.display="none";
+    document.getElementById("vdSubmitBtn").style.display="";
+    document.getElementById("vdBreadcrumb").innerHTML=`Etap 3 z 3 — Motyw działania &nbsp;|&nbsp; <span class="sel">Fakty utwierdzone</span>`;
+  }
+};
+
+window.submitVerdict=function(){
+  if(STATE.endGameDone)return;
+  const whyNode=document.querySelector('input[name="why"]:checked');
+  if(!whyNode)return;
+  const why=whyNode.value;
+  const who=STATE.verdictWho;
+  const how=STATE.verdictHow;
+  STATE.endGameDone=true;
+  closeVerdict();
+
+  const WIN=who==="antek"&&how==="fight"&&why==="escalation";
+  const WRONG_WHO_KRUK=who==="kruk";
+  const WRONG_WHO_KAMIL=who==="kamil";
+
+  let stamp,txt,cls;
+
+  if(WIN){
+    stamp="SPRAWA ZAMKNIĘTA - PRAWDA ODKRYTA";cls="win";
+    txt=`Złożyłeś to w całość.\n\nTo nie windykatorzy "Kruka" dopuścili się najścia. Choć Antek zaciągnął ogromne długi na poczet swoich gier w BetCrypto, ich groźba przyszła o 21:15. Wtedy tętno Niki na SmartWatchu wynosiło zero już od pełnych pięciu minut (21:10).\n\nAntek wrócił do domu, a Nika odkryła aplikację kasyna w jego telefonie. To ona stała się zapalnikiem kłótni. Doszło do szarpaniny (skok decybeli o 21:05), pchnął ją, a ofiara uderzyła głową o kant szklanego stolika (21:08). Przerażony, zaczął googlować jak usunąć ślady i jakie są konsekwencje prawne. Potem wyrzucił swój plan do Kosza, by w panice udawać atak z zewnątrz (wyłamany zamek w drzwiach).\n\nTwoja wnikliwa praca z logami udowodniła, że alibi jest fałszywe. Zostanie ukarany. Sprawiedliwości stało się zadość.`;
+  }else if(WRONG_WHO_KRUK){
+    stamp="RAPORT ODRZUCONY - BŁĄD PROCESOWY";cls="lose";
+    txt=`Wpadłeś w pułapkę Antka.\n\nZdecydowałeś oskarżyć ludzi Kruka. Policja aresztuje windykatorów na podstawie pogróżek z komunikatora, nie patrząc dokładnie na logi.\n\nMiesiąc później adwokaci wykazują, że o godzinie 21:10, w momencie zatrzymania akcji serca ofiary, bandyci byli widziani na monitoringu w innej części miasta. Wiadomość od nich została wysłana dopiero o 21:15. Oskarżenie upada.\n\nAntek wyjeżdża za granicę z pieniędzmi z ubezpieczenia. Kupił sobie wolność swoim kłamstwem i wyłamanym zamkiem, a ty to przeoczyłeś. Zawiodłeś.`;
+  }else if(WRONG_WHO_KAMIL){
+    stamp="NIEPRAWIDŁOWA KORELACJA FAKTÓW";cls="lose";
+    txt=`Oskarżyłeś Kamila.\n\nTo karygodny błąd. Kamil próbował jedynie uchronić swojego przyjaciela skryptem czyszczącym (Wipe). Nie było go w mieszkaniu podczas tragedii. Ich korespondencja z 21:30 potwierdza to ostatecznie, gdy Kamil w szoku pyta: "O czym ty gadasz?! Kto?!".\n\nPrawdziwy sprawca buduje swoje alibi na bazie windykatorów, a twoje bezpodstawne oskarżenia wobec osoby trzeciej pogrążają śledztwo w chaosie. Śledczy ignorują logi czasowe. Prawda przepada na zawsze.`;
+  }else if(who==="unknown"){
+    stamp="ANALIZA NIEKOMPLETNA";cls="lose";
+    txt=`Zatwierdziłeś raport z wynikiem niemożliwym do weryfikacji.\n\nTo oznacza kapitulację. Prokuratura przegląda ten bezsensowny raport i z powodu braku spójności oskarżony wychodzi za kaucją.\n\nTymczasem ukryty plan z Kosza – wyłamany zamek, zrzucenie winy – zadziałał idealnie na opinię publiczną. Ślady na pulpicie, historia przeglądarki, powiadomienia medyczne... to wszystko było na wyciągnięcie ręki. Ty po prostu nie potrafiłeś tego odczytać.`;
+  }else{
+    stamp="SPRZECZNE DANE W RAPCIE";cls="lose";
+    txt=`Twoje wnioski kompletnie się wykluczają.\n\nSędzia odrzuca Twoją ocenę. Motyw nie zgadza się ze sposobem działania lub wybranym oskarżonym. Brak logiki oznacza wyrzucenie materiału cyfrowego z sali sądowej.\n\nMiałeś na dłoni wszystko: kradzież pieniędzy (BetCrypto), historię kłótni w szkicach, i wreszcie zapis z inteligentnego domu z 21:10. Zamiast tego zaoferowałeś czysty chaos. Prawdziwy sprawca opuścił budynek bez zarzutów. Zbrodnia pozostanie bezkarna.`;
+  }
+  showEnding(who+how+why,stamp,cls==="win"?"win":"lose",txt);
+};
+
+window.showFinalThanks = function() {
+  document.getElementById("desktop").style.display = "none";
+  document.getElementById("verdictModal").classList.remove("on");
+  document.getElementById("ending").classList.remove("on");
+
+  const finalScreen = document.createElement("div");
+  finalScreen.style.cssText = "position:fixed;inset:0;background:#020305;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--cyan);font-family:Consolas,monospace;text-align:center;opacity:0;transition:opacity 3s ease-in-out;";
+  finalScreen.innerHTML = `
+      <div style="font-size:36px;font-weight:900;letter-spacing:15px;color:var(--magenta);text-shadow:0 0 25px var(--magenta);margin-bottom:30px;">SYSTEM SHUTDOWN</div>
+      <div style="font-size:16px;color:var(--text);letter-spacing:4px;max-width:700px;line-height:2.2;text-shadow:0 0 10px rgba(102,252,241,0.3)">DZIĘKUJĘ ZA ZAGRANIE WE WCZESNĄ WERSJĘ!</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:60px;letter-spacing:8px;">HOWLORA.OS // KRYMINALISTYKA CYFROWA</div>
+  `;
+  document.body.appendChild(finalScreen);
+
+  setTimeout(() => {
+      finalScreen.style.opacity = "1";
+  }, 200);
+};
+
+function showEnding(key,stamp,winLose,txt){
+  const e=document.getElementById("ending");
+  const s=document.getElementById("endStamp");
+  const t=document.getElementById("endTxt");
+  const b=document.getElementById("endBtns");
+  
+  s.textContent=stamp;
+  s.className="stamp "+(winLose==="win"?"win":"lose");
+  t.innerHTML='<span class="crt"></span>';
+  
+  if(winLose==="win"){
+    b.innerHTML=`<button class="end-btn" onclick="window.showFinalThanks()">ZAKOŃCZ ŚLEDZTWO (KONIEC GRY)</button>`;
+  } else {
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">ZAINICJUJ REBOOT SYSTEMU</button>`;
+  }
+  
+  e.classList.add("on");
+  let i=0;
+  const tick=()=>{
+    if(i>=txt.length)return;
+    i++;
+    t.innerHTML=txt.slice(0,i).replace(/\n/g,"<br>")+'<span class="crt"></span>';
+    setTimeout(tick,txt[i-1]==="\n"?220:15);
+  };
+  setTimeout(tick,1000);
+}
+</script>
+</body>
+</html>
