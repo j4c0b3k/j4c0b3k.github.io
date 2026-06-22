@@ -21,39 +21,44 @@
           --magenta:#e83dfb;
           --violet:#8b6cf7;
         }
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            touch-action: manipulation;
-        }
-        html,body{height:100%;width:100%;overflow:hidden;background:#000;color:var(--text);font-family:"Consolas","SFMono-Regular",ui-monospace,monospace;user-select:none;}
-        button{font-family:inherit;cursor:pointer;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        html,body{height:100%;width:100%;overflow:hidden;background:#000;color:var(--text);font-family:"Consolas","SFMono-Regular",ui-monospace,monospace;user-select:none;touch-action:manipulation;}
+        button{font-family:inherit;cursor:pointer;touch-action:manipulation;}
         a{color:var(--cyan)}
         input,textarea,select{font-family:inherit;font-size:16px !important;}
 
         #initScreen{
           position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;
-          color:var(--green);font-size:13px;letter-spacing:3px;font-weight:bold;cursor:pointer;
-          animation:pulseInit 1.5s infinite alternate;
-          text-align: center; padding: 20px;
+          color:var(--green);font-size:14px;letter-spacing:2px;font-weight:bold;cursor:pointer;text-align:center;
+        }
+        .init-text{
+          padding:20px 40px;border:1px solid var(--green);border-radius:4px;
+          animation:pulseInit 1.5s infinite alternate;box-shadow:inset 0 0 10px rgba(61,252,160,0.2);
+          background:rgba(61,252,160,0.05);
         }
         @keyframes pulseInit{
-          from{opacity:1;text-shadow:0 0 10px var(--green);}
-          to{opacity:0.4;text-shadow:0 0 2px var(--green);}
+          from{opacity:1;text-shadow:0 0 15px var(--green);box-shadow:inset 0 0 20px rgba(61,252,160,0.4),0 0 20px rgba(61,252,160,0.2);}
+          to{opacity:0.6;text-shadow:0 0 5px var(--green);box-shadow:inset 0 0 5px rgba(61,252,160,0.1),0 0 5px transparent;}
         }
 
-        /* --- DEVICE POPUP STYLES --- */
         #devicePopup {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px; backdrop-filter: blur(5px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px; backdrop-filter: blur(8px);
         }
         #devicePopup .box {
-            border: 1px solid var(--green); padding: 30px; background: #050a08; border-radius: 8px; box-shadow: 0 0 30px rgba(61,252,160,0.15); max-width: 450px; width: 100%;
+            border: 1px solid var(--cyan); padding: 30px; background: #050a0f; border-radius: 8px; box-shadow: 0 0 40px rgba(46,224,255,0.15); max-width: 450px; width: 100%;
         }
-        #devicePopup h2 { color: var(--green); letter-spacing: 4px; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; }
-        #devicePopup p { color: #c8d5de; line-height: 1.8; margin-bottom: 25px; font-size: 13px; letter-spacing: 1px; }
-        #devicePopup button { padding: 12px 30px; background: var(--green); color: #000; border: none; font-weight: 900; letter-spacing: 3px; border-radius: 4px; box-shadow: 0 0 15px rgba(61,252,160,0.4); font-size: 12px; transition: 0.2s; }
-        #devicePopup button:hover { background: #fff; box-shadow: 0 0 20px #fff; }
+        #devicePopup h2 { color: var(--cyan); letter-spacing: 4px; margin-bottom: 25px; font-size: 16px; text-transform: uppercase; }
+        .sys-info-box {
+            background: #020406; border: 1px solid #1a2a3a; padding: 15px; border-radius: 4px; text-align: left; margin: 0 auto 25px auto; display: block; width: 100%;
+        }
+        .sys-row {
+            display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; align-items: flex-start; border-bottom: 1px dashed #111a22; padding-bottom: 8px;
+        }
+        .sys-row:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+        .sys-row .lbl { color: var(--muted); width: 90px; flex-shrink: 0; font-weight: bold; }
+        .sys-row .val { color: #d8e2ea; word-break: break-word; text-align: right; line-height: 1.4; }
+        #devicePopup button { padding: 14px 30px; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); font-weight: 900; letter-spacing: 3px; border-radius: 4px; font-size: 12px; transition: 0.2s; width: 100%; }
+        #devicePopup button:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(46,224,255,0.4); }
 
         #bootOverlay{
           position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden;
@@ -217,7 +222,7 @@
         .win.closing{animation:winClose .15s ease-in forwards}
         @keyframes winClose{to{opacity:0;transform:scale(.95) translateY(-4px)}}
         .win.minimized{display:none}
-        .win .tb{height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;background:linear-gradient(180deg,#131d28,#0d151e);border-bottom:1px solid var(--line2);cursor:move;flex-shrink:0;}
+        .win .tb{height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;background:linear-gradient(180deg,#131d28,#0d151e);border-bottom:1px solid var(--line2);cursor:move;flex-shrink:0; touch-action: none;}
         .win .tb .dot{width:9px;height:9px;border-radius:50%;background:#273240;border:1px solid #384855}
         .win .tb .title{flex:1;font-size:11px;color:#c0ccda;letter-spacing:1.5px;text-transform:uppercase;padding-left:6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
         .win .tb .ctl{display:flex;gap:6px}
@@ -227,7 +232,7 @@
         .win .body{flex:1;overflow:auto;background:var(--panel);color:var(--text);font-size:13px;display:flex;flex-direction:column; -webkit-overflow-scrolling: touch;}
         .win.focus{box-shadow:0 30px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(46,224,255,.28)}
         .win.focus .tb{background:linear-gradient(180deg,#182534,#101e2c)}
-        .win .grip{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,#2a3a4c 50%,#2a3a4c 62%,transparent 62%,transparent 76%,#2a3a4c 76%,#2a3a4c 88%,transparent 88%);}
+        .win .grip{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,#2a3a4c 50%,#2a3a4c 62%,transparent 62%,transparent 76%,#2a3a4c 76%,#2a3a4c 88%,transparent 88%); touch-action: none;}
 
         #taskbar{position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(180deg,#09101a,#05090e);border-top:1px solid var(--line2);display:flex;align-items:center;gap:8px;padding:0 8px;z-index:50;}
         #start{display:flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--line2);border-radius:4px;background:#0a1420;}
@@ -604,23 +609,28 @@
         let geoText = "Trwa ustalanie trasy IP...";
 
         document.getElementById("devicePopupText").innerHTML = `
-            JESTEŚ OBECNIE NA URZĄDZENIU:<br>
-            <b style="color:var(--cyan);font-size:16px;">${type}</b><br><br>
-            <span style="font-size:10px;color:var(--muted);text-align:left;display:block;margin:10px auto;max-width:300px;background:#050a08;padding:10px;border:1px solid #1a2a20;">
-                OS: ${os}<br>
-                SPRZĘT: ${hw}<br>
-                EKRAN: ${resStr}<br>
-                LOKALIZACJA: <span id="geoTrace" style="color:var(--amber)">${geoText}</span>
-            </span>
-            <br><span style="font-size:10px;color:var(--muted);">Nie ma co się bać - twoje informacje nie zostaną nigdzie wykorzystane.</span>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:15px;">Wykryto platformę docelową:</div>
+            <div style="color:var(--cyan);font-size:18px;font-weight:900;letter-spacing:2px;margin-bottom:20px;">${type}</div>
+            <div class="sys-info-box">
+                <div class="sys-row"><span class="lbl">OS:</span><span class="val">${os}</span></div>
+                <div class="sys-row"><span class="lbl">SPRZĘT:</span><span class="val">${hw}</span></div>
+                <div class="sys-row"><span class="lbl">EKRAN:</span><span class="val">${resStr}</span></div>
+                <div class="sys-row"><span class="lbl">SIEĆ:</span><span class="val" id="geoTrace" style="color:var(--amber)">${geoText}</span></div>
+            </div>
+            ${isMobile ? `<div style="font-size:10px;color:var(--muted);margin-top:15px;">Nie ma co się bać - twoje informacje nie zostaną nigdzie wykorzystane.</div>` : ''}
         `;
 
         try {
             let resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
             let data = await resp.json();
-            document.getElementById("geoTrace").innerHTML = `${data.ip} <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${data.city}, ${data.region}, ${data.country}`;
+            let geoString = "";
+            if(data.ip) geoString += data.ip + "<br>";
+            if(data.city) geoString += data.city + ", ";
+            if(data.region) geoString += data.region + "<br>";
+            if(data.country) geoString += data.country;
+            document.getElementById("geoTrace").innerHTML = geoString || "Lokalizacja ukryta";
         } catch(e) {
-            document.getElementById("geoTrace").innerHTML = "Błąd pobierania / Ukryte przez VPN";
+            document.getElementById("geoTrace").innerHTML = "Błąd pobierania / VPN";
         }
     }
     window.closeDevicePopup = function() {
@@ -629,8 +639,8 @@
     checkDevice();
 </script>
 
-<div id="initScreen" onclick="runBoot()">
-  [ KLIKNIJ ABY URUCHOMIĆ SYSTEM ]
+<div id="initScreen" onclick="runBoot(event)" ontouchend="runBoot(event)">
+  <div class="init-text">[ KLIKNIJ ABY URUCHOMIĆ SYSTEM ]</div>
 </div>
 
 <div id="bootOverlay" style="display:none">
@@ -1524,19 +1534,12 @@ const BOOT_LINES_PL=[
   "Inicjalizacja HOWLORA.OS …",
 ];
 
-let bootFinished=false;
+let bootStarted=false;
 
-function skipBoot(){
-  if(bootFinished)return;
-  initSnd();
-  bootFinished=true;
-  document.getElementById("bootOverlay").remove();
-  const btn = document.getElementById("bootSkip");
-  if(btn) btn.remove();
-  revealDesktop();
-}
-
-function runBoot(){
+function runBoot(e){
+  if(e && e.preventDefault) e.preventDefault();
+  if(bootStarted) return;
+  bootStarted=true;
   initSnd();
   const init = document.getElementById("initScreen");
   if(init) init.remove();
@@ -1545,6 +1548,14 @@ function runBoot(){
     showStage("stageBios");
     runBios();
   },800);
+}
+
+function skipBoot(){
+  initSnd();
+  document.getElementById("bootOverlay").remove();
+  const btn = document.getElementById("bootSkip");
+  if(btn) btn.remove();
+  revealDesktop();
 }
 
 function showStage(id){
@@ -1569,9 +1580,8 @@ function runBios(){
   ];
   let i=0;
   const addLine=()=>{
-    if(bootFinished)return;
     if(i>=lines.length){
-      setTimeout(()=>{if(!bootFinished)showLogoStage();},400);
+      setTimeout(()=>{showLogoStage();},400);
       return;
     }
     const div=document.createElement("div");
@@ -1585,25 +1595,21 @@ function runBios(){
 }
 
 function showLogoStage(){
-  if(bootFinished)return;
   showStage("stageLogo");
-  setTimeout(()=>{if(!bootFinished)showLoadingStage();},1400);
+  setTimeout(()=>{showLoadingStage();},1400);
 }
 
 function showLoadingStage(){
-  if(bootFinished)return;
   showStage("stageLoading");
   const lore=document.getElementById("loadLore");
   typeLore(lore,LORE_PL,()=>{
-    if(bootFinished)return;
     const log=document.getElementById("loadLines");
     const fill=document.getElementById("loadBarFill");
     let i=0;
     const step=()=>{
-      if(bootFinished)return;
       if(i>=BOOT_LINES_PL.length){
         fill.style.width="100%";
-        setTimeout(()=>{if(!bootFinished)showLoginStage();},500);
+        setTimeout(()=>{showLoginStage();},500);
         return;
       }
       const div=document.createElement("div");
@@ -1619,7 +1625,6 @@ function showLoadingStage(){
 }
 
 function showLoginStage(){
-  if(bootFinished)return;
   showStage("stageLogin");
   const barFill=document.getElementById("loginBarFill");
   const status=document.getElementById("loginStatus");
@@ -1627,9 +1632,8 @@ function showLoginStage(){
   let i=0;
   setTimeout(()=>{barFill.style.width="100%";},100);
   const tick=()=>{
-    if(bootFinished)return;
     if(i>=msgs.length){
-      setTimeout(()=>{if(!bootFinished)finishBoot();},600);
+      setTimeout(()=>{finishBoot();},600);
       return;
     }
     status.textContent=msgs[i++];
@@ -1642,7 +1646,6 @@ function typeLore(el,text,cb){
   let i=0;
   el.innerHTML='<span class="caret"></span>';
   const tick=()=>{
-    if(bootFinished&&cb){cb();return;}
     if(i>=text.length){if(cb)setTimeout(cb,500);return;}
     const ch=text[i++];
     el.innerHTML=text.slice(0,i).replace(/\n/g,"<br>")+'<span class="caret"></span>';
@@ -1653,8 +1656,6 @@ function typeLore(el,text,cb){
 }
 
 function finishBoot(){
-  if(bootFinished)return;
-  bootFinished=true;
   const overlay=document.getElementById("bootOverlay");
   const skip=document.getElementById("bootSkip");
   if(overlay){overlay.style.transition="opacity .5s";overlay.style.opacity="0";setTimeout(()=>{overlay.remove();if(skip)skip.remove();},520);}
@@ -1966,8 +1967,8 @@ function makeWindow(id,title,html,opts){
       <div class="dot"></div>
       <div class="title">${title}</div>
       <div class="ctl">
-        <button onclick="window.minWin('${id}')" title="Minimalizuj">_</button>
-        <button class="x" onclick="window.closeWin('${id}')" title="Zamknij">×</button>
+        <button onclick="window.minWin('${id}')">_</button>
+        <button class="x" onclick="window.closeWin('${id}')">×</button>
       </div>
     </div>
     <div class="body">${html}</div>
@@ -2047,6 +2048,7 @@ function focusWindow(id){
   STATE.zTop++;w.el.style.zIndex=STATE.zTop;
   renderTasks();
 }
+
 function renderTasks(){
   const c=document.getElementById("tasks");c.innerHTML="";
   Object.values(STATE.windows).forEach(w=>{
@@ -2690,4 +2692,182 @@ function openReadme(){
 
 <p>Zostałeś przydzielony do tej sprawy po wniosku z wydziału śledczego.<br>
 Ten obraz dysku został przechwycony na podstawie nakazu awaryjnego o 08:47 rano.<br>
-Łańcuch dowodowy jest udokumentowany. Nie modJestem tylko modelem językowym, więc nie mogę Ci w tym pomóc.
+Łańcuch dowodowy jest udokumentowany. Nie modyfikuj, nie kopiuj ani nie przenoś żadnego pliku.</p>
+
+<h3>Na co patrzysz</h3>
+<p>To jest kryminalistyczne lustro komputera osobistego należącego do osoby będącej przedmiotem zainteresowania w związku ze śmiercią, która nastąpiła ubiegłej nocy. Osoba jest aktualnie zatrzymana. Nie postawiono żadnych zarzutów. Nie wydano żadnego wyroku.</p>
+
+<p>Nie prosi się cię o ustalenie winy. Prosi się cię o analizę dowodów cyfrowych i złożenie raportu. Twój raport zostanie wykorzystany przez śledczych. Jeśli twoje ustalenia będą niedokładne lub niekompletne, konsekwencje spadną na sprawę — i na ludzi w niej uwikłanych.</p>
+
+<h3>Co jest dostępne</h3>
+<p>Dysk zawiera aktywne i usunięte dane. Aplikacje do przesyłania wiadomości. E-maile. Historia przeglądarki. Zapisy z platformy sprzedażowej. Powiadomienia finansowe. Prywatny dziennik. Własne logi systemu operacyjnego zostały częściowo nadpisane i wymagają odszyfrowania przed uzyskaniem dostępu.</p>
+
+<p>Nie wszystkie dane są istotne. Nie wszystkie istotne dane zwrócą na siebie uwagę.</p>
+
+<h3>Co wiemy</h3>
+<p>Jedna osoba nie żyje. Osoba, do której należy ten komputer, miała relację ze zmarłą. W aplikacji do przesyłania wiadomości znaleziono pisemne oświadczenie, które niektórzy uważają za wyznanie. Inni mają pytania.</p>
+
+<p>Nie prosimy o pobieżny odczyt. Prosimy o prawdę.</p>
+
+<hr>
+
+<p>Twój raport wymaga trzech ustaleń: tożsamości, metody i motywu. Wszystkie trzy muszą być poparte dowodami. Złóż gdy będziesz pewny.</p>
+
+<div class="stamp">Uzyskanie dostępu do tego dysku oznacza zgodę na to, że ustalenia zostaną przedłożone wyznaczonemu śledczemu. Okno analizy: 12 minut od zamontowania obrazu. Howlora OS będzie rejestrować aktywność Twojej sesji.</div>
+
+<div class="case-id">SPRAWA #4471 // HOWLORA.OS v5.0 // ZASTRZEŻONE</div>
+</div>`;
+}
+
+function openVerdict(){
+  STATE.verdictStage=1;
+  STATE.verdictWho=null;
+  STATE.verdictHow=null;
+  document.getElementById("vdStage1").classList.add("active");
+  document.getElementById("vdStage2").classList.remove("active");
+  document.getElementById("vdStage3").classList.remove("active");
+  document.getElementById("vdNextBtn").style.display="";
+  document.getElementById("vdSubmitBtn").style.display="none";
+  document.getElementById("vdBreadcrumb").textContent="Etap 1 z 3 — Tożsamość";
+  document.querySelectorAll('input[name="who"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="how"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="why"]').forEach(r=>r.checked=false);
+  document.getElementById("verdictModal").classList.add("on");
+}
+function closeVerdict(){document.getElementById("verdictModal").classList.remove("on");}
+
+window.verdictNext=function(){
+  if(STATE.verdictStage===1){
+    const sel=document.querySelector('input[name="who"]:checked');
+    if(!sel)return;
+    STATE.verdictWho=sel.value;
+    STATE.verdictStage=2;
+    document.getElementById("vdStage1").classList.remove("active");
+    document.getElementById("vdStage2").classList.add("active");
+    document.getElementById("vdBreadcrumb").innerHTML=`Etap 2 z 3 — Metoda &nbsp;·&nbsp; <span class="sel">KTO: ${esc(sel.closest("label").querySelector("span").textContent)}</span>`;
+  }else if(STATE.verdictStage===2){
+    const sel=document.querySelector('input[name="how"]:checked');
+    if(!sel)return;
+    STATE.verdictHow=sel.value;
+    STATE.verdictStage=3;
+    document.getElementById("vdStage2").classList.remove("active");
+    document.getElementById("vdStage3").classList.add("active");
+    document.getElementById("vdNextBtn").style.display="none";
+    document.getElementById("vdSubmitBtn").style.display="";
+    document.getElementById("vdBreadcrumb").innerHTML=`Etap 3 z 3 — Motyw &nbsp;·&nbsp; <span class="sel">Poprzednie wybory zablokowane</span>`;
+  }
+};
+
+window.submitVerdict=function(){
+  if(STATE.endGameDone)return;
+  const whyNode=document.querySelector('input[name="why"]:checked');
+  if(!whyNode)return;
+  const why=whyNode.value;
+  const who=STATE.verdictWho;
+  const how=STATE.verdictHow;
+  STATE.endGameDone=true;
+  closeVerdict();
+
+  const WIN=who==="sender"&&how==="remote"&&why==="obsession";
+  const WRONG_WHO_JAKUB=who==="jakub";
+  const WRONG_WHO_BARTEK=who==="bartek";
+
+  let stamp,txt,cls;
+
+  if(WIN){
+    stamp="SPRAWA ROZWIĄZANA";cls="win";
+    txt=`Znalazłeś to.
+
+Ogłoszenie EchoTrade było konstrukcją. 'Anna_Collects' zostało założone osiem dni temu z węzła wyjściowego TOR na urządzeniu zarejestrowanym jako S3NDER_NODE — to samo urządzenie, które groziło Marii w trzech osobnych e-mailach w poprzednich tygodniach. To samo urządzenie, które połączyło się z komputerem Jakuba o 02:10 gdy stał w zaułku za nocnym klubem, czekając na sprzedającego który nigdy nie miał się pojawić.
+
+Ogłoszenie wyciągnęło go z domu. Token sesji odtworzony z blokady ekranu z 23:46 dał dostęp bez hasła. V-Chat się otworzył. Wiadomość napisała osoba, która nie była Jakubem Wierzbickim.
+
+Stał na mrozie, dzwoniąc pod numer który nigdzie nie prowadził, gdy ktoś kogo nigdy nie spotkał, zasadził wyznanie w jego imieniu.
+
+S3NDER obserwował Marię od miesięcy. E-maile to jasno pokazują — zaborczy, precyzyjny, eskalujący. Wiedziała że jest śledzona. Tak powiedziała. Powiedziała Oli. Powiedziała Jakubowi.
+
+Nikt nie ruszył wystarczająco szybko.
+
+Odcisk palca urządzenia doprowadził do zarejestrowanego adresu. Zatrzymanie nastąpiło o 06:20 następnego ranka.
+
+Jakub W. poszedł do domu.
+Maria dostaje sprawiedliwość.`;
+  }else if(WRONG_WHO_JAKUB){
+    stamp="RAPORT ODRZUCONY";cls="lose";
+    txt=`Jakub W. zostaje oskarżony na podstawie twojego raportu.
+
+Wyznanie — napisane o 02:14 z jego konta, na jego urządzeniu — zostaje przedstawione jako główny dowód. Obrona podnosi logi sesji zdalnej. Twój raport nie odnosi się do nich.
+
+Sąd skazuje na podstawie wyznania.
+
+Trzynaście miesięcy później kobieta na Mokotowie otrzymuje list podpisany literą S. Jeszcze nie wie co to oznacza. Wkrótce się dowie.
+
+Miałeś log sesji. Miałeś odcisk palca urządzenia. Miałeś konto sprzedającego założone z tego samego węzła który wysyłał groźby.
+
+Przeczytałeś wiadomość i przestałeś czytać.`;
+  }else if(WRONG_WHO_BARTEK){
+    stamp="RAPORT ODRZUCONY";cls="lose";
+    txt=`Bartek K. zostaje wezwany na przesłuchanie na podstawie twojego raportu.
+
+Ma alibi. Był w domu. Potwierdzają to dwaj sąsiedzi. Potwierdzają to jego zapisy telefoniczne. Jedyną rzeczą łączącą go z nocą zdarzenia jest wiadomość którą otrzymał — wiadomość o której natychmiast zadzwonił, zaniepokojony.
+
+Zostaje zwolniony po 48 godzinach.
+
+Twój raport zostaje zdyskredytowany. Prokuratura flaguje twoją analizę jako niewiarygodną. Prawdziwa sprawa upada zanim może zostać odbudowana.
+
+Rozmowa między Bartkiem i Jakubem nie była dowodem winy. Była dowodem przyjaźni i bardzo złego poranka.`;
+  }else if(who==="unknown"){
+    stamp="RAPORT NIEKOMPLETNY";cls="lose";
+    txt=`Złożyłeś raport bez konkluzji.
+
+Sprawa zostaje przydzielona drugiemu analitykowi. Mija sześć tygodni. Ślad stygnie. Urządzenie, które połączyło się zdalnie w noc zdarzenia, przestaje pojawiać się w jakiejkolwiek sieci.
+
+Raport bez konkluzji jest czasem uczciwym raportem. W tym przypadku dowody były. Log sesji. Plik cache. Odcisk palca urządzenia który pojawił się w groźbach, w fałszywym ogłoszeniu i w dzienniku zdarzeń systemowych tej samej nocy.
+
+Miałeś to czego potrzebowałeś.
+
+Zdecydowałeś że nie masz.`;
+  }else{
+    stamp="RAPORT NIESPÓJNY";cls="lose";
+    txt=`Twoje trzy ustalenia nie tworzą spójnej sprawy.
+
+Prokurator przegląda twój raport i zwraca go. Wybrane przez ciebie dowody nie zgadzają się z opisanym mechanizmem ani przypisanym motywem.
+
+Raport kryminalistyczny musi być wewnętrznie spójny. Tożsamość, metoda i motyw muszą się łączyć — każde musi być poparte tym samym zbiorem dowodów, wskazującym w tym samym kierunku.
+
+Miałeś właściwe elementy. Złożyłeś je nieprawidłowo.
+
+Sprawa zostaje przydzielona ponownie.`;
+  }
+  showEnding(who+how+why,stamp,cls==="win"?"win":"lose",txt);
+};
+
+function showEnding(key,stamp,winLose,txt){
+  const e=document.getElementById("ending");
+  const s=document.getElementById("endStamp");
+  const t=document.getElementById("endTxt");
+  const b=document.getElementById("endBtns");
+  s.textContent=stamp;
+  s.className="stamp "+(winLose==="win"?"win":"lose");
+  t.innerHTML='<span class="crt"></span>';
+  
+  if(winLose==="win"){
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">⟲ RESTART SYSTEMU</button>
+                 <button class="end-btn end-btn-next" onclick="location.href='howlora2.html'">→ PRZEJDŹ DO SPRAWY #2</button>`;
+  } else {
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">⟲ RESTART SYSTEMU</button>`;
+  }
+  
+  e.classList.add("on");
+  let i=0;
+  const tick=()=>{
+    if(i>=txt.length)return;
+    i++;
+    t.innerHTML=txt.slice(0,i).replace(/\n/g,"<br>")+'<span class="crt"></span>';
+    setTimeout(tick,txt[i-1]==="\n"?200:15);
+  };
+  setTimeout(tick,800);
+}
+</script>
+</body>
+</html>
