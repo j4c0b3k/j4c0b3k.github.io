@@ -1,2298 +1,889 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8"/>
-<title>HOWLORA.OS v6.0 // Sprawa #8829 — Mikołaj S.</title>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<title>Adam W. - OS</title>
 <style>
 :root{
-  --bg:#0a0500;
-  --panel:#140a00;
-  --panel2:#1f1000;
-  --line:#331a00;
-  --line2:#4d2600;
-  --text:#e6ccb3;
-  --muted:#80664d;
-  --green:#ff9900;
-  --green-dim:#995c00;
-  --amber:#ff3300;
-  --red:#e60000;
-  --cyan:#ffcc00;
-  --magenta:#ff6600;
-  --violet:#cc3300;
+--bg-top:#3b82f6;
+--bg-mid:#8b5cf6;
+--bg-bot:#ec4899;
+--primary:#007aff;
+--primary-hover:#005bb5;
+--window-bg:rgba(255,255,255,0.85);
+--text-main:#0f172a;
+--text-muted:#64748b;
+--border:rgba(255,255,255,0.4);
+--header-bg:rgba(241,245,249,0.7);
+--danger:#ff3b30;
+--warning:#ffcc00;
+--success:#28cd41;
+--chat-me:#007aff;
+--chat-them:#e2e8f0;
+--glass-shadow:0 25px 50px -12px rgba(0,0,0,0.25);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-family:"Consolas","SFMono-Regular",ui-monospace,monospace;user-select:none}
-button{font-family:inherit;cursor:pointer}
-a{color:var(--cyan)}
-input,textarea,select{font-family:inherit}
-
-#initScreen{
-  position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;
-  color:var(--cyan);font-size:14px;letter-spacing:4px;font-weight:bold;cursor:pointer;
-  animation:pulseInit 1.5s infinite alternate;
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;user-select:none;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;width:100%;overflow:hidden;background:radial-gradient(circle at 10% 10%,var(--bg-top) 0%,transparent 50%),radial-gradient(circle at 90% 90%,var(--bg-bot) 0%,transparent 50%),radial-gradient(circle at 50% 50%,var(--bg-mid) 0%,transparent 100%);background-color:#0f172a;color:var(--text-main);}
+button{cursor:pointer;outline:none;border:none;font-family:inherit;}
+input,textarea{font-family:inherit;user-select:text;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(148,163,184,0.5);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(148,163,184,0.8);}
+#lockScreen{position:fixed;inset:0;background:inherit;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),transform 0.8s cubic-bezier(0.16,1,0.3,1);}
+.avatar-container{width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.2);padding:10px;margin-bottom:20px;box-shadow:0 10px 25px rgba(0,0,0,0.1);backdrop-filter:blur(10px);}
+.avatar{width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#e2e8f0,#94a3b8);display:grid;place-items:center;font-size:48px;color:#fff;}
+.user-name{font-size:24px;font-weight:600;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.2);margin-bottom:30px;}
+.login-btn{padding:12px 32px;background:rgba(255,255,255,0.2);color:#fff;border-radius:20px;font-weight:600;font-size:16px;letter-spacing:1px;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(10px);transition:0.3s;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+.login-btn:hover{background:rgba(255,255,255,0.3);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.15);}
+#desktop{position:fixed;inset:0;display:none;flex-direction:column;opacity:0;transform:scale(1.05);transition:opacity 0.8s ease,transform 0.8s ease;}
+#desktop.active{display:flex;opacity:1;transform:scale(1);}
+.top-bar{height:28px;background:rgba(255,255,255,0.2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:13px;font-weight:500;color:#fff;z-index:9000;box-shadow:0 1px 5px rgba(0,0,0,0.05);}
+.top-bar-left{display:flex;gap:20px;}
+.top-bar-right{display:flex;gap:15px;align-items:center;}
+#icons{position:absolute;inset:28px 0 80px 0;padding:30px;display:flex;flex-direction:column;flex-wrap:wrap;gap:25px;align-content:flex-start;z-index:10;}
+.icon{width:80px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:10px;border-radius:12px;transition:0.2s;}
+.icon:hover{background:rgba(255,255,255,0.2);box-shadow:0 4px 15px rgba(0,0,0,0.05);}
+.icon:active{transform:scale(0.95);}
+.icon-glyph{width:64px;height:64px;background:rgba(255,255,255,0.9);border-radius:16px;display:grid;place-items:center;font-size:32px;box-shadow:0 8px 20px rgba(0,0,0,0.1);position:relative;}
+.icon-label{font-size:12px;font-weight:600;color:#fff;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.4);}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--danger);color:white;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;box-shadow:0 4px 10px rgba(239,68,68,0.4);border:2px solid #fff;}
+.locked-icon .icon-glyph{background:rgba(226,232,240,0.9);color:#94a3b8;}
+#dock-container{position:absolute;bottom:15px;width:100%;display:flex;justify-content:center;z-index:9500;}
+#dock{background:rgba(255,255,255,0.4);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);padding:10px 15px;border-radius:24px;display:flex;gap:15px;box-shadow:0 10px 30px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.5);align-items:center;}
+.dock-item{width:50px;height:50px;background:rgba(255,255,255,0.9);border-radius:14px;display:grid;place-items:center;font-size:26px;cursor:pointer;transition:0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 4px 12px rgba(0,0,0,0.1);position:relative;}
+.dock-item:hover{transform:translateY(-10px) scale(1.15);box-shadow:0 12px 25px rgba(0,0,0,0.2);}
+.dock-item.running::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 5px rgba(255,255,255,0.8);}
+.dock-separator{width:1px;height:40px;background:rgba(255,255,255,0.3);margin:0 5px;}
+.report-btn{background:var(--danger)!important;color:white!important;font-weight:800;font-size:11px!important;padding:0 20px!important;width:auto!important;letter-spacing:1px;box-shadow:0 4px 15px rgba(239,68,68,0.4);text-transform:uppercase;}
+.report-btn:hover{background:#dc2626!important;box-shadow:0 12px 25px rgba(239,68,68,0.5)!important;}
+.window{position:absolute;width:750px;height:500px;background:var(--window-bg);border-radius:14px;box-shadow:var(--glass-shadow);display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:scale(0.95);transition:opacity 0.2s ease,transform 0.2s ease;pointer-events:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);}
+.window.open{opacity:1;transform:scale(1);pointer-events:auto;}
+.window.focus{z-index:1000;box-shadow:0 30px 60px rgba(0,0,0,0.3);}
+.win-header{height:46px;background:var(--header-bg);display:flex;align-items:center;padding:0 16px;border-bottom:1px solid rgba(0,0,0,0.05);cursor:default;}
+.win-controls{display:flex;gap:8px;width:70px;}
+.win-btn{width:13px;height:13px;border-radius:50%;cursor:pointer;transition:0.2s;}
+.win-close{background:var(--danger);}
+.win-min{background:var(--warning);}
+.win-max{background:var(--success);}
+.win-title{flex:1;text-align:center;font-size:13px;font-weight:700;color:#334155;pointer-events:none;}
+.win-content{flex:1;display:flex;overflow:hidden;background:rgba(255,255,255,0.6);position:relative;}
+.app-layout{display:flex;width:100%;height:100%;position:relative;}
+.sidebar{width:260px;background:rgba(248,250,252,0.5);border-right:1px solid rgba(0,0,0,0.05);display:flex;flex-direction:column;z-index:2;}
+.list-wrap{flex:1;overflow-y:auto;}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(0,0,0,0.03);cursor:pointer;transition:0.2s;}
+.list-item:hover{background:rgba(255,255,255,0.5);}
+.list-item.active{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.02);}
+.item-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#60a5fa);color:white;display:grid;place-items:center;font-size:16px;font-weight:bold;flex-shrink:0;}
+.item-info{flex:1;overflow:hidden;}
+.item-name{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.item-sub{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.main-pane{flex:1;display:flex;flex-direction:column;background:#fff;z-index:1;}
+.pane-header{height:54px;padding:0 20px;display:flex;align-items:center;border-bottom:1px solid rgba(0,0,0,0.05);background:rgba(255,255,255,0.8);}
+.back-btn{display:none;background:transparent;color:var(--primary);font-size:15px;font-weight:600;padding:10px 15px 10px 0;align-items:center;gap:6px;}
+.pane-title{font-size:15px;font-weight:800;color:#0f172a;}
+.pane-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;}
+.empty-state{margin:auto;color:#94a3b8;font-size:14px;font-weight:500;text-align:center;}
+.bubble{max-width:75%;padding:10px 16px;border-radius:18px;font-size:13px;line-height:1.5;position:relative;font-weight:500;}
+.bubble.them{background:var(--chat-them);color:#1e293b;align-self:flex-start;border-bottom-left-radius:4px;}
+.bubble.me{background:var(--chat-me);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(37,99,235,0.2);}
+.bubble-time{font-size:9px;opacity:0.7;margin-top:4px;display:block;text-align:right;font-weight:600;}
+.mail-view h2{font-size:20px;color:#0f172a;margin-bottom:8px;font-weight:800;}
+.mail-meta{font-size:12px;color:#64748b;padding-bottom:15px;border-bottom:1px solid rgba(0,0,0,0.05);margin-bottom:15px;}
+.mail-content{font-size:14px;color:#334155;line-height:1.7;white-space:pre-wrap;font-weight:500;}
+.ad-item{background:#fff;border:1px solid rgba(0,0,0,0.05);border-radius:12px;overflow:hidden;margin-bottom:16px;cursor:pointer;transition:0.2s;display:flex;box-shadow:0 2px 8px rgba(0,0,0,0.02);}
+.ad-item:hover{box-shadow:0 8px 20px rgba(0,0,0,0.06);transform:translateY(-2px);}
+.ad-pic{width:110px;background:#f8fafc;display:grid;place-items:center;font-size:40px;border-right:1px solid rgba(0,0,0,0.05);}
+.ad-desc{padding:14px;flex:1;}
+.ad-price{font-size:18px;font-weight:800;color:var(--success);margin-bottom:4px;}
+.ad-title{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px;}
+.hist-item{padding:12px 20px;border-bottom:1px solid rgba(0,0,0,0.05);transition:0.2s;}
+.hist-item:hover{background:#f8fafc;}
+.hist-title{font-weight:700;font-size:13px;color:#0f172a;}
+.hist-url{font-size:11px;font-weight:500;color:var(--primary);margin-top:4px;}
+.mg-container{padding:25px;display:flex;flex-direction:column;height:100%;}
+.mg-log{background:#0f172a;color:#38bdf8;font-family:"Consolas",monospace;padding:20px;border-radius:10px;font-size:13px;line-height:1.6;flex:1;overflow-y:auto;margin-bottom:20px;white-space:pre-wrap;box-shadow:inset 0 4px 10px rgba(0,0,0,0.3);}
+.mg-log .corrupt{color:var(--danger);background:rgba(239,68,68,0.2);padding:0 4px;border-radius:3px;}
+.mg-question{font-weight:800;font-size:15px;margin-bottom:15px;color:#0f172a;text-align:center;}
+.mg-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mg-btn{padding:12px;border:1px solid rgba(0,0,0,0.1);background:#fff;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:0.2s;color:#475569;}
+.mg-btn:hover{border-color:var(--primary);color:var(--primary);background:#f0f9ff;transform:translateY(-1px);}
+.mg-btn.correct{background:var(--success);color:white;border-color:var(--success);}
+.mg-btn.wrong{background:var(--danger);color:white;border-color:var(--danger);}
+.mg-timer-bar{width:100%;height:6px;background:#e2e8f0;border-radius:3px;margin-top:20px;overflow:hidden;}
+.mg-timer-fill{height:100%;background:var(--primary);width:100%;transition:width 1s linear;}
+#popupOverlay{position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:200000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);opacity:0;transition:opacity 0.2s;}
+#popupOverlay.active{display:flex;opacity:1;}
+.popup-box{background:#fff;border-radius:16px;width:90%;max-width:400px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,0.2);text-align:center;transform:scale(0.9);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);}
+#popupOverlay.active .popup-box{transform:scale(1);}
+.popup-title{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:10px;}
+.popup-desc{font-size:14px;color:#475569;margin-bottom:24px;line-height:1.5;white-space:pre-wrap;}
+.popup-btn{background:var(--primary);color:#fff;padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;}
+#verdictModal{position:fixed;inset:0;background:rgba(15,23,42,0.85);z-index:100000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity 0.3s;}
+#verdictModal.active{display:flex;opacity:1;}
+.v-box{width:90%;max-width:650px;background:#fff;border-radius:24px;padding:35px;box-shadow:0 25px 60px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto;transform:translateY(20px);transition:transform 0.3s;}
+#verdictModal.active .v-box{transform:translateY(0);}
+.v-title{font-size:24px;font-weight:900;color:#0f172a;margin-bottom:10px;text-align:center;}
+.v-desc{font-size:14px;font-weight:500;color:#64748b;text-align:center;margin-bottom:25px;line-height:1.5;}
+.v-step{display:none;}
+.v-step.active{display:block;}
+.v-opt{display:flex;align-items:flex-start;gap:15px;padding:15px;border:2px solid #e2e8f0;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:0.2s;}
+.v-opt:hover{border-color:var(--primary);background:#f8fafc;}
+.v-opt input{margin-top:3px;transform:scale(1.2);accent-color:var(--primary);}
+.v-opt b{font-size:14px;color:#1e293b;display:block;margin-bottom:4px;font-weight:800;}
+.v-opt span{font-size:12px;color:#64748b;line-height:1.4;display:block;}
+.v-actions{display:flex;gap:10px;margin-top:25px;}
+.v-btn{flex:1;padding:14px;border-radius:10px;font-weight:800;font-size:13px;transition:0.2s;text-transform:uppercase;}
+.v-btn.cancel{background:#f1f5f9;color:#475569;}
+.v-btn.cancel:hover{background:#e2e8f0;}
+.v-btn.next{background:var(--primary);color:white;}
+.v-btn.next:hover{background:var(--primary-hover);}
+#endingScreen{position:fixed;inset:0;background:#fff;z-index:200000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;opacity:0;transition:opacity 0.5s;}
+#endingScreen.active{display:flex;opacity:1;}
+.end-icon{font-size:80px;margin-bottom:20px;}
+.end-title{font-size:32px;font-weight:900;color:#0f172a;margin-bottom:15px;}
+.end-text{font-size:16px;color:#475569;max-width:600px;line-height:1.6;margin-bottom:35px;white-space:pre-wrap;font-weight:500;}
+.end-btn{padding:16px 40px;background:var(--primary);color:white;font-weight:800;border-radius:12px;font-size:14px;letter-spacing:1px;transition:0.2s;}
+.end-btn:hover{transform:translateY(-2px);background:var(--primary-hover);}
+@media(max-width:768px){
+.widget-clock{top:45px;right:25px;}
+.widget-time{font-size:54px;}
+.widget-date{font-size:12px;}
+#icons{padding:120px 15px 15px 15px;gap:10px;flex-direction:row;}
+.icon{width:70px;padding:5px;gap:4px;}
+.icon-glyph{width:54px;height:54px;font-size:24px;border-radius:14px;}
+.icon-label{font-size:11px;}
+#dock{padding:10px 15px;gap:12px;border-radius:20px;}
+.dock-item{width:42px;height:42px;font-size:20px;border-radius:12px;}
+.window{width:100%!important;height:calc(100% - 90px)!important;top:0!important;left:0!important;border-radius:0;border:none;transform:translateY(100%) scale(1);transition:transform 0.35s cubic-bezier(0.2,0.8,0.2,1),opacity 0.3s;}
+.window.open{transform:translateY(0) scale(1);}
+.win-header{border-radius:0;padding:0 10px;background:var(--header-bg);}
+.app-layout{position:relative;display:block;}
+.sidebar{width:100%;position:absolute;inset:0;z-index:10;transition:transform 0.3s cubic-bezier(0.2,0.8,0.2,1);}
+.main-pane{width:100%;position:absolute;inset:0;z-index:20;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.2,0.8,0.2,1);}
+.app-layout.show-pane .sidebar{transform:translateX(-30%);}
+.app-layout.show-pane .main-pane{transform:translateX(0);}
+.back-btn{display:flex;}
+.mg-options{grid-template-columns:1fr;}
+.v-opts{flex-direction:column;gap:8px;}
+.v-box{padding:20px;width:95%;border-radius:16px;}
 }
-@keyframes pulseInit{
-  from{opacity:1;text-shadow:0 0 12px var(--cyan);}
-  to{opacity:0.3;text-shadow:0 0 3px var(--cyan);}
-}
-
-#bootOverlay{
-  position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden;
-}
-
-#stagePower{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:16px;
-}
-#powerLed{width:12px;height:12px;border-radius:0;background:var(--cyan);box-shadow:0 0 25px var(--cyan);animation:ledBlink .2s steps(2) infinite}
-@keyframes ledBlink{50%{opacity:0}}
-#powerText{color:#4d3d00;font-size:12px;letter-spacing:5px;text-transform:uppercase}
-
-#stageBios{
-  position:absolute;inset:0;display:none;padding:40px;
-  background:#000;
-}
-#biosText{font-size:13px;color:#a38f7a;line-height:1.7;text-shadow:none}
-#biosText .ok{color:var(--green)}
-#biosText .fail{color:var(--red)}
-
-#stageLogo{
-  position:absolute;inset:0;display:none;
-  background:#050200;
-  flex-direction:column;align-items:center;justify-content:center;gap:0;
-}
-#stageLogoInner{
-  display:flex;flex-direction:column;align-items:center;gap:0;
-  animation:logoFadeIn .6s ease-out;
-}
-@keyframes logoFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.boot-logo-mark{position:relative;width:140px;height:140px;margin-bottom:20px;}
-.boot-logo-mark svg{width:140px;height:140px;display:block;}
-.boot-wordmark{font-size:36px;font-weight:900;letter-spacing:12px;
-  color:var(--cyan);text-shadow:0 0 20px var(--amber);
-  text-transform:uppercase;}
-.boot-sub{font-size:11px;letter-spacing:8px;color:var(--violet);margin-top:8px;text-transform:uppercase;font-weight:bold}
-
-#stageLoading{
-  position:absolute;inset:0;display:none;
-  flex-direction:column;align-items:center;justify-content:center;gap:0;
-}
-#loadLore{max-width:680px;color:#e6ccb3;font-size:17px;line-height:1.8;text-align:center;min-height:80px;margin-bottom:36px;padding:0 20px}
-#loadLore .caret{display:inline-block;width:10px;height:18px;background:var(--cyan);vertical-align:-3px;margin-left:4px;animation:blink 1s steps(2) infinite}
-@keyframes blink{50%{opacity:0}}
-#loadLines{font-size:12px;color:var(--green);line-height:1.7;text-shadow:0 0 5px rgba(255,153,0,.5);min-height:140px;text-align:left;width:580px;max-width:85vw;padding:0 4px}
-#loadBarWrap{width:580px;max-width:85vw;margin-top:24px}
-#loadBarLabel{font-size:11px;color:var(--muted);letter-spacing:3px;margin-bottom:8px}
-#loadBar{width:100%;height:4px;background:#1a0d00;border:1px solid var(--line2);overflow:hidden}
-#loadBarFill{height:100%;width:0;background:var(--cyan);transition:width .15s ease;box-shadow:0 0 15px var(--cyan)}
-
-#stageLogin{
-  position:absolute;inset:0;display:none;
-  flex-direction:column;align-items:center;justify-content:center;gap:20px;
-}
-.login-avatar{width:90px;height:90px;border-radius:8px;background:linear-gradient(135deg,#331a00,#140a00);border:2px solid var(--cyan);display:grid;place-items:center;font-size:32px;font-weight:900;color:var(--cyan);box-shadow:0 0 30px rgba(255,204,0,.2)}
-.login-name{font-size:16px;color:#fff;letter-spacing:6px;text-transform:uppercase}
-.login-role{font-size:11px;color:var(--amber);letter-spacing:3px}
-#loginBar{width:220px;height:3px;background:#1a0d00;overflow:hidden;margin-top:10px}
-#loginBarFill{height:100%;width:0;background:var(--red);transition:width 1.5s ease}
-#loginStatus{font-size:11px;color:var(--red);letter-spacing:4px;text-transform:uppercase;min-height:18px;text-align:center}
-
-#desktopReveal{animation:revealDesktop .7s cubic-bezier(0.1, 0.8, 0.2, 1)}
-@keyframes revealDesktop{from{opacity:0;filter:blur(10px);transform:scale(1.05)}to{opacity:1;filter:blur(0);transform:scale(1)}}
-
-#bootSkip{position:fixed;bottom:24px;right:30px;color:var(--muted);font-size:12px;background:none;border:1px solid var(--line);padding:6px 14px;border-radius:0;letter-spacing:2px;z-index:10000;}
-#bootSkip:hover{color:var(--cyan);border-color:var(--cyan);background:rgba(255,204,0,0.1)}
-
-#desktop{position:fixed;inset:0;display:none;flex-direction:column;
-  background:
-    linear-gradient(rgba(255, 153, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 153, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(180deg,#0a0500 0%,#000000 100%);
-  background-size: 40px 40px, 40px 40px, 100% 100%;
-}
-#desktop.on{display:flex}
-#desktop::after{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(circle at 50% 50%,transparent 40%,rgba(0,0,0,.8) 100%);
-}
-.hack-active #desktop {
-   filter: contrast(120%) saturate(60%);
-   transition: filter 1s ease;
-}
-
-.wall-big{position:absolute;right:50px;top:40px;text-align:right;color:#1f1000;font-size:96px;font-weight:900;letter-spacing:10px;line-height:.85;pointer-events:none;z-index:1;}
-.wall-big span{color:#331a00;font-size:42px;letter-spacing:16px;display:block;margin-top:6px}
-.wall-sub{position:absolute;right:52px;top:280px;color:var(--violet);font-size:12px;letter-spacing:10px;text-transform:uppercase;pointer-events:none;z-index:1;opacity:0.6}
-.wall-info{position:absolute;left:30px;top:24px;color:#804000;font-size:11px;letter-spacing:2px;line-height:1.8;text-transform:uppercase;pointer-events:none;z-index:1;}
-.wall-info b{color:var(--amber)}
-
-#objPanel{
-  position:absolute;top:90px;left:30px;width:260px;z-index:10;pointer-events:none;
-}
-#objPanel .obj-head{font-size:10px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:12px;opacity:.8;border-bottom:1px solid var(--line2);padding-bottom:6px}
-#objPanel .obj-item{
-  font-size:12px;color:#a38f7a;line-height:1.6;padding:5px 0;
-  border-left:2px solid #331a00;padding-left:10px;margin-bottom:6px;
-  letter-spacing:.8px;transition:all .3s;
-}
-#objPanel .obj-item.done{color:#664d33;border-color:#4d2600;text-decoration:line-through;opacity:.6}
-#objPanel .obj-item.active{color:var(--text);border-color:var(--amber);background:rgba(255,51,0,0.05)}
-#objPanel .obj-caret{display:inline-block;width:7px;height:12px;background:var(--amber);vertical-align:-2px;margin-left:4px;animation:blink 1s steps(2) infinite}
-#objPanel .obj-item.updated{animation:objFlash .6s ease-out}
-@keyframes objFlash{0%{background:rgba(255,204,0,.4);padding-left:14px}100%{background:transparent;padding-left:10px}}
-
-#icons{position:absolute;inset:0;pointer-events:none;z-index:2;}
-.icon{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:6px;width:110px;padding:12px 8px;border:1px solid transparent;border-radius:0;cursor:pointer;text-align:center;transition:all .2s;}
-.icon:hover{background:rgba(255,153,0,.08);border-color:rgba(255,153,0,.3);transform:scale(1.05)}
-.icon.launching{animation:iconLaunch .3s ease-in-out}
-@keyframes iconLaunch{0%{transform:scale(1)}50%{transform:scale(.85);opacity:0.5}100%{transform:scale(1)}}
-.icon .glyph{position:relative;width:56px;height:56px;border-radius:4px;display:grid;place-items:center;font-size:26px;font-weight:800;background:#0d0600;border:1px solid var(--line2);box-shadow:inset 0 0 10px rgba(0,0,0,1), 0 5px 15px rgba(0,0,0,.8);color:var(--green);text-shadow:0 0 10px rgba(255,153,0,.5);}
-.icon.locked .glyph{color:var(--red);text-shadow:0 0 10px rgba(230,0,0,.6);border-color:var(--red)}
-.icon.game .glyph{color:var(--cyan);text-shadow:0 0 10px rgba(255,204,0,.6)}
-.icon.lore-app .glyph{color:var(--magenta);text-shadow:0 0 10px rgba(255,102,0,.6)}
-.icon .lbl{font-size:11px;color:#cca37a;letter-spacing:1px}
-
-.icon-badge {
-  position: absolute; top: -8px; right: -8px;
-  background: var(--red); color: #fff;
-  font-size: 12px; font-weight: bold;
-  width: 22px; height: 22px; border-radius: 0;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 15px rgba(230,0,0,0.8); z-index: 10;
-  border: 1px solid #ff4d4d;
-}
-
-.icon.readme-hl { position: relative; }
-.icon.readme-hl .glyph{
-  box-shadow: 0 0 25px var(--red), inset 0 0 15px var(--red);
-  border-color: var(--red);
-  color: #fff;
-  animation: pulseReadme 1.2s infinite alternate;
-}
-.icon.readme-hl::after {
-  content: "!!! OTWÓRZ";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  color: var(--red);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-shadow: 0 0 10px var(--red);
-  animation: readmeBounce 0.8s infinite alternate;
-  pointer-events: none;
-  margin-top: 6px;
-}
-@keyframes pulseReadme {
-  from { transform: scale(1); box-shadow: 0 0 15px var(--red); }
-  to { transform: scale(1.15); box-shadow: 0 0 40px var(--red); }
-}
-@keyframes readmeBounce {
-  from { transform: translateX(-50%) translateY(0); }
-  to { transform: translateX(-50%) translateY(8px); }
-}
-
-.win{position:absolute;min-width:360px;min-height:220px;background:var(--panel);border:1px solid var(--line2);border-radius:0;display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(0,0,0,.9), 0 0 0 1px rgba(255,153,0,.1);overflow:hidden;transform-origin:top left;animation:winOpen .25s ease-out;}
-@keyframes winOpen{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.win.closing{animation:winClose .2s ease-in forwards}
-@keyframes winClose{to{opacity:0;transform:scale(.98) translateY(-10px)}}
-.win.minimized{display:none}
-.win .tb{height:38px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#0d0600;border-bottom:1px solid var(--line2);cursor:move;flex-shrink:0;}
-.win .tb .dot{width:10px;height:10px;background:var(--amber);box-shadow:0 0 8px var(--amber)}
-.win .tb .title{flex:1;font-size:12px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;padding-left:4px;font-weight:bold}
-.win .tb .ctl{display:flex;gap:8px}
-.win .tb .ctl button{width:28px;height:24px;border:1px solid var(--line);background:#1a0d00;color:var(--muted);border-radius:0;font-size:14px;line-height:1;}
-.win .tb .ctl button:hover{background:#331a00;color:var(--cyan);border-color:var(--cyan)}
-.win .tb .ctl .x:hover{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 0 10px var(--red)}
-.win .body{flex:1;overflow:auto;background:var(--panel);color:var(--text);font-size:14px;display:flex;flex-direction:column;}
-.win.focus{box-shadow:0 40px 100px rgba(0,0,0,1), 0 0 0 1px rgba(255,204,0,.4)}
-.win.focus .tb{background:#1f1000;border-bottom-color:var(--amber)}
-.win .grip{position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 45%,var(--line2) 45%,var(--line2) 55%,transparent 55%,transparent 70%,var(--line2) 70%,var(--line2) 80%,transparent 80%);}
-
-#taskbar{position:absolute;left:0;right:0;bottom:0;height:50px;background:#050200;border-top:1px solid var(--amber);display:flex;align-items:center;gap:12px;padding:0 12px;z-index:50;}
-#start{display:flex;align-items:center;gap:10px;padding:8px 16px;border:1px solid var(--amber);border-radius:0;background:#140a00;box-shadow:inset 0 0 10px rgba(255,51,0,.2)}
-#start .logo-tb{font-size:12px;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 5px var(--cyan)}
-#start .dot{width:8px;height:8px;background:var(--red);box-shadow:0 0 10px var(--red);animation:pulse 1s infinite;flex-shrink:0}
-@keyframes pulse{50%{opacity:.2}}
-#tasks{display:flex;gap:6px;flex:1;overflow:hidden;margin-left:8px}
-.task{display:flex;align-items:center;gap:6px;height:34px;padding:0 14px;font-size:11px;color:#a38f7a;background:#0d0600;border:1px solid var(--line);border-radius:0;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:1px;}
-.task:hover{background:#1f1000;color:var(--text);border-color:var(--line2)}
-.task.active{border-color:var(--cyan);color:var(--cyan);background:#1a0d00;box-shadow:inset 0 -3px 0 var(--cyan)}
-#clock-area{color:var(--green);font-size:12px;padding:0 16px;border-left:1px solid var(--line2);height:34px;display:flex;align-items:center;letter-spacing:2px;white-space:nowrap;font-weight:bold}
-#verdictBtn{height:36px;padding:0 20px;background:#b30000;color:#fff;font-weight:900;letter-spacing:3px;font-size:11px;border:1px solid #ff3333;border-radius:0;box-shadow:0 0 15px rgba(230,0,0,.6);animation:glow 1.5s infinite alternate;text-transform:uppercase}
-#verdictBtn:hover{background:#e60000;box-shadow:0 0 25px rgba(255,0,0,1)}
-@keyframes glow{from{box-shadow:0 0 10px rgba(230,0,0,.4)} to{box-shadow:0 0 25px rgba(230,0,0,1)}}
-
-#timerDisplay{
-  display:flex;align-items:center;gap:12px;padding:0 16px;border-left:1px solid var(--line2);height:40px;
-}
-#timerDisplay .t-label{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-#timerDisplay .t-val{font-size:18px;font-weight:900;letter-spacing:4px;color:var(--cyan);font-variant-numeric:tabular-nums;text-shadow:0 0 10px var(--cyan);}
-#timerDisplay.urgent .t-val{color:var(--red);text-shadow:0 0 15px var(--red);animation:tpulse .5s infinite alternate}
-@keyframes tpulse{from{opacity:.5}to{opacity:1}}
-#timerDisplay .t-bar{width:80px;height:4px;background:#1a0d00;border:1px solid var(--line2);overflow:hidden}
-#timerDisplay .t-bar-fill{height:100%;background:var(--amber);transition:width 1s linear;box-shadow:0 0 8px var(--amber)}
-
-.app{display:flex;height:100%;color:var(--text);flex:1;}
-.sidebar{width:230px;background:#0d0600;border-right:1px solid var(--line2);overflow-y:auto;flex-shrink:0}
-.sidebar .head{padding:12px 16px;font-size:10px;letter-spacing:3px;color:var(--amber);border-bottom:1px solid var(--line);text-transform:uppercase;font-weight:bold}
-.list{display:flex;flex-direction:column}
-.row{display:flex;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px;color:#cca37a;}
-.row:hover{background:#1a0d00}
-.row.active{background:#261300;color:#fff;border-left:3px solid var(--cyan);padding-left:13px}
-.row .av{width:36px;height:36px;border-radius:4px;background:#140a00;display:grid;place-items:center;font-weight:900;color:var(--cyan);flex-shrink:0;border:1px solid var(--line2);font-size:14px;}
-.row .meta{flex:1;overflow:hidden}
-.row .meta .n{font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:bold}
-.row .meta .p{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
-.row .time{font-size:10px;color:var(--muted);white-space:nowrap}
-.unread{width:8px;height:8px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);flex-shrink:0}
-.pane{flex:1;display:flex;flex-direction:column;min-width:0}
-.pane .ph{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:#0d0600;font-size:12px;letter-spacing:2px;flex-shrink:0;}
-.back{background:#140a00;color:var(--cyan);border:1px solid var(--cyan);padding:6px 12px;border-radius:0;font-size:11px;letter-spacing:2px;text-transform:uppercase}
-.back:hover{background:var(--cyan);color:#000;font-weight:bold}
-.pane .pc{flex:1;overflow-y:auto;padding:16px;background:#140a00}
-.empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:12px;letter-spacing:2px;text-align:center;padding:24px;text-transform:uppercase}
-.bub{max-width:80%;padding:10px 14px;border-radius:0;font-size:13px;line-height:1.6;margin-bottom:12px;word-wrap:break-word;border:1px solid transparent}
-.bub.them{background:#1f1000;color:#e6ccb3;border-color:var(--line2);border-left:3px solid var(--muted)}
-.bub.me{background:#261300;color:#fff;margin-left:auto;border-color:var(--line2);border-right:3px solid var(--green)}
-.bub.flagged{background:#330000;border-color:var(--red);color:#ffcccc;border-left:3px solid var(--red)}
-.bub .ts{display:block;font-size:10px;color:var(--muted);margin-top:6px;letter-spacing:1px}
-.bub.me .ts{color:#b38f66}
-
-.mail-row{padding:12px 16px}
-.mail-row .from{font-size:13px;color:#fff;font-weight:700}
-.mail-row .sub{font-size:12px;color:var(--cyan);margin-top:4px}
-.mail-row .pv{font-size:11px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mail-view h3{font-size:16px;color:#fff;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
-.mail-view .meta{font-size:12px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px;line-height:1.8}
-.mail-view .body-txt{font-size:14px;line-height:1.8;color:#e6ccb3;white-space:pre-wrap}
-
-.match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:16px}
-.ad-item{background:#0d0600;border:1px solid var(--line2);border-radius:0;overflow:hidden;cursor:pointer;transition:all .2s;display:flex;}
-.ad-item:hover{transform:translateY(-4px);border-color:var(--cyan);box-shadow:0 8px 20px rgba(0,0,0,0.5), 0 0 0 1px var(--cyan)}
-.ad-item .pic{width:90px;background:#1a0d00;display:grid;place-items:center;font-size:32px;color:var(--violet);text-shadow:0 0 15px rgba(204,51,0,.6);border-right:1px solid var(--line2)}
-.ad-item .info{padding:12px;font-size:13px;flex:1}
-.ad-item .info .n{color:#fff;font-weight:700;margin-bottom:6px;line-height:1.4}
-.ad-item .info .p{color:var(--cyan);font-weight:900;font-size:15px;margin-bottom:6px;letter-spacing:1px}
-.ad-item .info .a{color:var(--muted);font-size:11px}
-.ad-item .info .sold{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;font-weight:bold}
-.ad-item .info .sold.yes{color:var(--red)}
-
-#notesArea{width:100%;height:100%;background:#0d0600;border:none;color:var(--green);padding:20px;font-family:"Consolas",monospace;font-size:14px;line-height:1.8;outline:none;resize:none;}
-
-.brw .url{padding:10px 16px;border-bottom:1px solid var(--line2);background:#0d0600;font-size:11px;color:var(--muted);letter-spacing:1px}
-.brw .url b{color:var(--cyan)}
-.hist-row{padding:10px 16px;border-bottom:1px solid var(--line);font-size:13px}
-.hist-row .t{color:#fff}
-.hist-row .u{color:var(--green);font-size:11px;margin-top:4px}
-.hist-row .ts{color:var(--muted);font-size:11px;margin-top:4px}
-.hist-cat{padding:8px 16px;font-size:10px;letter-spacing:3px;color:var(--amber);background:#1a0d00;text-transform:uppercase;border-bottom:1px solid var(--line);font-weight:bold}
-
-.file{padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
-.file:hover{background:#1f1000;border-left:3px solid var(--cyan);padding-left:13px}
-.file .n{color:var(--cyan);font-weight:bold}
-.file .d{color:var(--muted);font-size:11px}
-.file-folder{padding:8px 16px;font-size:10px;letter-spacing:3px;color:var(--amber);background:#1a0d00;text-transform:uppercase;border-bottom:1px solid var(--line);font-weight:bold}
-pre.term{padding:20px;background:#050200;color:var(--green);font-size:12px;line-height:1.8;white-space:pre-wrap;font-family:"Consolas",monospace;text-shadow:0 0 5px rgba(255,153,0,.3);height:100%;overflow-y:auto;border:1px solid var(--line2)}
-pre.term .hl{color:var(--red);text-shadow:0 0 10px rgba(230,0,0,.8);font-weight:900}
-pre.term .ok{color:var(--cyan);text-shadow:0 0 5px rgba(255,204,0,.5)}
-pre.term .dim{color:#664d33}
-
-.readme{padding:24px;font-size:14px;line-height:1.8;color:#e6ccb3;overflow-y:auto}
-.readme h2{color:var(--cyan);letter-spacing:4px;margin-bottom:16px;font-size:16px;text-transform:uppercase;border-bottom:1px solid var(--line2);padding-bottom:12px;font-weight:900}
-.readme h3{color:var(--amber);margin:24px 0 10px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:bold}
-.readme p{margin-bottom:14px;color:#cca37a}
-.readme .stamp{margin-top:24px;padding:16px 20px;border:1px solid var(--red);background:#1a0000;font-size:12px;color:#ff9999;letter-spacing:1px;line-height:1.7;font-style:italic;box-shadow:inset 0 0 15px rgba(230,0,0,.2)}
-.readme .stamp::before{content:"[ ! ] ";color:var(--red);font-weight:bold;font-style:normal}
-.readme hr{border:none;border-top:1px dashed var(--line2);margin:24px 0}
-.readme .case-id{font-size:10px;letter-spacing:5px;color:var(--muted);text-align:right;margin-top:30px}
-
-#snakeCanvas{background:#000;border:2px solid var(--line2);display:block;margin:0 auto;box-shadow:0 0 30px rgba(255,153,0,.1)}
-.snake-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#050200;padding:20px;}
-.snake-ui{color:var(--green);font-size:12px;margin-bottom:12px;letter-spacing:3px;width:100%;max-width:400px;display:flex;justify-content:space-between;text-shadow:0 0 8px rgba(255,153,0,.5);font-weight:bold}
-
-.ttt-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#050200;padding:20px;gap:16px}
-.ttt-header{color:var(--cyan);font-size:13px;letter-spacing:4px;text-align:center;font-weight:bold}
-.ttt-score{display:flex;gap:30px;font-size:11px;letter-spacing:2px}
-.ttt-score span{color:var(--muted)}.ttt-score b{color:var(--amber);font-size:14px}
-.ttt-board{display:grid;grid-template-columns:repeat(3,90px);grid-template-rows:repeat(3,90px);gap:6px}
-.ttt-cell{background:#140a00;border:1px solid var(--line2);display:grid;place-items:center;font-size:36px;font-weight:900;cursor:pointer;transition:background .15s;color:var(--cyan)}
-.ttt-cell:hover:empty{background:#1f1000;box-shadow:inset 0 0 15px rgba(255,204,0,.1)}
-.ttt-cell.X{color:var(--cyan);text-shadow:0 0 15px rgba(255,204,0,.8)}
-.ttt-cell.O{color:var(--red);text-shadow:0 0 15px rgba(230,0,0,.8)}
-.ttt-cell.win-line{background:#331a00;border-color:var(--cyan);animation:pulseWin 1s infinite alternate}
-@keyframes pulseWin{from{box-shadow:0 0 10px var(--cyan)}to{box-shadow:0 0 25px var(--cyan)}}
-.ttt-status{font-size:14px;color:#fff;letter-spacing:2px;min-height:24px;text-align:center;text-transform:uppercase}
-.ttt-btn{padding:8px 20px;background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:0;font-size:11px;letter-spacing:3px;text-transform:uppercase}
-.ttt-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(255,204,0,.1)}
-.ttt-diff{display:flex;gap:10px;font-size:11px}
-.ttt-diff button{padding:6px 14px;background:#0d0600;border:1px solid var(--line2);color:var(--muted);border-radius:0;letter-spacing:2px;font-size:11px;text-transform:uppercase}
-.ttt-diff button.active{border-color:var(--amber);color:var(--amber);background:#1a0500}
-
-.rps-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#050200;padding:20px;gap:16px}
-.rps-score{display:flex;gap:30px;font-size:12px;letter-spacing:2px;border:1px solid var(--line2);padding:12px 24px;background:#0d0600}
-.rps-score .rs{color:var(--green)}.rps-score .ls{color:var(--red)}.rps-score .ds{color:var(--muted)}
-.rps-score b{font-size:18px}
-.rps-arena{display:flex;align-items:center;gap:30px;padding:20px 0}
-.rps-side{display:flex;flex-direction:column;align-items:center;gap:12px}
-.rps-hand{font-size:64px;transition:transform .2s;min-height:80px;display:flex;align-items:center;filter:drop-shadow(0 0 10px rgba(255,204,0,.2))}
-.rps-hand.shake{animation:rpsShake .4s infinite}
-@keyframes rpsShake{0%,100%{transform:translateY(0)}25%{transform:translateY(-15px)}75%{transform:translateY(10px)}}
-.rps-label{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;font-weight:bold}
-.rps-vs{color:var(--amber);font-size:18px;font-weight:900;letter-spacing:4px}
-.rps-choices{display:flex;gap:16px}
-.rps-choice{width:80px;height:80px;border-radius:0;border:2px solid var(--line2);background:#140a00;font-size:36px;display:grid;place-items:center;cursor:pointer;transition:all .2s;}
-.rps-choice:hover{border-color:var(--cyan);background:#1f1000;transform:scale(1.1);box-shadow:0 0 20px rgba(255,204,0,.3)}
-.rps-choice:disabled{cursor:not-allowed;opacity:.3;transform:none;box-shadow:none}
-.rps-result{font-size:16px;letter-spacing:4px;min-height:24px;text-align:center;font-weight:900;text-transform:uppercase}
-.rps-result.win{color:var(--green);text-shadow:0 0 15px rgba(255,153,0,.8)}
-.rps-result.lose{color:var(--red);text-shadow:0 0 15px rgba(230,0,0,.8)}
-.rps-result.draw{color:var(--cyan);text-shadow:0 0 10px rgba(255,204,0,.5)}
-
-.mg{padding:20px;display:flex;flex-direction:column;gap:16px;height:100%;overflow:hidden;background:#050200}
-.mg .mg-head{color:var(--cyan);letter-spacing:4px;font-size:14px;text-align:center;padding-bottom:12px;border-bottom:1px solid var(--line2);font-weight:bold}
-.mg .mg-desc{font-size:13px;color:var(--text);line-height:1.7;text-align:center;padding:0 10px}
-.mg .mg-puzzle{background:#0a0500;border:1px solid var(--amber);padding:16px;font-family:"Consolas",monospace;font-size:12px;line-height:1.8;color:var(--green);text-shadow:0 0 5px rgba(255,153,0,.4);flex:1;overflow-y:auto;box-shadow:inset 0 0 20px rgba(255,51,0,.1)}
-.mg .mg-puzzle .corrupt{color:var(--red);text-shadow:0 0 10px rgba(230,0,0,.8);background:rgba(230,0,0,.1)}
-.mg .mg-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.mg .mg-opt{padding:12px 16px;background:#140a00;border:1px solid var(--line2);font-size:12px;color:#e6ccb3;cursor:pointer;text-align:left;line-height:1.5;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
-.mg .mg-opt:hover{background:#1f1000;border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 15px rgba(255,204,0,.2)}
-.mg .mg-opt.correct{background:#1a1000;border-color:var(--green);color:var(--green);animation:flashGreen .5s}
-.mg .mg-opt.wrong{background:#1a0000;border-color:var(--red);color:var(--red);animation:flashRed .5s}
-@keyframes flashGreen{0%{background:#332000;box-shadow:0 0 20px var(--green)}100%{background:#1a1000}}
-@keyframes flashRed{0%{background:#330000;box-shadow:0 0 20px var(--red)}100%{background:#1a0000}}
-.mg .mg-progress{display:flex;gap:8px;justify-content:center}
-.mg .mg-pip{width:24px;height:6px;background:#1a0d00;border:1px solid var(--line2)}
-.mg .mg-pip.done{background:var(--green);border-color:var(--green);box-shadow:0 0 10px rgba(255,153,0,.8)}
-.mg .mg-pip.fail{background:var(--red);border-color:var(--red)}
-.mg .mg-pip.cur{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 15px rgba(255,204,0,.8);animation:blinkPip 1s infinite alternate}
-@keyframes blinkPip{to{opacity:.5}}
-.mg .mg-status{font-size:12px;color:var(--muted);text-align:center;min-height:18px;letter-spacing:2px;text-transform:uppercase;font-weight:bold}
-.mg .mg-timer{font-size:16px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-align:center;text-shadow:0 0 10px rgba(255,204,0,.6)}
-.mg .mg-timer.warn{color:var(--red);text-shadow:0 0 15px rgba(230,0,0,.9);animation:warnPulse .4s infinite alternate}
-@keyframes warnPulse{from{transform:scale(1)}to{transform:scale(1.1)}}
-
-#verdictModal{position:fixed;inset:0;background:rgba(10,5,0,.92);z-index:200;display:none;align-items:center;justify-content:center;animation:fadeIn .3s;backdrop-filter:blur(5px)}
-#verdictModal.on{display:flex}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-#verdictModal .box{width:700px;max-width:95vw;max-height:90vh;background:#0d0600;border:1px solid var(--amber);padding:32px;box-shadow:0 0 80px rgba(255,51,0,.4);overflow-y:auto;position:relative}
-#verdictModal .box::before{content:"";position:absolute;inset:0;pointer-events:none;border:1px solid rgba(255,204,0,.1);margin:4px}
-#verdictModal h2{color:var(--amber);letter-spacing:6px;font-size:18px;margin-bottom:8px;text-transform:uppercase;text-align:center;text-shadow:0 0 15px rgba(255,51,0,.5)}
-#verdictModal .vd-sub{color:var(--muted);font-size:12px;text-align:center;margin-bottom:24px;line-height:1.7;letter-spacing:1px}
-.vd-stage{margin-bottom:24px;display:none}
-.vd-stage.active{display:block;animation:stageIn .4s ease-out}
-@keyframes stageIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-.vd-stage-head{font-size:11px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line2);padding-bottom:8px}
-.vd-stage-head .s-num{width:24px;height:24px;background:#1a0d00;border:1px solid var(--cyan);display:grid;place-items:center;font-size:12px;font-weight:900;color:var(--cyan);box-shadow:0 0 10px rgba(255,204,0,.3)}
-.vd-stage-head .s-label{color:var(--cyan);font-weight:900;font-size:13px;letter-spacing:3px}
-.v-opts{display:flex;flex-direction:column;gap:10px}
-.v-opt{display:flex;align-items:flex-start;gap:14px;background:#140a00;border:1px solid var(--line2);padding:14px 16px;cursor:pointer;transition:all .2s}
-.v-opt:hover{background:#1f1000;border-color:var(--amber);transform:translateX(5px)}
-.v-opt input{width:18px;height:18px;accent-color:var(--amber);cursor:pointer;flex-shrink:0;margin-top:2px}
-.v-opt .v-opt-body span{font-size:14px;color:#fff;display:block;font-weight:bold;letter-spacing:1px;margin-bottom:6px}
-.v-opt .v-opt-body small{display:block;color:#a38f7a;font-size:11px;line-height:1.6}
-#verdictModal .v-actions{display:flex;gap:12px;margin-top:28px;border-top:1px solid var(--line2);padding-top:20px}
-#verdictModal .v-next{flex:2;padding:14px;background:var(--cyan);color:#000;border:none;font-weight:900;letter-spacing:3px;font-size:12px;text-transform:uppercase;transition:all .2s}
-#verdictModal .v-next:hover{background:#ffdb4d;box-shadow:0 0 20px rgba(255,204,0,.6)}
-#verdictModal .v-submit{flex:2;padding:14px;background:var(--red);color:#fff;border:none;font-weight:900;letter-spacing:3px;font-size:12px;text-transform:uppercase;transition:all .2s;box-shadow:0 0 15px rgba(230,0,0,.5)}
-#verdictModal .v-submit:hover{background:#ff1a1a;box-shadow:0 0 30px rgba(255,0,0,.8)}
-#verdictModal .v-cancel{flex:1;padding:14px;background:transparent;color:var(--muted);border:1px solid var(--line2);font-size:11px;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
-#verdictModal .v-cancel:hover{color:#fff;border-color:var(--amber);background:rgba(255,51,0,.1)}
-.vd-breadcrumb{font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:20px;text-transform:uppercase;background:#140a00;padding:10px;border-left:3px solid var(--amber)}
-.vd-breadcrumb .sel{color:var(--green);font-weight:bold}
-
-#ending{position:fixed;inset:0;background:#050200;z-index:300;display:none;overflow-y:auto;padding:80px 20px;text-align:center;animation:fadeIn .5s;}
-#ending.on{display:block;}
-#ending .stamp{display:inline-block;white-space:nowrap;font-size:40px;font-weight:900;letter-spacing:10px;padding:16px 32px;border:6px solid;transform:rotate(-2deg);margin:0 auto 50px auto;text-transform:uppercase;animation:stampIn .6s cubic-bezier(.2,.9,.3,1.4);position:relative;z-index:20;}
-@keyframes stampIn{from{opacity:0;transform:rotate(-2deg) scale(2.5)} to{opacity:1;transform:rotate(-2deg) scale(1)}}
-#ending .stamp.win{color:var(--cyan);border-color:var(--cyan);text-shadow:0 0 25px rgba(255,204,0,.6);box-shadow:0 0 50px rgba(255,204,0,.3)}
-#ending .stamp.lose{color:var(--red);border-color:var(--red);text-shadow:0 0 25px rgba(230,0,0,.6);box-shadow:0 0 50px rgba(230,0,0,.3)}
-#ending .txt{display:block;max-width:760px;margin:0 auto 40px auto;font-size:17px;line-height:2;color:#e6ccb3;text-align:left;letter-spacing:.8px;z-index:10;position:relative;padding:30px;background:#0d0600;border:1px solid var(--line2);box-shadow:0 20px 50px rgba(0,0,0,.8)}
-#ending .txt .crt{display:inline-block;width:10px;height:18px;background:var(--cyan);vertical-align:-3px;margin-left:4px;animation:blink 1s steps(2) infinite}
-#ending button.end-btn{display:inline-block;margin:20px auto;padding:16px 36px;background:#140a00;color:var(--cyan);border:2px solid var(--cyan);font-size:13px;letter-spacing:4px;font-weight:900;text-transform:uppercase;cursor:pointer;transition:all .2s;box-shadow:0 0 15px rgba(255,204,0,.2)}
-#ending button.end-btn:hover{background:var(--cyan);color:#000;box-shadow:0 0 30px rgba(255,204,0,.8);transform:translateY(-2px)}
-
-#toasts{position:fixed;left:24px;bottom:70px;display:flex;flex-direction:column;gap:10px;z-index:150;pointer-events:none}
-.toast{background:#0d0600;border:1px solid var(--amber);border-left:4px solid var(--amber);color:#fff;padding:12px 16px;font-size:12px;letter-spacing:1px;box-shadow:0 5px 20px rgba(255,51,0,.25);animation:toastIn .3s cubic-bezier(0.1, 0.8, 0.2, 1);min-width:260px;}
-.toast.vchat-toast{border-color:var(--red);border-left-color:var(--red);box-shadow:0 5px 25px rgba(230,0,0,.4);}
-@keyframes toastIn{from{transform:translateX(-30px);opacity:0}to{transform:translateX(0);opacity:1}}
-
-#hackOverlay {
-  position: fixed; inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(50,0,0,0.8) 100%);
-  z-index: 25000; display: none; pointer-events: none;
-  box-shadow: inset 0 0 150px rgba(200,0,0,0.5);
-  animation: doomPulse 2s infinite alternate ease-in-out;
-}
-@keyframes doomPulse {
-  from { backdrop-filter: blur(2px) grayscale(40%); opacity: 0.8; }
-  to { backdrop-filter: blur(4px) grayscale(70%); opacity: 1; }
-}
-
-::-webkit-scrollbar{width:8px;height:8px}
-::-webkit-scrollbar-track{background:#050200;border-left:1px solid var(--line2)}
-::-webkit-scrollbar-thumb{background:#331a00;}
-::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
 </style>
 </head>
 <body>
 
-<div id="initScreen" onclick="runBoot()">
-  [ AUTORYZACJA WYMAGANA — KLIKNIJ ABY ROZPOCZĄĆ ]
-</div>
-
-<div id="bootOverlay" style="display:none">
-  <div id="stagePower">
-    <div id="powerLed"></div>
-    <div id="powerText">NEXOTECH SECURITY BIOS</div>
-  </div>
-  <div id="stageBios">
-    <div id="biosText"></div>
-  </div>
-  <div id="stageLogo">
-    <div id="stageLogoInner">
-      <div class="boot-logo-mark">
-        <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ffcc00"/>
-              <stop offset="50%" stop-color="#ff3300"/>
-              <stop offset="100%" stop-color="#cc0000"/>
-            </linearGradient>
-            <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          <polygon points="70,10 130,110 10,110" fill="none" stroke="url(#lg1)" stroke-width="3" filter="url(#glow)" opacity="0.9"/>
-          <polygon points="70,40 105,100 35,100" fill="none" stroke="url(#lg1)" stroke-width="1.5" opacity="0.6"/>
-          <circle cx="70" cy="80" r="12" fill="none" stroke="url(#lg1)" stroke-width="2"/>
-          <circle cx="70" cy="80" r="4" fill="url(#lg1)" filter="url(#glow)"/>
-          <line x1="70" y1="10" x2="70" y2="30" stroke="url(#lg1)" stroke-width="2"/>
-          <line x1="130" y1="110" x2="115" y2="100" stroke="url(#lg1)" stroke-width="2"/>
-          <line x1="10" y1="110" x2="25" y2="100" stroke="url(#lg1)" stroke-width="2"/>
-        </svg>
-      </div>
-      <div class="boot-wordmark">HOWLORA</div>
-      <div class="boot-sub">CYBER FORENSICS // v6.0</div>
+<div id="bootScreen">
+    <div class="avatar-container">
+        <div class="avatar">👨🏻</div>
     </div>
-  </div>
-  <div id="stageLoading">
-    <div id="loadLore"></div>
-    <div id="loadLines"></div>
-    <div id="loadBarWrap">
-      <div id="loadBarLabel">DEKRYPTACJA SEKTORA DOWODOWEGO</div>
-      <div id="loadBar"><div id="loadBarFill"></div></div>
-    </div>
-  </div>
-  <div id="stageLogin">
-    <div class="login-avatar">P</div>
-    <div class="login-name">piotr.nexo</div>
-    <div class="login-role">KONTO: PRACOWNIK R&D — TRYB LUSTRZANY</div>
-    <div id="loginBar"><div id="loginBarFill"></div></div>
-    <div id="loginStatus"></div>
-  </div>
-  <button id="bootSkip" onclick="skipBoot()">POMIŃ SEKWENCJĘ</button>
+    <div class="user-name">Adam W.</div>
+    <div class="spinner" id="bootSpinner"></div>
+    <button class="login-btn" id="bootBtn" onclick="startOS()">Zaloguj się</button>
 </div>
 
 <div id="desktop">
-  <div class="wall-big">HOWLORA<span>v6.0</span></div>
-  <div class="wall-sub">SPRAWA #8829 // STRICT CONFIDENTIAL</div>
-  <div class="wall-info">
-    <b>>></b> CEL: PIOTR_NEXO.img<br>
-    <b>>></b> STATUS: ZABEZPIECZONY<br>
-    <b>>></b> POZIOM DOSTĘPU: OMEGA
-  </div>
-  <div id="objPanel"></div>
-  <div id="icons"></div>
-  <div id="taskbar">
-    <div id="start"><span class="dot"></span><span class="logo-tb">SYS.MENU</span></div>
-    <div id="tasks"></div>
-    <div id="timerDisplay">
-      <div>
-        <div class="t-label">CZAS ANALIZY</div>
-        <div class="t-val" id="timerVal">15:00</div>
-      </div>
-      <div>
-        <div class="t-bar"><div class="t-bar-fill" id="timerBarFill" style="width:100%"></div></div>
-      </div>
+    <div class="wallpaper-overlay"></div>
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <span></span>
+            <span style="font-weight:600">Finder</span>
+            <span>Plik</span>
+            <span>Edycja</span>
+        </div>
+        <div class="top-bar-right">
+            <span>100%</span>
+            <span id="topTime">--:--</span>
+        </div>
     </div>
-    <div id="clock-area"></div>
-    <button id="verdictBtn" onclick="openVerdict()">ZATWIERDŹ ANALIZĘ</button>
-  </div>
-  <div id="toasts"></div>
+    <div class="widget-clock">
+        <div class="widget-time" id="clockTime">--:--</div>
+        <div class="widget-date" id="clockDate">PIĄTEK, 24 MAJA</div>
+        <div class="widget-user">Konto Lokalne</div>
+    </div>
+
+    <div id="icons">
+        <div class="icon" onclick="openApp('chat')">
+            <div class="icon-glyph" style="background:#25d366;color:#fff;">💬<div class="badge" id="chatBadge" style="display:none">1</div></div>
+            <div class="icon-label">Messenger</div>
+        </div>
+        <div class="icon" onclick="openApp('mail')">
+            <div class="icon-glyph" style="background:#ef4444;color:#fff;">📧</div>
+            <div class="icon-label">Poczta</div>
+        </div>
+        <div class="icon" onclick="openApp('market')">
+            <div class="icon-glyph" style="background:#0ea5e9;color:#fff;">🛒</div>
+            <div class="icon-label">OLX</div>
+        </div>
+        <div class="icon" onclick="openApp('browser')">
+            <div class="icon-glyph" style="background:#f59e0b;color:#fff;">🌐</div>
+            <div class="icon-label">Chrome</div>
+        </div>
+        <div class="icon" onclick="openApp('files')">
+            <div class="icon-glyph" style="background:#3b82f6;color:#fff;">📁</div>
+            <div class="icon-label">Dokumenty</div>
+        </div>
+        <div class="icon locked-icon" onclick="openApp('report')" id="iconReport">
+            <div class="icon-glyph" id="glyphReport">🔒</div>
+            <div class="icon-label" id="labelReport">Akta Policji</div>
+        </div>
+    </div>
+
+    <div id="dock-container">
+        <div id="dock">
+            <div class="dock-item" id="dock_chat" onclick="openApp('chat')" title="Wiadomości" style="color:#25d366">💬</div>
+            <div class="dock-item" id="dock_mail" onclick="openApp('mail')" title="Poczta" style="color:#ef4444">📧</div>
+            <div class="dock-item" id="dock_browser" onclick="openApp('browser')" title="Przeglądarka" style="color:#f59e0b">🌐</div>
+            <div class="dock-separator"></div>
+            <div class="dock-item report-btn" onclick="openVerdict()">ZŁÓŻ ZEZNANIA</div>
+        </div>
+    </div>
 </div>
 
-<div id="hackOverlay"></div>
+<div id="popupOverlay">
+    <div class="popup-box">
+        <div class="popup-title" id="popupTitle">Tytuł</div>
+        <div class="popup-desc" id="popupDesc">Opis</div>
+        <button class="popup-btn" onclick="closePopup()">Zrozumiałem</button>
+    </div>
+</div>
 
 <div id="verdictModal">
-  <div class="box">
-    <h2>RAPORT KOŃCOWY SPRAWY #8829</h2>
-    <div class="vd-sub">Konieczne jest zidentyfikowanie sprawcy śmierci Mikołaja S. oraz mechanizmu sabotażu. Wybory są nieodwracalne i zadecydują o kierunku śledztwa NexoTech.</div>
-    <div class="vd-breadcrumb" id="vdBreadcrumb">Krok 1 z 3</div>
-    <div class="vd-stage active" id="vdStage1">
-      <div class="vd-stage-head"><div class="s-num">1</div><div class="s-label">KTO</div><span style="color:var(--muted);font-size:10px">— Zidentyfikuj inicjatora zdarzenia</span></div>
-      <div class="v-opts">
-        <label class="v-opt"><input type="radio" name="who" value="kameleon"><div class="v-opt-body"><span>KAMELEON (Zewnętrzny Kontraktor)</span><small>Anonimowy byt, który dokonał zakupu oprogramowania zakłócającego i wielokrotnie groził Piotrowi oraz ofierze z powodu wycieku danych.</small></div></label>
-        <label class="v-opt"><input type="radio" name="who" value="piotr"><div class="v-opt-body"><span>Piotr (Właściciel dysku)</span><small>Pracownik NexoTech, który jako jedyny miał bezpośredni dostęp do infrastruktury i motyw ukrycia własnych kradzieży danych.</small></div></label>
-        <label class="v-opt"><input type="radio" name="who" value="anna"><div class="v-opt-body"><span>Anna (Redaktor Naczelna)</span><small>Posiadała pełen dostęp do szkiców Mikołaja i mogła czerpać ogromne zyski finansowe z przejęcia wyłączności na publikację materiału.</small></div></label>
-        <label class="v-opt"><input type="radio" name="who" value="unknown"><div class="v-opt-body"><span>Brak możliwości weryfikacji</span><small>Materiał dowodowy jest zbyt silnie uszkodzony przez procedury czyszczące NexoTech.</small></div></label>
-      </div>
+    <div class="v-box">
+        <div class="v-title">ZŁÓŻ ZEZNANIA</div>
+        <div class="v-desc">Jesteś przesłuchiwany w sprawie śmierci Grzegorza. Złóż spójne zeznania na podstawie danych z komputera.</div>
+        
+        <div class="v-step active" id="vStep1">
+            <div style="font-weight:800; color:var(--primary); margin-bottom: 8px; font-size:12px; letter-spacing:1px;">PYTANIE 1 Z 3</div>
+            <div style="margin-bottom:15px; font-size:16px; font-weight:700;">Kto bezpośrednio odpowiada za zgon Grzegorza?</div>
+            <div class="v-opts">
+                <label class="v-opt"><input type="radio" name="v_who" value="adam"><div><b>Ja (Adam)</b><span>Zabiłem go w garażu po kłótni o wiertarkę.</span></div></label>
+                <label class="v-opt"><input type="radio" name="v_who" value="monika"><div><b>Monika (Żona)</b><span>Otruła go jedzeniem.</span></div></label>
+                <label class="v-opt"><input type="radio" name="v_who" value="grzesiu"><div><b>Nieszczęśliwy wypadek</b><span>Sąsiad sam doprowadził do swojej śmierci.</span></div></label>
+                <label class="v-opt"><input type="radio" name="v_who" value="unknown"><div><b>Włamywacz z OLX</b><span>Napadł go ktoś obcy.</span></div></label>
+            </div>
+        </div>
+
+        <div class="v-step" id="vStep2">
+            <div style="font-weight:800; color:var(--primary); margin-bottom: 8px; font-size:12px; letter-spacing:1px;">PYTANIE 2 Z 3</div>
+            <div style="margin-bottom:15px; font-size:16px; font-weight:700;">Jaka była bezpośrednia przyczyna śmierci?</div>
+            <div class="v-opts">
+                <label class="v-opt"><input type="radio" name="v_how" value="wiertarka"><div><b>Cios tępym narzędziem</b><span>Uderzenie skradzioną wiertarką.</span></div></label>
+                <label class="v-opt"><input type="radio" name="v_how" value="nawoz"><div><b>Otrucie nawozem</b><span>Użycie chemii (Roundup).</span></div></label>
+                <label class="v-opt"><input type="radio" name="v_how" value="thc"><div><b>Odurzenie i upadek</b><span>Zatrucie THC i niefortunne uderzenie głową o kosiarkę.</span></div></label>
+            </div>
+        </div>
+
+        <div class="v-step" id="vStep3">
+            <div style="font-weight:800; color:var(--primary); margin-bottom: 8px; font-size:12px; letter-spacing:1px;">PYTANIE 3 Z 3</div>
+            <div style="margin-bottom:15px; font-size:16px; font-weight:700;">Jaki konflikt z sąsiadem miał miejsce wczoraj?</div>
+            <div class="v-opts">
+                <label class="v-opt"><input type="radio" name="v_why" value="kasa"><div><b>Długi pieniężne</b><span>Wisial mi gotówkę.</span></div></label>
+                <label class="v-opt"><input type="radio" name="v_why" value="sprzet"><div><b>Sprzęt i granica działki</b><span>Kłótnia o kosiarkę, wiertarkę i płot.</span></div></label>
+                <label class="v-opt"><input type="radio" name="v_why" value="ciagnik"><div><b>Części do traktora</b><span>Ukradł mi części do Ursusa C330.</span></div></label>
+            </div>
+        </div>
+
+        <div class="v-actions">
+            <button class="v-btn cancel" onclick="closeVerdict()">ANULUJ</button>
+            <button class="v-btn next" id="vBtnNext" onclick="nextVerdict()">DALEJ</button>
+            <button class="v-btn next" id="vBtnSubmit" style="display:none" onclick="submitVerdict()">ZATWIERDŹ</button>
+        </div>
     </div>
-    <div class="vd-stage" id="vdStage2">
-      <div class="vd-stage-head"><div class="s-num">2</div><div class="s-label">JAK</div><span style="color:var(--muted);font-size:10px">— Wskaż wektor ataku</span></div>
-      <div class="v-opts">
-        <label class="v-opt"><input type="radio" name="how" value="remote"><div class="v-opt-body"><span>Zdalne Przejęcie Telemetrii (Override_Steering.exe)</span><small>Atakujący wykorzystał lukę zero-day kupioną w DarkNet, aby zdalnie przejąć kontrolę nad układem kierowniczym pojazdu autonomicznego ofiary.</small></div></label>
-        <label class="v-opt"><input type="radio" name="how" value="physical"><div class="v-opt-body"><span>Fizyczna Ingerencja w Układ Hamulcowy</span><small>Klasyczny sabotaż wykonany przed odjazdem Mikołaja z podziemnego parkingu pod redakcją. Ominęło to logi systemowe pojazdu.</small></div></label>
-        <label class="v-opt"><input type="radio" name="how" value="social"><div class="v-opt-body"><span>Inżynieria Społeczna i Wyprowadzenie w Błąd</span><small>Ofiara została sprowokowana fałszywymi komunikatami nawigacji do wjazdu na zamknięty odcinek autostrady przy dużej prędkości.</small></div></label>
-        <label class="v-opt"><input type="radio" name="how" value="unknown"><div class="v-opt-body"><span>Brak możliwości weryfikacji</span><small>Dane telemetryczne zostały bezpowrotnie zniszczone w momencie pożaru pojazdu.</small></div></label>
-      </div>
-    </div>
-    <div class="vd-stage" id="vdStage3">
-      <div class="vd-stage-head"><div class="s-num">3</div><div class="s-label">DLACZEGO</div><span style="color:var(--muted);font-size:10px">— Określ główny motyw</span></div>
-      <div class="v-opts">
-        <label class="v-opt"><input type="radio" name="why" value="silence"><div class="v-opt-body"><span>Zablokowanie publikacji artykułu (Uciszenie)</span><small>Celem było zapobieżenie opublikowaniu przecieku, który zniszczyłby NexoTech i obnażył błędy w ich autonomicznym SI.</small></div></label>
-        <label class="v-opt"><input type="radio" name="why" value="revenge"><div class="v-opt-body"><span>Zemsta za szantaż</span><small>Ofiara próbowała wymusić okup w zamian za zwrot oryginalnych logów, co wywołało agresywną odpowiedź sprawcy.</small></div></label>
-        <label class="v-opt"><input type="radio" name="why" value="financial"><div class="v-opt-body"><span>Monetyzacja akcji korporacyjnych</span><small>Sprawca działał wyłącznie w celu wywołania krachu giełdowego i zarobienia na krótkich pozycjach przed publikacją.</small></div></label>
-        <label class="v-opt"><input type="radio" name="why" value="unknown"><div class="v-opt-body"><span>Brak możliwości weryfikacji</span><small>Brak logów z komunikacji bezpośredniej uniemożliwia wskazanie motywu.</small></div></label>
-      </div>
-    </div>
-    <div class="v-actions">
-      <button class="v-cancel" onclick="closeVerdict()">PRZERWIJ</button>
-      <button class="v-next" id="vdNextBtn" onclick="verdictNext()">DALEJ</button>
-      <button class="v-submit" id="vdSubmitBtn" onclick="submitVerdict()" style="display:none">ZATWIERDŹ RAPORT</button>
-    </div>
-  </div>
 </div>
 
-<div id="ending">
-  <div class="stamp" id="endStamp"></div>
-  <div class="txt" id="endTxt"></div>
-  <div id="endBtns"></div>
+<div id="endingScreen">
+    <div class="end-icon" id="endIcon">✅</div>
+    <div class="end-title" id="endTitle">Wynik</div>
+    <div class="end-text" id="endText">Tekst</div>
+    <button class="end-btn" id="endBtnAction" onclick="location.reload()">ZAMKNIJ SYSTEM</button>
 </div>
 
 <script>
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let actx;
+const DATA = {
+    chats: [
+        {
+            id: "zona", name: "Monika (Żona)", sub: "Kup mleko",
+            msgs: [
+                { t: "Wczoraj 14:20", f: "them", x: "Adam, uspokój się z tym Grześkiem. Przez ten płot w końcu się pozabijacie." },
+                { t: "Wczoraj 14:25", f: "me", x: "On zaczął! Przesunął słupek o 10 centymetrów na naszą stronę! I nie oddał sprzętu!" },
+                { t: "Wczoraj 14:28", f: "them", x: "Zachowujecie się jak dzieci. Upiekłam szarlotkę. Zanieś mu kawałek i się pogódźcie." },
+                { t: "Wczoraj 14:30", f: "me", x: "Nigdy. Nie po tym, jak przywłaszczył moją wiertarkę." },
+                { t: "Wczoraj 21:00", f: "them", x: "Adam, znowu śmierdzi ziołem. Grzesiek coś piecze w tym swoim garażu?" },
+                { t: "Wczoraj 21:05", f: "me", x: "Tak, narkoman jeden. Dzwonię jutro na straż miejską." }
+            ]
+        },
+        {
+            id: "synek", name: "Jakub (Synek)", sub: "Odpisz",
+            msgs: [
+                { t: "Wczoraj 10:00", f: "them", x: "Tato, pożyczysz 50 zł blikiem? Oddam we wtorek." },
+                { t: "Wczoraj 10:15", f: "me", x: "Na co ci tyle kasy?" },
+                { t: "Wczoraj 10:20", f: "them", x: "Idę z chłopakami na pizzę." },
+                { t: "Wczoraj 10:25", f: "me", x: "Poszło. Ale jutro musisz opryskać ziemniaki, opryskiwacz kupiłem." },
+                { t: "Wczoraj 10:30", f: "them", x: "Dzięki! A widziałem rano jak Grzesiek niósł twoją Makitę do siebie." },
+                { t: "Dzisiaj 08:00", f: "them", x: "Tato, dlaczego pod domem Grześka stoją dwa radiowozy?" }
+            ]
+        },
+        {
+            id: "grzesiu", name: "Grzesiu (Sąsiad)", sub: "Oddawaj to",
+            msgs: [
+                { t: "Wczoraj 18:00", f: "them", x: "Adam, jak nie oddasz tej kosiarki do wieczora to dzwonie na policje." },
+                { t: "Wczoraj 18:05", f: "me", x: "Zabrałeś moją wiertarkę, to kosiarka jest w zastawie. Oddasz sprzęt, dostaniesz kosiarkę." },
+                { t: "Wczoraj 18:10", f: "them", x: "Jesteś nienormalny. Wiertarke to ty sam zgubiles." },
+                { t: "Wczoraj 18:12", f: "them", x: "Z reszta mam to gdzies. Upieklem sobie wlasnie moje specjalne ciasteczka. Zjem cala blache i zapomne ze mam takiego sasiada." },
+                { t: "Wczoraj 18:15", f: "me", x: "Tylko nie padnij tam, ćpunie. Będę miał spokój na weekend." }
+            ]
+        },
+        {
+            id: "tata", name: "Dziadek Kaziu", sub: "ZDROWIE",
+            msgs: [
+                { t: "Dzisiaj 09:00", f: "me", x: "Wszystkiego najlepszego z okazji Dnia Ojca, tatusiu! Dużo zdrowia i spokoju. Kocham Cię! ❤️" },
+                { t: "Dzisiaj 09:15", f: "them", x: "DZIEKUJE SYNKU BARDZO MI MILO" },
+                { t: "Dzisiaj 09:20", f: "me", x: "Wiem tato. Wpadniemy w niedzielę na obiad. I wyłącz tego capslocka." },
+                { t: "Dzisiaj 09:30", f: "them", x: "CO TO JEST CAPSLOK. KUP MI MASĆ NA STAWY I POMPE WODY DO URSUSA C330." }
+            ]
+        },
+        {
+            id: "mama", name: "Babcia Gienia", sub: "Ksiądz pytał",
+            msgs: [
+                { t: "Wtorek 12:00", f: "them", x: "Adasiu, byłeś w niedzielę w kościele? Proboszcz pytał." },
+                { t: "Wtorek 12:15", f: "me", x: "Byliśmy mamo, siedzieliśmy z tyłu." }
+            ]
+        }
+    ],
+    mails: [
+        { from: "powiadomienia@allegro.pl", sub: "Kupiłeś: Środek chwastobójczy ROUNDUP", time: "Środa 12:30", body: "Dziękujemy za zakupy Adam!\n\nKupiłeś:\n- ROUNDUP Flex 480 5L (Bardzo silny środek chemiczny)\n- Opryskiwacz plecakowy 10L\n\nSprzedawca przygotowuje paczkę." },
+        { from: "wspolnota@osiedle.pl", sub: "Wezwanie do zaprzestania hałasów", time: "Wtorek 09:00", body: "Szanowny Panie Adamie,\n\nOtrzymaliśmy skargę od sąsiada (Grzegorz K.) na temat kłótni przy ogrodzeniu. Prosimy o polubowne rozwiązanie sporu o granicę działki, w przeciwnym razie sprawa trafi do nadzoru." },
+        { from: "rolnik-sklep@agro.pl", sub: "Zamówienie zrealizowane", time: "Poniedziałek 08:00", body: "Twoje części do Ursus C330 (chłodnica, paski klinowe) zostały wysłane." }
+    ],
+    market: [
+        { title: "Wiertarka Udarowa Makita 18V (Używana)", price: "250 zł", seller: "Anonimowy_G", pic: "🔧", desc: "Sprzedam szybko wiertarkę. Brak ładowarki w zestawie. Odbiór osobisty tylko po 22:00." },
+        { title: "Kosiarka Spalinowa NAC (Na części)", price: "100 zł", seller: "Janusz_Wawa", pic: "🚜", desc: "Niestety nie odpala, nie wiem co jest grane. Sprzedaję tak jak stoi." },
+        { title: "Pompa Wody Ursus C330 (Nowa)", price: "180 zł", seller: "AgroCzesci", pic: "⚙️", desc: "Nowa pompa wody do ciagnika Ursus C330. Szybka wysylka." }
+    ],
+    history: [
+        { t: "jak uspokoić nerwy po ostrej kłótni z idiotą", u: "poradnik-zdrowie.pl", time: "Wczoraj 19:15" },
+        { t: "czy od marihuany mozna zejsc z tego swiata", u: "forum-medyczne.pl", time: "Wczoraj 21:40" },
+        { t: "gdzie zgłosić kradzież narzędzi przez sąsiada", u: "policja.gov.pl", time: "Środa 15:30" },
+        { t: "jak skutecznie wypalić trawę u sąsiada bez przypału", u: "ogrodnicze-triki.pl/roundup", time: "Wtorek 11:20" },
+        { t: "ursus c330 wymiana pompy wody instrukcja", u: "agrofoto.pl", time: "Poniedziałek 10:00" }
+    ],
+    files: [
+        { n: "list_do_sasiada_BRUDNOPIS.txt", desc: "Szkic pisma", content: "Grzesiek,\nOddaj moją wiertarkę, bo inaczej to się bardzo źle skończy dla nas obu. Z tą swoją nową kosiarką możesz się pożegnać, dopóki nie zobaczę sprzętu u siebie." },
+        { n: "przepis_szarlotka.txt", desc: "Przepisy kulinarne", content: "Szybka szarlotka Moniki:\n- 5 kwaśnych jabłek\n- 2 szklanki mąki\n- 200g masła\n(Notatka: Monika chciała, żebym mu to zaniósł na zgodę. Niedoczekanie.)" },
+        { n: "lista_zakupow_traktor.txt", desc: "Notatki dla ojca", content: "Ursus C330 - części do kupienia:\n1. Pompa wody\n2. Uszczelki\n3. Olej silnikowy 15W40\nZawieźć tacie w niedzielę." }
+    ],
+    report: `[ T A J N E - RAPORT WSTĘPNY OGLĘDZIN MIEJSCA ZDARZENIA ]
+SYGNATURA SPRAWY: KRP-2026/06/104
+DATA ZDARZENIA: Wczoraj, godz. 23:45
+OFIARA: Grzegorz K., lat 42
 
-function initSnd(){
-  if(!actx) actx = new AudioCtx();
-  if(actx && actx.state === 'suspended') actx.resume();
-}
+STAN FAKTYCZNY NA MIEJSCU:
+Ciało zmarłego w zamkniętym od wewnątrz garażu. Na potylicy rozległa rana tłuczona. Obok ciała kosiarka spalinowa ze śladami krwi na metalowym korpusie silnika. Na stole pusta blacha do pieczenia. Brak śladów walki.
 
-function startBGM() {
-    if(STATE.bgmStarted || !actx || actx.state !== 'running') return;
-    STATE.bgmStarted = true;
-    const masterBGM = actx.createGain();
-    masterBGM.gain.value = 0.015;
-    masterBGM.connect(actx.destination);
+WYNIKI TOKSYKOLOGII:
+We krwi denata wykryto ekstremalnie wysokie, toksyczne stężenie związków psychoaktywnych (syntetyczne THC z wypieków). 
 
-    const osc1 = actx.createOscillator();
-    osc1.type = "sine";
-    osc1.frequency.value = 65.41;
-    osc1.connect(masterBGM);
-    osc1.start();
+WNIOSKI LEKARZA SĄDOWEGO:
+Denat w wyniku spożycia ogromnej dawki doznał ostrego ataku paniki. Potknął się i upadł do tyłu, uderzając głową w twardy, metalowy rant kosiarki.
 
-    const osc2 = actx.createOscillator();
-    osc2.type = "sine";
-    osc2.frequency.value = 98.00;
-    osc2.connect(masterBGM);
-    osc2.start();
-
-    const osc3 = actx.createOscillator();
-    osc3.type = "triangle";
-    osc3.frequency.value = 130.81;
-    const gain3 = actx.createGain();
-    gain3.gain.value = 0.3;
-    osc3.connect(gain3);
-    gain3.connect(masterBGM);
-    osc3.start();
-
-    const lfo = actx.createOscillator();
-    lfo.type = "sine";
-    lfo.frequency.value = 0.03;
-    const lfoGain = actx.createGain();
-    lfoGain.gain.value = 0.005;
-    lfo.connect(lfoGain);
-    lfoGain.connect(masterBGM.gain);
-    lfo.start();
-}
-
-function sndType(){
-  if(!actx || actx.state !== 'running') return;
-  const osc = actx.createOscillator();
-  const gain = actx.createGain();
-  osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(120 + Math.random()*30, actx.currentTime);
-  gain.gain.setValueAtTime(0.005, actx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.04);
-  osc.connect(gain);
-  gain.connect(actx.destination);
-  osc.start();
-  osc.stop(actx.currentTime + 0.04);
-}
-
-function sndApp(){
-  if(!actx || actx.state !== 'running') return;
-  const osc = actx.createOscillator();
-  const gain = actx.createGain();
-  osc.type = "triangle";
-  osc.frequency.setValueAtTime(300, actx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(600, actx.currentTime + 0.1);
-  gain.gain.setValueAtTime(0.02, actx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.1);
-  osc.connect(gain);
-  gain.connect(actx.destination);
-  osc.start();
-  osc.stop(actx.currentTime + 0.1);
-}
-
-function sndNotif(){
-  if(!actx || actx.state !== 'running') return;
-  const osc = actx.createOscillator();
-  const gain = actx.createGain();
-  osc.type = "square";
-  osc.frequency.setValueAtTime(600, actx.currentTime);
-  osc.frequency.setValueAtTime(900, actx.currentTime + 0.05);
-  gain.gain.setValueAtTime(0.04, actx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.15);
-  osc.connect(gain);
-  gain.connect(actx.destination);
-  osc.start();
-  osc.stop(actx.currentTime + 0.15);
-}
-
-function sndHackAlert(){
-    if(!actx || actx.state !== 'running') return;
-    const osc = actx.createOscillator();
-    const gain = actx.createGain();
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(100, actx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(40, actx.currentTime + 1.5);
-    gain.gain.setValueAtTime(0.1, actx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.01, actx.currentTime + 1.5);
-    osc.connect(gain);
-    gain.connect(actx.destination);
-    osc.start();
-    osc.stop(actx.currentTime + 1.5);
-}
-
-function sndTick(){
-    if(!actx || actx.state !== 'running') return;
-    const osc = actx.createOscillator();
-    const gain = actx.createGain();
-    osc.type = "square";
-    osc.frequency.setValueAtTime(150, actx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(50, actx.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.05, actx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.1);
-    osc.connect(gain);
-    gain.connect(actx.destination);
-    osc.start();
-    osc.stop(actx.currentTime + 0.1);
-}
-
-const STATE={
-  windows:{},
-  zTop:100,
-  notes:"",
-  logsUnlocked:false,
-  igUnlocked:false,
-  contactsRead:{},
-  mailRead:{},
-  adRead:{},
-  activeChat:null,
-  activeAd:null,
-  activeMail:null,
-  endGameDone:false,
-  verdictStage:1,
-  verdictWho:null,
-  verdictHow:null,
-  objectives:{opened:new Set(),mailOpened:false,logsOpened:false},
-  timerStart:null,
-  totalSecs:15*60,
-  readmeOpened:false,
-  vchatUnread:0,
-  creepyStage:0,
-  creepyWaiting:false,
-  creepyNextTimer:null,
-  creepyWarnedGame:false,
-  creepyWarnedGame2:false,
-  hackInt:null,
-  hackIntSec:null,
-  hackTime:0,
-  hackCode:"",
-  bgmStarted:false
+KONKLUZJA ŚLEDCZA:
+Brak udziału osób trzecich. Nieszczęśliwy wypadek wywołany silnym odurzeniem.`
 };
 
-const DATA={
-  contacts:[
-    {id:"mikolaj",name:"Mikołaj S.",sub:"Auto wariuje. Zadzwoń.",time:"Czw 22:15",
-      msgs:[
-        {t:"Wt 11:15",f:"them",x:"Piotr, widziałem paczkę danych. To jest absolutna bomba."},
-        {t:"Wt 11:20",f:"me",x:"Mówiłem ci. NexoTech ignoruje wady w systemie antykolizyjnym. Wiedzą, że giną ludzie."},
-        {t:"Wt 11:22",f:"them",x:"Anna chce to puścić w poniedziałek. Mamy ubezpieczenie prawne."},
-        {t:"Wt 11:25",f:"me",x:"Bądź ostrożny. Oni mają ludzi od czarnej roboty. Monitorują mój ruch."},
-        {t:"Czw 19:30",f:"them",x:"Chyba miałeś rację. Ktoś kręcił się wokół mojego biura."},
-        {t:"Czw 19:45",f:"me",x:"Zostań w redakcji. Nie wsiadaj do swojego wozu, weź taksówkę."},
-        {t:"Czw 22:10",f:"them",x:"Wsiadłem. Złe przeczucie. Wyświetlacz wariuje. Odpalił się tryb serwisowy."},
-        {t:"Czw 22:15",f:"them",x:"Piotr, nie mogę wyłączyć autopilota. Drzwi zablokowane. Zadzwoń!"}
-      ]},
-    {id:"szef_it",name:"Dyr. Borys",sub:"Natychmiastowe wezwanie",time:"Pt 08:00",
-      msgs:[
-        {t:"Pon 09:00",f:"them",x:"Piotr, dlaczego widzę logowanie z twojego terminala do węzła pojazdów autonomicznych?"},
-        {t:"Pon 09:15",f:"me",x:"Robiłem rutynowy audyt, szefie. Zlecenie z sekcji 4."},
-        {t:"Pon 09:30",f:"them",x:"Sekcja 4 nic o tym nie wie. Masz zakaz zbliżania się do serwera telemetrii."},
-        {t:"Pt 08:00",f:"them",x:"Zarząd zablokował ci kartę dostępu. Zgłoś się do kadr o 10:00."}
-      ]},
-    {id:"lena",name:"Lena (Siostra)",sub:"Oglądałeś wiadomości?",time:"Pt 07:15",
-      msgs:[
-        {t:"Śr 15:00",f:"them",x:"Wpadniesz w niedzielę na obiad? Mama pyta."},
-        {t:"Śr 15:10",f:"me",x:"Nie wiem, mam straszny młyn w pracy. Możliwe, że wyjadę na kilka dni."},
-        {t:"Śr 15:11",f:"them",x:"Znów masz te swoje paranoje? Odpocznij chłopie."},
-        {t:"Pt 07:14",f:"them",x:"Piotr, oglądałeś wiadomości? Ten dziennikarz, o którym mi mówiłeś... on zginął w nocy."},
-        {t:"Pt 07:15",f:"them",x:"Odbierz telefon. Boję się."}
-      ]},
-    {id:"anna",name:"Anna (Redaktor)",sub:"Gdzie są reszta plików?",time:"Pt 02:30",
-      msgs:[
-        {t:"Czw 14:00",f:"them",x:"Piotr, Mikołaj przekazał mi paczkę. Czy masz coś więcej o protokole Override?"},
-        {t:"Czw 14:05",f:"me",x:"Wszystko co mam, dałem jemu. Nie piszcie do mnie z niezabezpieczonych linii."},
-        {t:"Czw 14:10",f:"them",x:"Spokojnie. Szykujemy się na poniedziałek."},
-        {t:"Pt 02:30",f:"them",x:"Policja tu jest. Mikołaj miał wypadek na obwodnicy. Samochód uderzył w filar przy 160km/h."}
-      ]},
-  ],
-  ads:[
-    {id:"exploit",title:"Zero-Day: System Nawigacji NT-OS 4.0",price:"15.000 XMR",seller:"DarkVendor",glyph:"☢",
-      msgs:[
-        {t:"Wt 20:04",f:"me",x:"Szukam wektora ataku na systemy telemetrii NT."},
-        {t:"Wt 21:00",f:"them",x:"Mam coś. Pełny override układu kierowniczego. Niewykrywalne, zostawia log błędu czujnika."},
-        {t:"Wt 21:15",f:"me",x:"Zbyt drogo. Odpuszczam."},
-        {t:"Śr 10:00",f:"them",x:"Ogłoszenie zamknięte. Ktoś inny właśnie to kupił."},
-        {t:"Śr 10:05",f:"me",x:"Kto?"},
-        {t:"Śr 10:10",f:"them",x:"A od kiedy na DarkDropie zadaje się takie pytania? Gość miał tag Kameleon. Tyle ci powiem."}
-      ],sold:true},
-    {id:"docs",title:"Plany Architektoniczne HQ NexoTech",price:"500 XMR",seller:"RogueArch",glyph:"🏢",
-      msgs:[
-        {t:"Pon 16:00",f:"them",x:"Plany serwerowni podziemnej. Zainteresowany?"},
-        {t:"Pon 18:30",f:"me",x:"Znam je na pamięć. Pracuję tam."}
-      ]},
-  ],
-  mails:[
-    {id:"m_kameleon",from:"kameleon@darknet.enc",sub:"[OSTRZEŻENIE] Zamilknij",time:"Śr 03:22",
-      body:"Piotr.\n\nWsadziłeś nos tam, gdzie nie trzeba. NexoTech wie o przecieku.\nDziennikarzyna niczego nie opublikuje. Zadbamy o to.\nZniszcz swoje dyski albo podzielisz jego los. System operacyjny waszych zabawek ma furtki, o których nie śniłeś.\n\n— K."},
-    {id:"m_nexohr",from:"hr@nexotech.corp",sub:"Zawieszenie obowiązków",time:"Pt 01:00",
-      body:"Szanowny Panie,\n\nInformujemy, że z dniem dzisiejszym Pana dostęp do infrastruktury NexoTech zostaje zawieszony w związku ze śledztwem wewnętrznym dotyczącym nieautoryzowanego kopiowania danych zastrzeżonych.\n\nProszę nie opuszczać miejsca zamieszkania."},
-    {id:"m_anna",from:"anna.redakcja@news.local",sub:"Co my teraz zrobimy?!",time:"Pt 03:00",
-      body:"Piotr, on nie żyje. Zidentyfikowali wrak. Policja twierdzi, że to błąd sterownika pojazdu połączony z nadmierną prędkością. Ty i ja wiemy, że to niemożliwe. Ktoś przejął jego wóz. Musimy wrzucić pliki do sieci TERAZ."},
-    {id:"m_sys",from:"sysadmin@nexotech.corp",sub:"Naruszenie protokołu bezpieczeństwa",time:"Czw 23:45",
-      body:"Zautomatyzowany alert sieciowy:\nWykryto próbę zewnętrznego dostępu do węzła telemetrii z adresu IP: 44.120.88.12. Atakujący wykorzystał nieznany exploit typu RCE. Kod błędu: OVERRIDE_STEERING_ENGAGED. Czas: 22:12. Znaleziono wiele prób logowania: ilość prób logowania 1804."},
-  ],
-  history:[
-    {cat:"WYSZUKIWANIA",entries:[
-      {t:"jak trwale nadpisać dysk SSD",u:"darkweb.forum/wipe",ts:"Pt 00:15"},
-      {t:"NexoTech wypadki autonomiczne statystyki ukryte",u:"search.local",ts:"Wt 14:22"},
-      {t:"Kameleon haker najemnik",u:"search.local",ts:"Śr 09:48"},
-    ]},
-    {cat:"WIADOMOŚCI",entries:[
-      {t:"Wypadek na obwodnicy. Spłonął samochód autonomiczny",u:"news.local/wypadek",ts:"Pt 02:45"},
-      {t:"Akcje NexoTech spadają po doniesieniach o awarii",u:"finance.local",ts:"Pt 08:30"},
-    ]},
-  ],
-  files:[
-    {folder:"POUFNE",items:[
-      {n:"szkic_artykulu.docx",d:"24 KB — zmodyfikowany Wt 11:00",x:"artykul"},
-      {n:"brudnopis_piotr.txt",d:"2 KB — zmodyfikowany Pt 04:00",x:"brudnopis"},
-    ]},
-    {folder:"ZRZUTY SYSTEMOWE",items:[
-      {n:"telemetria_wypadek.log",d:"Wymaga dekryptacji",x:"telemetria"},
-      {n:"skan_sieciowy.json",d:"4 KB — zrzucone Pt 01:10",x:"skan"},
-    ]},
-  ],
-  fileContents:{
-    artykul:`[FRAGMNENT ARTYKUŁU - AUTOR: MIKOŁAJ S.]
-
-NexoTech reklamuje swój nowy system Autodrive 4.0 jako najbezpieczniejszy na świecie. Nasze śledztwo, poparte danymi od anonimowego sygnalisty z wewnątrz firmy, pokazuje zupełnie inną rzeczywistość. 
-
-Algorytmy posiadają krytyczną lukę w module zarządzania priorytetami zasilania. Co gorsza, dyrekcja NexoTech wiedziała o tym od 8 miesięcy. Zamiast wycofać pojazdy, wdrożyli "łatkę", która maskuje błąd i w razie wypadku resetuje logi pojazdu, wskazując na winę kierowcy.
-
-Mamy dowody na to, że firma zatrudnia zewnętrznych "czyścicieli" w sieci, aby usuwać dowody i zastraszać ofiary.`,
-
-    brudnopis:`Godzina 4:00. Piątek.
-
-Mikołaj nie żyje. Zabili go. Kameleon włamał się do jego wozu. Widziałem alerty w systemie zanim mnie odcięli. Wektorem był ten sam exploit, o który pytałem na DarkDropie. Ktoś go ubiegł, kupił go i wykorzystał przeciwko niemu. 
-
-Muszę uciekać. Zostawiam ten komputer w trybie lustrzanym, wysyłam obraz do zaprzyjaźnionego serwera w chmurze. Jeśli ktoś to czyta, w logach telemetrii jest prawda. Użyjcie jej. Ja już jestem martwy.`,
-
-    skan:`{
-  "scan_id": "NT-441-A",
-  "target": "Pojazd_Mikolaj_NT_Mod",
-  "anomalies_detected": [
-    {
-      "timestamp": "22:12:05",
-      "event": "Zewnętrzne połączenie UDP, port 8042",
-      "source_ip": "44.120.88.12",
-      "payload": "Override_Steering.exe",
-      "signature_match": "KAMELEON_APT"
-    },
-    {
-      "timestamp": "22:14:30",
-      "event": "Krytyczna prędkość osiągnięta. Moduł hamowania wyłączony zdalnie."
-    },
-    {
-      "timestamp": "22:15:42",
-      "event": "Utrata sygnału. Kolizja."
-    }
-  ]
-}`,
-    telemetria:`[PLIK ZASZYFROWANY]
-Przejdź przez moduł dekryptacji, aby uzyskać pełen dostęp do zrzutu awaryjnego systemu NT-OS pojazdu.`,
-  },
-  logs:`[SYS] HOWLORA CYBER-FORENSICS — Dysk dowodowy zmapowany
-[SYS] Hash obrazu zgodny.
-[SYS] Inicjalizacja modułów czytania struktury plików.
-
-<span class="dim">=======================================================
-ZDARZENIA Z OSTATNICH 24 GODZIN
-=======================================================</span>
-[SYS] Czw 19:30 — Piotr loguje się do systemu R&D.
-[NET] Czw 22:10 — Wykryto asynchroniczne pakiety z węzła DarkDrop.
-[APP] Czw 22:12 — Uruchomiono sniffer sieciowy.
-<span class="hl">[ALARM] Czw 22:12:05 — Wykryto przejęcie pojazdu w logach globalnych. Source: 44.120.88.12</span>
-[APP] Czw 22:15 — Zakończenie połączenia komunikatora SecureComm z Mikołajem.
-[NET] Pt 01:00 — Skrzynka pocztowa odbiera powiadomienie HR o zawieszeniu.
-[SYS] Pt 04:00 — Plik brudnopis_piotr.txt zapisany.
-[SYS] Pt 04:15 — Rozpoczęto kompresję i wysyłanie lustrzanego obrazu dysku w chmurę (akcja użytkownika Piotr).
-[SYS] Pt 04:30 — Urządzenie odłączone od zasilania.
-
-[Wniosek systemu]
-Brak w śladach działań wskazujących na winę użytkownika Piotr. Dowody wskazują na ingerencję z zewnątrz z użyciem zakupionego exploita. Motyw: Zapobieżenie publikacji oskarżającej korporację NexoTech.`,
+let STATE = {
+    windows: {},
+    zIndex: 100,
+    reportUnlocked: false,
+    vStep: 1,
+    vAnswers: {}
 };
 
-function openTrash(){
-  trackObj("start");
-  const w=makeWindow("trash","RecycleBin","",{w:520,h:380});
-  w.body.innerHTML=`
-     <div class="list">
-       <div class="file-folder">USUNIĘTE POZYCJE</div>
-       <div class="file" onclick="openTrashFile()"><div class="n">wiadomosc_robocza.txt</div><div class="d">Usunięto: Czw 23:59</div></div>
-     </div>
-  `;
-}
-window.openTrashFile = function(){
-  const w=makeWindow("trash_file","wiadomosc_robocza.txt","",{w:500,h:400});
-  w.body.innerHTML=`<pre class="term">"Anna, nie publikuj tego. Oni posuną się do wszystkiego. Kameleon to rzeźnik cyfrowy, nie zostawia śladów w kodzie, ale zostawia w prawdziwym życiu. Odcinam się."</pre>`;
-};
-
-window.toggleIgComments = function(id){
-  const el = document.getElementById("ig_com_"+id);
-  if(el){
-    el.style.display = el.style.display === "none" ? "block" : "none";
-  }
-};
-
-function openIG(){
-  if(!STATE.igUnlocked){
-    const w = makeWindow("ig_lock", "Chirp — Autoryzacja", "", {w:300, h:200});
-    w.body.innerHTML = `
-      <div style="padding:20px;text-align:center;display:flex;flex-direction:column;gap:12px;justify-content:center;height:100%">
-        <div style="color:var(--magenta);font-size:28px">🐦</div>
-        <div style="font-size:11px;color:var(--muted);letter-spacing:2px">PODAJ PIN BEZPIECZEŃSTWA</div>
-        <input type="password" id="igPin" maxlength="4" style="background:#0d0600;border:1px solid var(--amber);color:var(--cyan);padding:10px;text-align:center;font-size:18px;letter-spacing:10px;width:140px;margin:0 auto" autocomplete="off">
-        <button onclick="checkIGPin()" style="padding:10px 20px;background:var(--amber);color:#000;border:none;border-radius:0;font-size:11px;margin-top:10px;font-weight:900;letter-spacing:2px">ODBLOKUJ</button>
-        <div id="igError" style="color:var(--red);font-size:11px;min-height:16px;font-weight:bold"></div>
-      </div>
-    `;
-    return;
-  }
-  const w = makeWindow("ig", "Chirp // Sieć", "", {w:440, h:580});
-  w.body.innerHTML = `
-    <div class="ig-feed" style="background:#0a0500;height:100%;overflow-y:auto;padding-bottom:20px">
-      <div style="padding:16px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:12px;background:#0d0600;position:sticky;top:0;z-index:10">
-         <div style="font-size:20px;color:var(--magenta)">🐦</div>
-         <div style="font-size:14px;font-weight:900;color:var(--cyan);letter-spacing:2px">CHIRP DECENTRALIZED</div>
-      </div>
-      <div style="margin-bottom:20px;border-bottom:1px solid var(--line2)">
-        <div style="padding:12px 16px;display:flex;align-items:center;gap:12px">
-          <div style="width:32px;height:32px;background:var(--amber);display:grid;place-items:center;font-size:12px;color:#000;font-weight:bold">N</div>
-          <div style="font-size:13px;font-weight:bold;color:#fff">NewsLocal <span style="color:var(--cyan)">✓</span></div>
-        </div>
-        <div style="padding:10px 16px;font-size:13px;color:#e6ccb3;line-height:1.6">
-          Tragiczny wypadek na obwodnicy. Samochód autonomiczny zjechał z drogi z prędkością 160km/h. Służby badają przyczynę awarii. #NexoTech #Wypadek
-        </div>
-        <div style="padding:0 16px 16px;display:flex;gap:20px;color:var(--muted);font-size:11px;font-weight:bold;cursor:pointer" onclick="toggleIgComments('news')">
-          <span>🔁 402</span><span>💬 Rozwiń komentarze (3)</span>
-        </div>
-        <div id="ig_com_news" style="display:none;padding:0 16px 16px;font-size:12px;color:#cca37a;border-top:1px dashed var(--line2);padding-top:12px;">
-          <div style="margin-bottom:8px"><b style="color:var(--cyan)">TechGuru:</b> To nie pierwszy raz kiedy ich system zawodzi.</div>
-          <div style="margin-bottom:8px"><b style="color:var(--cyan)">Kameleon_0x:</b> Technologia bywa brutalna. Trzeba uważać na drodze. 👁️</div>
-          <div style="margin-bottom:8px"><b style="color:var(--cyan)">Anna_Redakcja:</b> Zabraniacie nam mówić prawdy, ale my nie zamilkniemy.</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-window.checkIGPin = function(){
-  const val = document.getElementById("igPin").value;
-  if(val === "1804"){
-    STATE.igUnlocked = true;
-    closeWin("ig_lock");
-    openIG();
-  } else {
-    document.getElementById("igError").textContent = "BŁĄD KODU";
-    setTimeout(()=>document.getElementById("igError").textContent="", 2000);
-  }
-};
-
-const APPS=[
-  {id:"vchat",   name:"SecureComm",  glyph:"S",   open:openVChat},
-  {id:"echo",    name:"DarkDrop",    glyph:"∇",   open:openEcho},
-  {id:"mail",    name:"Poczta.Enc",  glyph:"✉",   open:openMail},
-  {id:"notes",   name:"Notatnik",    glyph:"≡",   open:openNotes},
-  {id:"browser", name:"NetNav",      glyph:"⎈",   open:openBrowser},
-  {id:"files",   name:"System Plików",glyph:"▤",   open:openFiles},
-  {id:"logs",    name:"Telemetria",  glyph:"⚠",   open:openLogs, locked:true},
-  {id:"ig",      name:"Chirp",       glyph:"🐦",  open:openIG},
-  {id:"trash",   name:"RecycleBin",  glyph:"⏚",   open:openTrash},
-  {id:"snake",   name:"Widmo.exe",   glyph:"⏣",  open:openSnake, game:true},
-  {id:"ttt",     name:"Krypto-Krzyżyk",glyph:"✕", open:openTicTacToe, game:true},
-  {id:"rps",     name:"Sieć-Węzeł-Wirus",glyph:"⚄", open:openRPS, game:true},
-  {id:"readme",  name:"INSTRUKCJA",  glyph:"?",   open:openReadme},
-];
-
-const OBJECTIVES=[
-  {id:"start",   text:"Inicjalizacja terminali"},
-  {id:"vchat",   text:"Analiza komunikacji SecureComm"},
-  {id:"mail",    text:"Ekstrakcja logów pocztowych"},
-  {id:"files",   text:"Przegląd plików zastrzeżonych"},
-  {id:"logs",    text:"Dekryptacja logów telemetrii pojazdu"},
-  {id:"verdict", text:"Zatwierdzenie raportu końcowego"},
-];
-
-let objTypingIdx=0;
-function renderObjectives(){
-  const panel=document.getElementById("objPanel");
-  const opened=STATE.objectives.opened;
-  const completed=new Set([...opened]);
-  if(STATE.logsUnlocked) completed.add("logs");
-  let html=`<div class="obj-head">CELE ŚLEDZTWA</div>`;
-  OBJECTIVES.forEach(o=>{
-    const done=completed.has(o.id)&&o.id!=="verdict";
-    const cur=!done&&o.id===OBJECTIVES.find(x=>!completed.has(x.id)||x.id==="verdict")?.id;
-    let cls="obj-item"+(done?" done":cur?" active":"");
-    html+=`<div class="${cls}">${done?"[X] ":cur?"[>] ":"[ ] "}${o.text}${cur&&!done?'<span class="obj-caret"></span>':""}</div>`;
-  });
-  panel.innerHTML=html;
-}
-
-const LORE_PL="Mikołaj S. zginął w płonącym wraku pojazdu NexoTech.\nPolicja uznaje to za błąd systemu i nadmierną prędkość.\nTo komputer jego informatora.\nMasz 15 minut na zabezpieczenie dowodów morderstwa.";
-
-const BOOT_LINES_PL=[
-  "INICJALIZACJA KERNELA HOWLORA ... OK",
-  "ODCZYT KLUCZY SZYFRUJĄCYCH ... OK",
-  "Montowanie obrazu: PIOTR_NEXO.img",
-  "Weryfikacja sumy kontrolnej SHA-256 ... ZGODNA",
-  "Przechwytywanie zaszyfrowanych pakietów pocztowych ...",
-  "Rozpakowywanie logów telemetrii ... BŁĄD. WYMAGANA RĘCZNA DEKRYPTACJA.",
-  "Przywracanie struktury systemu plików.",
-  "Uruchamianie interfejsu Omega.",
-];
-
-let bootFinished=false;
-
-function skipBoot(){
-  if(bootFinished)return;
-  initSnd();
-  bootFinished=true;
-  document.getElementById("bootOverlay").remove();
-  const btn = document.getElementById("bootSkip");
-  if(btn) btn.remove();
-  revealDesktop();
-}
-
-function runBoot(){
-  initSnd();
-  const init = document.getElementById("initScreen");
-  if(init) init.remove();
-  document.getElementById("bootOverlay").style.display = "block";
-  setTimeout(()=>{
-    showStage("stageBios");
-    runBios();
-  },800);
-}
-
-function showStage(id){
-  ["stagePower","stageBios","stageLogo","stageLoading","stageLogin"].forEach(s=>{
-    const el=document.getElementById(s);
-    if(el){
-      el.style.display=(s===id)?"flex":"none";
-    }
-  });
-}
-
-function runBios(){
-  const biosEl=document.getElementById("biosText");
-  const lines=[
-    {t:"NEXOTECH SECURE BOOT v4.2",c:"ok"},
-    {t:"Procesor sprzętowy: Quantum-Link Core ... OK",c:"ok"},
-    {t:"Pamięć operacyjna: 64TB Z-RAM ... OK",c:"ok"},
-    {t:"Moduł sieciowy: Odłączony (Tryb Air-Gap) ... OK",c:"ok"},
-    {t:"System plików zablokowany przed zapisem.",c:"ok"},
-    {t:"Bootowanie z partycji kryminalistycznej...",c:""},
-  ];
-  let i=0;
-  const addLine=()=>{
-    if(bootFinished)return;
-    if(i>=lines.length){
-      setTimeout(()=>{if(!bootFinished)showLogoStage();},500);
-      return;
-    }
-    const div=document.createElement("div");
-    const l=lines[i];
-    div.innerHTML=l.c==="ok"?`<span class="ok">${esc(l.t)}</span>`:esc(l.t);
-    biosEl.appendChild(div);
-    i++;
-    setTimeout(addLine,100+Math.random()*60);
-  };
-  addLine();
-}
-
-function showLogoStage(){
-  if(bootFinished)return;
-  showStage("stageLogo");
-  setTimeout(()=>{if(!bootFinished)showLoadingStage();},1600);
-}
-
-function showLoadingStage(){
-  if(bootFinished)return;
-  showStage("stageLoading");
-  const lore=document.getElementById("loadLore");
-  typeLore(lore,LORE_PL,()=>{
-    if(bootFinished)return;
-    const log=document.getElementById("loadLines");
-    const fill=document.getElementById("loadBarFill");
-    let i=0;
-    const step=()=>{
-      if(bootFinished)return;
-      if(i>=BOOT_LINES_PL.length){
-        fill.style.width="100%";
-        setTimeout(()=>{if(!bootFinished)showLoginStage();},600);
-        return;
-      }
-      const div=document.createElement("div");
-      div.textContent="> "+BOOT_LINES_PL[i];
-      log.appendChild(div);
-      log.scrollTop=log.scrollHeight;
-      fill.style.width=((i+1)/BOOT_LINES_PL.length*100)+"%";
-      i++;
-      setTimeout(step,150+Math.random()*150);
-    };
-    setTimeout(step,400);
-  });
-}
-
-function showLoginStage(){
-  if(bootFinished)return;
-  showStage("stageLogin");
-  const barFill=document.getElementById("loginBarFill");
-  const status=document.getElementById("loginStatus");
-  const msgs=["WERYFIKACJA ODCISKU SIATKÓWKI","PROFIL AUTORYZOWANY","DEKRYPTACJA SEKTORA","SYSTEM GOTOWY"];
-  let i=0;
-  setTimeout(()=>{barFill.style.width="100%";},150);
-  const tick=()=>{
-    if(bootFinished)return;
-    if(i>=msgs.length){
-      setTimeout(()=>{if(!bootFinished)finishBoot();},700);
-      return;
-    }
-    status.textContent=msgs[i++];
-    setTimeout(tick,600);
-  };
-  setTimeout(tick,500);
-}
-
-function typeLore(el,text,cb){
-  let i=0;
-  el.innerHTML='<span class="caret"></span>';
-  const tick=()=>{
-    if(bootFinished&&cb){cb();return;}
-    if(i>=text.length){if(cb)setTimeout(cb,600);return;}
-    const ch=text[i++];
-    el.innerHTML=text.slice(0,i).replace(/\n/g,"<br>")+'<span class="caret"></span>';
-    if(ch!==" " && ch!=="\n") sndType();
-    setTimeout(tick,ch==="\n"?500:(Math.random()*30+40));
-  };
-  tick();
-}
-
-function finishBoot(){
-  if(bootFinished)return;
-  bootFinished=true;
-  const overlay=document.getElementById("bootOverlay");
-  const skip=document.getElementById("bootSkip");
-  if(overlay){overlay.style.transition="opacity .6s";overlay.style.opacity="0";setTimeout(()=>{overlay.remove();if(skip)skip.remove();},620);}
-  startBGM();
-  revealDesktop();
-}
-
-const creepyConvo = [
-  {
-    msg: "Widzę, że grzebiesz w jego komputerze.",
-    opts: ["Kim jesteś?", "Nie powstrzymasz mnie."],
-    replies: ["Rozwiązaniem twojego problemu. Albo jego początkiem.", "Piotr też tak myślał. Zobacz jak skończył Mikołaj."]
-  },
-  {
-    msg: "Pliki, których szukasz, zniszczą nie tylko NexoTech.",
-    opts: ["Prawda wyjdzie na jaw.", "Masz krew na rękach."],
-    replies: ["Prawda to luksus dla żywych.", "Zaledwie algorytm. Kod nie ma rąk."]
-  },
-  {
-    msg: "Wiesz, że ten system raportuje każde twoje kliknięcie?",
-    opts: ["Odciąłem połączenie zewnętrzne.", "Zaraz to skończę."],
-    replies: ["Naprawdę w to wierzysz? Naiwne.", "Śpiesz się. Procedura czyszcząca już działa w tle."]
-  }
-];
-
-function scheduleCreepy(delay){
-   STATE.creepyNextTimer = setTimeout(triggerCreepyPhase, delay);
-}
-
-function triggerCreepyPhase(){
-    let isGame = (STATE.windows.snake && !STATE.windows.snake.el.classList.contains("minimized")) ||
-                 (STATE.windows.ttt && !STATE.windows.ttt.el.classList.contains("minimized")) ||
-                 (STATE.windows.rps && !STATE.windows.rps.el.classList.contains("minimized"));
-
-    if (isGame && !STATE.creepyWarnedGame) {
-       STATE.creepyWarnedGame = true;
-       receiveCreepyMessage("Bawisz się? Kod śledzący zaraz sformatuje ci dysk, a ty marnujesz sekundy.");
-       scheduleCreepy(50000);
-       return;
-    }
-
-    const left = Math.max(0, STATE.totalSecs - Math.floor((Date.now()-STATE.timerStart)/1000));
-    if (isGame && left < 300 && !STATE.creepyWarnedGame2) {
-       STATE.creepyWarnedGame2 = true;
-       receiveCreepyMessage("Koniec czasu się zbliża. Wkrótce nic nie zostanie z tych dowodów.");
-       scheduleCreepy(50000);
-       return;
-    }
-
-    if(STATE.creepyStage >= creepyConvo.length) return;
-    const stageData = creepyConvo[STATE.creepyStage];
-    receiveCreepyMessage(stageData.msg);
-    STATE.creepyWaiting = true;
-    if(STATE.windows.vchat) renderVChat(STATE.windows.vchat);
-}
-
-function receiveCreepyMessage(text){
-    sndNotif();
-    let c = DATA.contacts.find(x => x.id === "unknown");
-    if(!c){
-      c = {id:"unknown",name:"NIEZNANY WĘZEŁ",sub:"",time:"Teraz",msgs:[]};
-      DATA.contacts.unshift(c);
-    } else {
-      DATA.contacts = DATA.contacts.filter(x => x.id !== "unknown");
-      DATA.contacts.unshift(c);
-    }
-    c.msgs.push({t:"Teraz", f:"them", x:text, flag:true});
-    c.sub = text;
-    c.time = "Teraz";
-
-    const vchatWin = STATE.windows.vchat;
-    const isActive = vchatWin && STATE.activeChat === "unknown" && !vchatWin.el.classList.contains("minimized");
-
-    if(!isActive){
-        STATE.vchatUnread++;
-    } else {
-        STATE.vchatUnread = 0;
-    }
-    renderIcons();
-
-    if(vchatWin) renderVChat(vchatWin);
-
-    const t = document.createElement("div");
-    t.className = "toast vchat-toast";
-    t.innerHTML = '<div style="color:var(--red);font-weight:900;margin-bottom:6px;font-size:11px;letter-spacing:2px">⚠ INTRUZ SIECIOWY</div><div style="color:#fff;font-size:13px">'+esc(text)+'</div>';
-    document.getElementById("toasts").appendChild(t);
-    setTimeout(()=>{t.style.transition="opacity .4s";t.style.opacity="0";setTimeout(()=>t.remove(),500);},7000);
-}
-
-window.replyCreepy = function(optIdx){
-    STATE.creepyWaiting = false;
-    const stageData = creepyConvo[STATE.creepyStage];
-    const myText = stageData.opts[optIdx];
-    const hisReply = stageData.replies[optIdx];
-
-    let c = DATA.contacts.find(x => x.id === "unknown");
-    c.msgs.push({t:"Teraz", f:"me", x:myText});
-    if(STATE.windows.vchat) renderVChat(STATE.windows.vchat);
-
+setTimeout(() => {
+    document.getElementById('bootText').textContent = "AUTORYZACJA ZAKOŃCZONA";
     setTimeout(() => {
-        receiveCreepyMessage(hisReply);
-        STATE.creepyStage++;
-        scheduleCreepy(50000);
-    }, 4000);
-};
+        document.getElementById('bootSpinner').style.display = 'none';
+        document.getElementById('bootBtn').style.display = 'block';
+    }, 800);
+}, 1500);
 
-function startCreepyMessages(){
-    scheduleCreepy(45000);
+function startOS() {
+    document.getElementById('bootScreen').style.opacity = '0';
+    document.getElementById('bootScreen').style.transform = 'scale(1.05)';
+    setTimeout(() => {
+        document.getElementById('bootScreen').style.display = 'none';
+        document.getElementById('desktop').classList.add('active');
+        startClock();
+        setInterval(updateTopTime, 1000);
+    }, 800);
 }
 
-function startHackAttack(){
-   if(STATE.endGameDone) return;
-   document.getElementById("hackOverlay").style.display="block";
-   document.body.classList.add("hack-active");
-   
-   sndHackAlert();
-   
-   const w=makeWindow("hack","KAMELEON_APT // PROTOKÓŁ EGZEKUCYJNY","",{w:640,h:480});
-   w.el.style.zIndex=30000;
-   w.el.querySelector('.tb').style.background="#2a0000";
-   w.el.querySelector('.tb .ctl').style.display="none";
-   w.el.style.boxShadow="0 0 100px rgba(255,0,0,0.8), inset 0 0 20px rgba(255,0,0,0.5)";
-   w.el.style.border="2px solid var(--red)";
-   
-   STATE.hackTime = 45;
-   STATE.hackCode = "ABORT-OVERRIDE";
-   
-   w.body.innerHTML=`
-     <div style="padding:30px;text-align:center;color:var(--amber);display:flex;flex-direction:column;height:100%;background:#0a0000">
-       <h2 style="letter-spacing:8px;font-weight:900;text-shadow:0 0 15px var(--red);color:var(--red);font-size:22px;margin-bottom:10px;">KAMELEON_APT</h2>
-       <div style="font-size:12px;color:var(--muted);letter-spacing:4px;margin-bottom:20px;">PROTOKÓŁ NISZCZENIA DOWODÓW AKTYWNY</div>
-       <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;">
-           <div style="font-size:11px;color:#ff6666;letter-spacing:2px;margin-bottom:10px;">CZAS DO NIEODWRACALNEJ UTRATY DANYCH:</div>
-           <div style="font-size:48px;font-weight:900;color:var(--red);text-shadow:0 0 20px var(--red);font-variant-numeric:tabular-nums;letter-spacing:4px;" id="hackTimer">00:45:00</div>
-           <div style="width:100%;height:4px;background:#1a0000;margin:20px 0;border:1px solid #330000;position:relative;overflow:hidden;">
-               <div id="hackProgressBar" style="position:absolute;top:0;left:0;height:100%;width:0%;background:var(--red);box-shadow:0 0 15px var(--red);transition:width 1s linear;"></div>
-           </div>
-       </div>
-       <div style="margin-top:auto;">
-           <div style="font-size:11px;color:var(--muted);margin-bottom:8px;letter-spacing:2px">WPROWADŹ KLUCZ DEZAKTYWACJI: <span style="color:var(--cyan);font-weight:bold;letter-spacing:4px">${STATE.hackCode}</span></div>
-           <input type="text" id="hackInput" style="background:#000;color:#fff;border:1px solid var(--red);padding:14px;text-align:center;font-size:18px;width:100%;letter-spacing:4px;text-transform:uppercase;outline:none;box-shadow:inset 0 0 10px rgba(255,0,0,0.2)" autocomplete="off">
-           <button onclick="checkHack()" style="display:none"></button>
-       </div>
-     </div>
-   `;
-   
-   let ms = 99;
-   STATE.hackInt = setInterval(()=>{
-     ms -= 2;
-     if(ms < 0) ms = 99;
-     const ht = document.getElementById("hackTimer");
-     if(ht) {
-         const secStr = STATE.hackTime < 10 ? "0"+STATE.hackTime : STATE.hackTime;
-         const msStr = ms < 10 ? "0"+ms : ms;
-         ht.textContent = "00:"+secStr+":"+msStr;
-     }
-   }, 20);
-   
-   STATE.hackIntSec = setInterval(()=>{
-       STATE.hackTime--;
-       sndTick();
-       const pb = document.getElementById("hackProgressBar");
-       if(pb) {
-           const pct = ((45 - STATE.hackTime) / 45) * 100;
-           pb.style.width = pct + "%";
-       }
-       if(STATE.hackTime<=0){
-          clearInterval(STATE.hackInt);
-          clearInterval(STATE.hackIntSec);
-          hackFailed();
-       }
-   }, 1000);
-   
-   setTimeout(() => {
-       const inp = document.getElementById("hackInput");
-       if(inp){
-           inp.focus();
-           inp.addEventListener("keypress", function(e) {
-               if (e.key === "Enter") {
-                   e.preventDefault();
-                   checkHack();
-               }
-           });
-       }
-   }, 100);
+function startClock() {
+    const clockTime = document.getElementById('clockTime');
+    setInterval(() => {
+        const d = new Date();
+        clockTime.textContent = String(d.getHours()).padStart(2, '0') + ":" + String(d.getMinutes()).padStart(2, '0');
+    }, 1000);
 }
 
-window.checkHack = function(){
-   const val = document.getElementById("hackInput").value.trim().toUpperCase();
-   if(val === STATE.hackCode){
-      clearInterval(STATE.hackInt);
-      clearInterval(STATE.hackIntSec);
-      document.getElementById("hackOverlay").style.display="none";
-      document.body.classList.remove("hack-active");
-      closeWin("hack");
-      toast("ZAPORA SIECIOWA AKTYWNA: Atak odparty.");
-   } else {
-      document.getElementById("hackInput").value = "";
-      document.getElementById("hackInput").style.borderColor = "var(--red)";
-      sndNotif();
-   }
-};
-
-function hackFailed(){
-   document.getElementById("hackOverlay").style.display="none";
-   document.body.classList.remove("hack-active");
-   closeWin("hack");
-   STATE.timerStart -= 240000;
-   toast("UWAGA: Kameleon usunął 4 minuty z twojego czasu analizy!");
+function updateTopTime() {
+    const d = new Date();
+    document.getElementById('topTime').textContent = String(d.getHours()).padStart(2, '0') + ":" + String(d.getMinutes()).padStart(2, '0');
 }
 
-function revealDesktop(){
-  const d=document.getElementById("desktop");
-  d.classList.add("on","desktopReveal");
-  renderIcons();
-  startClock();
-  startTimer();
-  renderObjectives();
-  startCreepyMessages();
-  setTimeout(startHackAttack, 200000);
-  setTimeout(()=>toast("System analityczny online. Wszystkie dane zamontowane jako tylko do odczytu."),800);
-  setTimeout(()=>toast("Pliki usunięte zostały zrekonstruowane. Zobacz system plików."),2500);
-  setTimeout(()=>toast("Rozpocznij od aplikacji INSTRUKCJA na pulpicie."),4000);
+function showPopup(title, text) {
+    document.getElementById('popupTitle').textContent = title;
+    document.getElementById('popupDesc').textContent = text;
+    const overlay = document.getElementById('popupOverlay');
+    overlay.style.display = 'flex';
+    setTimeout(() => overlay.classList.add('active'), 10);
 }
 
-function renderIcons(){
-  const c=document.getElementById("icons");
-  c.innerHTML="";
-  const iconW=110, iconH=110, gap=24;
-  const cols=Math.min(6, APPS.length);
-  const totalW=cols*iconW+(cols-1)*gap;
-  const startX=Math.max(30, (window.innerWidth-totalW)/2);
-  const startY=Math.max(30, (window.innerHeight-50)/2 - 80);
+function closePopup() {
+    const overlay = document.getElementById('popupOverlay');
+    overlay.classList.remove('active');
+    setTimeout(() => overlay.style.display = 'none', 200);
+}
 
-  APPS.forEach((a,i)=>{
-    const locked=a.locked&&!STATE.logsUnlocked;
-    const d=document.createElement("div");
-    d.className="icon"+(locked?" locked":"")+(a.game?" game":"")+(a.id==="readme"&&!STATE.readmeOpened?" readme-hl":"");
-    let badgeHtml = "";
-    if(a.id === "vchat" && STATE.vchatUnread > 0){
-        badgeHtml = `<div class="icon-badge">${STATE.vchatUnread}</div>`;
+function openWindow(id, title, contentHTML) {
+    if(STATE.windows[id]) {
+        if(STATE.windows[id].classList.contains('minimized')) {
+            STATE.windows[id].classList.remove('minimized');
+            STATE.windows[id].style.display = 'flex';
+        }
+        bringToFront(id);
+        return;
     }
-    d.innerHTML=`<div class="glyph" style="position:relative">${locked?"🔒":a.glyph}${badgeHtml}</div><div class="lbl">${a.name}</div>`;
-    d.style.position="absolute";
-    d.style.left=startX+(i%cols)*(iconW+gap)+"px";
-    d.style.top=startY+Math.floor(i/cols)*(iconH+gap)+"px";
-    c.appendChild(d);
-    bindIconDrag(d, a);
-  });
-}
 
-function bindIconDrag(el, a){
-  let sx,sy,ox,oy,drag=false,moved=false;
-  el.addEventListener("mousedown",(e)=>{
-    if(e.button !== 0) return;
-    drag=true; moved=false; sx=e.clientX; sy=e.clientY; ox=el.offsetLeft; oy=el.offsetTop;
-    el.style.zIndex=100;
-  });
-  window.addEventListener("mousemove",(e)=>{
-    if(!drag)return;
-    if(Math.abs(e.clientX-sx)>5||Math.abs(e.clientY-sy)>5) moved=true;
-    if(moved){
-      el.style.left=(ox+e.clientX-sx)+"px";
-      el.style.top=(oy+e.clientY-sy)+"px";
+    const win = document.createElement('div');
+    win.className = 'window open';
+    win.id = 'win_' + id;
+    
+    if(window.innerWidth > 768) {
+        const w = 750, h = 500;
+        const left = Math.max(10, (window.innerWidth - w)/2 + (Math.random() * 40 - 20));
+        const top = Math.max(10, (window.innerHeight - h)/2 + (Math.random() * 40 - 20) - 30);
+        win.style.left = left + 'px';
+        win.style.top = top + 'px';
     }
-  });
-  window.addEventListener("mouseup",(e)=>{
-    if(!drag)return;
-    drag=false; el.style.zIndex="";
-    if(!moved){
-       launchApp(a);
-    }
-  });
+    
+    win.style.zIndex = ++STATE.zIndex;
+
+    win.innerHTML = `
+        <div class="win-header" onmousedown="startDrag(event, '${id}')" ontouchstart="startDrag(event, '${id}')">
+            <div class="win-controls">
+                <div class="win-btn win-close" onclick="closeWindow('${id}')"></div>
+                <div class="win-btn win-min" onclick="minimizeWindow('${id}')"></div>
+                <div class="win-btn win-max"></div>
+            </div>
+            <div class="win-title">${title}</div>
+            <div style="width:70px"></div>
+        </div>
+        <div class="win-content">${contentHTML}</div>
+    `;
+
+    document.getElementById('desktop').appendChild(win);
+    STATE.windows[id] = win;
+    updateDock();
+    
+    win.addEventListener('mousedown', () => bringToFront(id));
+    win.addEventListener('touchstart', () => bringToFront(id), {passive: true});
 }
 
-function launchApp(a){
-  sndApp();
-  const iconEl=document.querySelector(`#icons .icon:nth-child(${APPS.indexOf(a)+1})`);
-  if(iconEl){iconEl.classList.add("launching");setTimeout(()=>iconEl.classList.remove("launching"),300);}
-  if(a.id==="readme"){
-     if(iconEl) iconEl.classList.remove("readme-hl");
-     STATE.readmeOpened = true;
-  }
-  a.open();
+function closeWindow(id) {
+    const win = STATE.windows[id];
+    if(!win) return;
+    win.style.opacity = '0';
+    if(window.innerWidth > 768) win.style.transform = 'scale(0.95)';
+    else win.style.transform = 'translateY(100%)';
+    
+    setTimeout(() => {
+        win.remove();
+        delete STATE.windows[id];
+        updateDock();
+    }, 200);
 }
 
-function startClock(){
-  const el=document.getElementById("clock-area");
-  const upd=()=>{
-    const d=new Date();
-    el.textContent=`[ ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")} ]`;
-  };
-  upd();setInterval(upd,1000);
+function minimizeWindow(id) {
+    const win = STATE.windows[id];
+    if(!win) return;
+    win.classList.add('minimized');
+    win.style.opacity = '0';
+    setTimeout(() => win.style.display = 'none', 200);
+    updateDock();
 }
 
-function startTimer(){
-  STATE.timerStart=Date.now();
-  const total=STATE.totalSecs;
-  const val=document.getElementById("timerVal");
-  const fill=document.getElementById("timerBarFill");
-  const disp=document.getElementById("timerDisplay");
-  const upd=()=>{
-    const elapsed=Math.floor((Date.now()-STATE.timerStart)/1000);
-    const left=Math.max(0,total-elapsed);
-    const m=Math.floor(left/60);
-    const s=left%60;
-    val.textContent=`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-    fill.style.width=(left/total*100)+"%";
-    if(left<=180) disp.classList.add("urgent");
-    if(left<=0&&!STATE.endGameDone){
-      STATE.endGameDone=true;
-      showEnding("timeout","CZAS MINĄŁ","lose",
-        "Protokoły czyszczące NexoTech zakończyły działanie.\n\nWszystkie dane na tym dysku zostały nieodwracalnie skasowane. Twoje śledztwo zakończyło się brakiem konkluzji. Oficjalna wersja policji pozostaje niezmieniona: nieszczęśliwy wypadek drogowy.\n\nKameleon wkrótce zrealizuje swoją kolejną misję dla korporacji. NexoTech zatuszowało lukę. Piotr zniknął.\n\nMiałeś dowody. Po prostu nie zdążyłeś.");
-    }
-  };
-  upd();setInterval(upd,1000);
+function bringToFront(id) {
+    const win = STATE.windows[id];
+    if(!win || win.style.zIndex == STATE.zIndex) return;
+    Object.values(STATE.windows).forEach(w => w.classList.remove('focus'));
+    win.style.zIndex = ++STATE.zIndex;
+    win.classList.add('focus');
 }
 
-function toast(msg){
-  const t=document.createElement("div");
-  t.className="toast";t.textContent=msg;
-  document.getElementById("toasts").appendChild(t);
-  setTimeout(()=>{t.style.transition="opacity .4s";t.style.opacity="0";setTimeout(()=>t.remove(),400);},4000);
+function updateDock() {
+    const dockIds = ['chat', 'mail', 'browser'];
+    dockIds.forEach(id => {
+        const el = document.getElementById('dock_' + id);
+        if(el) {
+            if(STATE.windows[id]) el.classList.add('running');
+            else el.classList.remove('running');
+        }
+    });
 }
 
-function makeWindow(id,title,html,opts){
-  opts=opts||{};
-  if(STATE.windows[id]){
-    const w=STATE.windows[id];
-    w.el.classList.remove("minimized");
-    focusWindow(id);
-    if(opts.replaceBody)w.body.innerHTML=html;
-    return w;
-  }
-  const el=document.createElement("div");
-  el.className="win";el.dataset.id=id;
-  const w=opts.w||700,h=opts.h||480;
-  const cx=Math.max(30,(window.innerWidth-w)/2+(Math.random()*80-40));
-  const cy=Math.max(30,(window.innerHeight-h-50)/2+(Math.random()*60-30));
-  el.style.left=cx+"px";el.style.top=cy+"px";
-  el.style.width=w+"px";el.style.height=h+"px";
-  el.innerHTML=`
-    <div class="tb">
-      <div class="dot"></div>
-      <div class="title">${title}</div>
-      <div class="ctl">
-        <button onclick="minWin('${id}')" title="Ukryj">_</button>
-        <button class="x" onclick="closeWin('${id}')" title="Zamknij">×</button>
-      </div>
-    </div>
-    <div class="body">${html}</div>
-    <div class="grip"></div>
-  `;
-  document.getElementById("desktop").appendChild(el);
-  const body=el.querySelector(".body");
-  const obj={el,body,id,title};
-  STATE.windows[id]=obj;
-  bindDrag(el);bindResize(el);
-  el.addEventListener("mousedown",()=>focusWindow(id));
-  focusWindow(id);
-  renderTasks();
-  return obj;
-}
-
-function bindDrag(el){
-  const tb=el.querySelector(".tb");
-  let sx,sy,ox,oy,drag=false;
-  tb.addEventListener("mousedown",(e)=>{
-    if(e.target.tagName==="BUTTON")return;
-    drag=true;sx=e.clientX;sy=e.clientY;ox=el.offsetLeft;oy=el.offsetTop;
-    document.body.style.userSelect="none";
-  });
-  window.addEventListener("mousemove",(e)=>{
-    if(!drag)return;
-    const nx=Math.max(0,Math.min(window.innerWidth-70,ox+e.clientX-sx));
-    const ny=Math.max(0,Math.min(window.innerHeight-90,oy+e.clientY-sy));
-    el.style.left=nx+"px";el.style.top=ny+"px";
-  });
-  window.addEventListener("mouseup",()=>{drag=false;document.body.style.userSelect="";});
-}
-function bindResize(el){
-  const g=el.querySelector(".grip");
-  if(!g)return;
-  let sx,sy,sw,sh,rs=false;
-  g.addEventListener("mousedown",(e)=>{
-    rs=true;sx=e.clientX;sy=e.clientY;sw=el.offsetWidth;sh=el.offsetHeight;
-    e.stopPropagation();document.body.style.userSelect="none";
-  });
-  window.addEventListener("mousemove",(e)=>{
-    if(!rs)return;
-    el.style.width=Math.max(380,sw+e.clientX-sx)+"px";
-    el.style.height=Math.max(220,sh+e.clientY-sy)+"px";
-  });
-  window.addEventListener("mouseup",()=>{rs=false;document.body.style.userSelect="";});
-}
-function focusWindow(id){
-  Object.values(STATE.windows).forEach(w=>w.el.classList.remove("focus"));
-  const w=STATE.windows[id];if(!w)return;
-  w.el.classList.add("focus");
-  STATE.zTop++;w.el.style.zIndex=STATE.zTop;
-  renderTasks();
-}
-function closeWin(id){
-  const w=STATE.windows[id];if(!w)return;
-  if(id==="notes"){const ta=w.body.querySelector("#notesArea");if(ta)STATE.notes=ta.value;}
-  w.el.classList.add("closing");
-  if(id==="snake")window.killSnake=true;
-  if(id==="ttt")window.killTTT=true;
-  setTimeout(()=>{w.el.remove();delete STATE.windows[id];renderTasks();},200);
-}
-function minWin(id){
-  const w=STATE.windows[id];if(!w)return;
-  if(id==="notes"){const ta=w.body.querySelector("#notesArea");if(ta)STATE.notes=ta.value;}
-  w.el.classList.add("minimized");renderTasks();
-}
-function renderTasks(){
-  const c=document.getElementById("tasks");c.innerHTML="";
-  Object.values(STATE.windows).forEach(w=>{
-    const b=document.createElement("button");b.className="task";
-    const active=!w.el.classList.contains("minimized")&&w.el.classList.contains("focus");
-    if(active)b.classList.add("active");
-    b.textContent="> "+w.title;
-    b.onclick=()=>{
-      if(w.el.classList.contains("minimized")){w.el.classList.remove("minimized");focusWindow(w.id);}
-      else if(active){minWin(w.id);}
-      else focusWindow(w.id);
+let dragInfo = null;
+function startDrag(e, id) {
+    if(window.innerWidth <= 768) return; 
+    if(e.target.classList.contains('win-btn')) return;
+    const win = STATE.windows[id];
+    bringToFront(id);
+    const touch = e.type === 'touchstart' ? e.touches[0] : e;
+    dragInfo = {
+        win: win,
+        ox: touch.clientX - win.offsetLeft,
+        oy: touch.clientY - win.offsetTop
     };
-    c.appendChild(b);
-  });
 }
+window.addEventListener('mousemove', (e) => {
+    if(!dragInfo) return;
+    dragInfo.win.style.left = (e.clientX - dragInfo.ox) + 'px';
+    dragInfo.win.style.top = (e.clientY - dragInfo.oy) + 'px';
+});
+window.addEventListener('touchmove', (e) => {
+    if(!dragInfo) return;
+    dragInfo.win.style.left = (e.touches[0].clientX - dragInfo.ox) + 'px';
+    dragInfo.win.style.top = (e.touches[0].clientY - dragInfo.oy) + 'px';
+}, {passive: true});
+window.addEventListener('mouseup', () => dragInfo = null);
+window.addEventListener('touchend', () => dragInfo = null);
 
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function openApp(appId) {
+    let content = "";
+    let title = "";
 
-function trackObj(id){
-  STATE.objectives.opened.add(id);
-  renderObjectives();
-}
+    switch(appId) {
+        case 'chat':
+            title = "Messenger";
+            const chatList = DATA.chats.map((c, i) => `
+                <div class="list-item" onclick="loadChat(${i})">
+                    <div class="item-av">${c.name[0]}</div>
+                    <div class="item-info">
+                        <div class="item-name">${c.name}</div>
+                        <div class="item-sub">${c.sub}</div>
+                    </div>
+                </div>
+            `).join('');
+            content = `
+                <div class="app-layout" id="chatLayout">
+                    <div class="sidebar">
+                        <div class="sidebar-header">Czaty</div>
+                        <div class="list-wrap">${chatList}</div>
+                    </div>
+                    <div class="main-pane">
+                        <div class="pane-header">
+                            <button class="back-btn" onclick="backPane('chatLayout')">◀ Wróć</button>
+                            <div class="pane-title" id="chatTitle">Wybierz rozmowę</div>
+                        </div>
+                        <div class="pane-body" id="chatBody">
+                            <div class="empty-state">Wybierz osobę z listy, aby otworzyć historię.</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
+            
+        case 'mail':
+            title = "Poczta WP";
+            const mailList = DATA.mails.map((m, i) => `
+                <div class="list-item" onclick="loadMail(${i})">
+                    <div class="item-av" style="background:var(--danger)">@</div>
+                    <div class="item-info">
+                        <div class="item-name">${m.sub}</div>
+                        <div class="item-sub">${m.from}</div>
+                    </div>
+                </div>
+            `).join('');
+            content = `
+                <div class="app-layout" id="mailLayout">
+                    <div class="sidebar">
+                        <div class="sidebar-header">Odebrane</div>
+                        <div class="list-wrap">${mailList}</div>
+                    </div>
+                    <div class="main-pane">
+                        <div class="pane-header">
+                            <button class="back-btn" onclick="backPane('mailLayout')">◀ Wróć</button>
+                            <div class="pane-title">Podgląd wiadomości</div>
+                        </div>
+                        <div class="pane-body" id="mailBody">
+                            <div class="empty-state">Wybierz e-mail z listy.</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
 
-function openVChat(){
-  trackObj("vchat");
-  if(STATE.activeChat === "unknown"){
-      STATE.vchatUnread = 0;
-      renderIcons();
-  }
-  const w=makeWindow("vchat","SecureComm // P2P Zabezpieczone","",{w:780,h:520});
-  renderVChat(w);
-}
-function renderVChat(w){
-  const rows=DATA.contacts.map(c=>`<div class="row${STATE.activeChat===c.id?" active":""}" onclick="selectChat('${c.id}')">
-    <div class="av">${c.name[0]}</div>
-    <div class="meta"><div class="n">${esc(c.name)}</div><div class="p">${esc(c.sub)}</div></div>
-    <div class="time">${c.time}</div>
-  </div>`).join("");
-  let right;
-  if(!STATE.activeChat){
-    right=`<div class="ph"><span style="color:var(--muted);letter-spacing:3px">SECURECOMM // KLUCZ OTWARTY</span></div>
-      <div class="empty">${DATA.contacts.length} węzłów komunikacyjnych dostępnych. Wybierz obiekt.</div>`;
-  }else{
-    const c=DATA.contacts.find(x=>x.id===STATE.activeChat);
-    const bub=c.msgs.map(m=>`<div class="bub ${m.f}${m.flag?' flagged':''}">${esc(m.x)}<span class="ts">${m.t}</span></div>`).join("");
-    
-    let optionsHtml = "";
-    if(c.id === "unknown" && STATE.creepyWaiting && STATE.creepyStage < creepyConvo.length){
-        const opts = creepyConvo[STATE.creepyStage].opts;
-        optionsHtml = `
-          <div class="chat-opts" style="display:flex;gap:12px;padding:16px;background:#050200;border-top:1px solid var(--line2);flex-shrink:0;">
-             <button onclick="replyCreepy(0)" style="flex:1;padding:12px;background:#1a0000;border:1px solid var(--red);color:var(--red);border-radius:0;font-size:12px;cursor:pointer;letter-spacing:2px;font-weight:900;transition:all 0.2s;text-transform:uppercase">${esc(opts[0])}</button>
-             <button onclick="replyCreepy(1)" style="flex:1;padding:12px;background:#1a0000;border:1px solid var(--red);color:var(--red);border-radius:0;font-size:12px;cursor:pointer;letter-spacing:2px;font-weight:900;transition:all 0.2s;text-transform:uppercase">${esc(opts[1])}</button>
-          </div>
-        `;
+        case 'market':
+            title = "OLX Lokalnie";
+            const adList = DATA.market.map((m) => `
+                <div class="ad-item" onclick="showPopup('Ogłoszenie niedostępne', 'Sprzedający ukrył ogłoszenie lub nie odpowiada na wiadomości.')">
+                    <div class="ad-pic">${m.pic}</div>
+                    <div class="ad-desc">
+                        <div class="ad-price">${m.price}</div>
+                        <div class="ad-title">${m.title}</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Od: <b>${m.seller}</b></div>
+                        <div style="font-size:13px; color:#475569; line-height:1.4;">${m.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+            content = `<div style="padding:20px; width:100%; height:100%; overflow-y:auto; background:#f8fafc;">
+                <h3 style="margin-bottom:15px; color:#0f172a;">Ostatnio przeglądane</h3>
+                ${adList}
+            </div>`;
+            break;
+
+        case 'browser':
+            title = "Chrome - Historia";
+            const histList = DATA.history.map(h => `
+                <div class="hist-item">
+                    <div class="hist-title">${h.t}</div>
+                    <div class="hist-url">${h.u} &nbsp;&bull;&nbsp; ${h.time}</div>
+                </div>
+            `).join('');
+            content = `<div style="width:100%; height:100%; overflow-y:auto;">
+                <div style="padding:12px 20px; background:#f1f5f9; border-bottom:1px solid var(--border); font-weight:800; font-size:11px; color:#64748b;">HISTORIA WYSZUKIWANIA</div>
+                ${histList}
+            </div>`;
+            break;
+
+        case 'files':
+            title = "Moje Dokumenty";
+            const fileList = DATA.files.map((f, i) => `
+                <div class="list-item" onclick="openFileViewer(${i})">
+                    <div class="item-av" style="background:#f59e0b; font-size:20px;">📄</div>
+                    <div class="item-info">
+                        <div class="item-name">${f.n}</div>
+                        <div class="item-sub">${f.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+            content = `<div style="width:100%; height:100%; overflow-y:auto; background:#fff;">${fileList}</div>`;
+            break;
+
+        case 'report':
+            if(!STATE.reportUnlocked) {
+                openDecodeGame();
+                return;
+            }
+            title = "Akta Policji - Podgląd";
+            content = `<div style="padding:25px; width:100%; height:100%; overflow-y:auto; background:#0f172a; color:#f8fafc; font-family:'Consolas', monospace; line-height:1.6; font-size:13px; white-space:pre-wrap;">${DATA.report}</div>`;
+            break;
     }
-    
-    right=`<div class="ph">
-        <button class="back" onclick="backChat()">Wróć</button>
-        <span style="color:var(--cyan);font-weight:bold">${esc(c.name)}</span>
-        <span style="color:var(--muted);margin-left:auto;font-size:11px">${c.msgs.length} pakietów</span>
-      </div>
-      <div class="pc" style="flex:1;overflow-y:auto;">${bub}</div>
-      ${optionsHtml}`;
-  }
-  w.body.innerHTML=`<div class="app">
-    <div class="sidebar"><div class="head">WĘZŁY KONTAKTOWE</div><div class="list">${rows}</div></div>
-    <div class="pane" style="display:flex;flex-direction:column;flex:1;">${right}</div>
-  </div>`;
-  if(STATE.activeChat){
-    const pc=w.body.querySelector(".pc");
-    if(pc)pc.scrollTop=pc.scrollHeight;
-  }
-}
-window.selectChat=id=>{
-  STATE.activeChat=id;
-  if(id === "unknown"){
-      STATE.vchatUnread = 0;
-      renderIcons();
-  }
-  renderVChat(STATE.windows.vchat);
-};
-window.backChat=()=>{STATE.activeChat=null;renderVChat(STATE.windows.vchat);};
 
-function openEcho(){
-  trackObj("vchat");
-  const w=makeWindow("echo","DarkDrop // Sieć Ukryta","",{w:760,h:500});
-  renderEcho(w);
-}
-function renderEcho(w){
-  if(!STATE.activeAd){
-    const g=DATA.ads.map(m=>`<div class="ad-item" onclick="selectAd('${m.id}')">
-      <div class="pic">${m.glyph}</div>
-      <div class="info">
-        <div class="n">${esc(m.title)}</div>
-        <div class="p">${m.price}</div>
-        <div class="a">Broker: ${esc(m.seller)}</div>
-        <div class="sold ${m.sold?"yes":""}">${m.sold?"[ ZAKOŃCZONE ]":"[ DOSTĘPNE ]"}</div>
-      </div>
-    </div>`).join("");
-    w.body.innerHTML=`<div class="app"><div class="pane">
-      <div class="ph"><span style="color:var(--cyan);letter-spacing:3px">DARKDROP // TABLICA ZGŁOSZEŃ</span></div>
-      <div class="pc"><div class="match-grid">${g}</div></div>
-    </div></div>`;
-  }else{
-    const m=DATA.ads.find(x=>x.id===STATE.activeAd);
-    const bub=m.msgs.map(x=>`<div class="bub ${x.f}">${esc(x.x)}<span class="ts">${x.t}</span></div>`).join("");
-    const notice=m.id==="exploit"?`<div style="margin-top:16px;padding:12px;border:1px dashed var(--red);background:#1a0000;color:var(--amber);font-size:12px;letter-spacing:2px;font-weight:bold;text-align:center">⚠ AUKCJA ZAMKNIĘTA KODEM KRYPTOGRAFICZNYM</div>`:"";
-    w.body.innerHTML=`<div class="app"><div class="pane">
-      <div class="ph">
-        <button class="back" onclick="backAd()">Wróć</button>
-        <span style="color:#fff;font-weight:bold">${esc(m.title)}</span>
-        <span style="color:var(--green);margin-left:auto;font-size:12px">${m.price} | ${esc(m.seller)}</span>
-      </div>
-      <div class="pc">${bub}${notice}</div>
-    </div></div>`;
-    const pc=w.body.querySelector(".pc");if(pc)pc.scrollTop=pc.scrollHeight;
-  }
-}
-window.selectAd=id=>{STATE.activeAd=id;STATE.adRead[id]=true;renderEcho(STATE.windows.echo);};
-window.backAd=()=>{STATE.activeAd=null;renderEcho(STATE.windows.echo);};
-
-function openMail(){
-  trackObj("mail");
-  const w=makeWindow("mail",`Poczta.Enc // Odbiorcza (${DATA.mails.length})`,"",{w:800,h:520});
-  renderMail(w);
-}
-function renderMail(w){
-  const rows=DATA.mails.map(m=>`<div class="row${STATE.activeMail===m.id?" active":""}" onclick="selectMail('${m.id}')">
-    <div class="meta mail-row" style="padding:0">
-      <div class="from">${esc(m.from)}</div>
-      <div class="sub">${esc(m.sub)}</div>
-      <div class="pv">${esc(m.body.slice(0,60))}…</div>
-    </div>
-    <div class="time" style="white-space:nowrap;font-size:11px;padding-left:10px">${m.time}</div>
-  </div>`).join("");
-  let right;
-  if(!STATE.activeMail){
-    right=`<div class="ph"><span style="color:var(--muted);letter-spacing:3px">SKRZYNKA ZABEZPIECZONA // ${DATA.mails.length} WPISÓW</span></div>
-      <div class="empty">Zdekoduj element z listy by odczytać zawartość.</div>`;
-  }else{
-    const m=DATA.mails.find(x=>x.id===STATE.activeMail);
-    right=`<div class="ph">
-        <button class="back" onclick="backMail()">Wróć</button>
-        <span style="color:var(--cyan);font-weight:bold">${esc(m.sub)}</span>
-      </div>
-      <div class="pc mail-view">
-        <h3>${esc(m.sub)}</h3>
-        <div class="meta">Oko: <b style="color:#fff">${esc(m.from)}</b><br>Cel: piotr.nexo@corp.local<br>Odcisk czasu: ${m.time}</div>
-        <div class="body-txt">${esc(m.body)}</div>
-      </div>`;
-  }
-  w.body.innerHTML=`<div class="app">
-    <div class="sidebar" style="width:320px"><div class="head">SKRZYNKA ODBIORCZA</div><div class="list">${rows}</div></div>
-    <div class="pane">${right}</div>
-  </div>`;
-}
-window.selectMail=id=>{STATE.activeMail=id;STATE.mailRead[id]=true;renderMail(STATE.windows.mail);};
-window.backMail=()=>{STATE.activeMail=null;renderMail(STATE.windows.mail);};
-
-function openNotes(){
-  const w=makeWindow("notes","Notatnik (Lokalny)","",{w:560,h:460});
-  w.body.innerHTML=`<textarea id="notesArea" spellcheck="false" placeholder="Rejestr uwag analityka (Tylko lokalnie)..."></textarea>`;
-  const ta=w.body.querySelector("#notesArea");
-  ta.value=STATE.notes;
-  ta.addEventListener("input",()=>{STATE.notes=ta.value;});
+    openWindow(appId, title, content);
 }
 
-function openBrowser(){
-  trackObj("start");
-  const w=makeWindow("browser","NetNav // Dziennik Routingu","",{w:680,h:480});
-  let html=`<div class="app brw"><div class="pane"><div class="url">ŚCIEŻKA: log_routow &nbsp; <b style="color:var(--green)">piotr.nexo</b> &nbsp; — Aktywność</div><div class="pc" style="padding:0">`;
-  DATA.history.forEach(g=>{
-    html+=`<div class="hist-cat">${g.cat}</div>`;
-    g.entries.forEach(h=>{
-      html+=`<div class="hist-row"><div class="t">${esc(h.t)}</div><div class="u">↳ ${esc(h.u)}</div><div class="ts">${h.ts}</div></div>`;
-    });
-  });
-  html+=`</div></div></div>`;
-  w.body.innerHTML=html;
+function showPane(layoutId) {
+    if(window.innerWidth <= 768) document.getElementById(layoutId).classList.add('show-pane');
+}
+function backPane(layoutId) {
+    document.getElementById(layoutId).classList.remove('show-pane');
 }
 
-function openFiles(){
-  trackObj("files");
-  const w=makeWindow("files","System Plików","",{w:580,h:440});
-  let html=`<div class="list">`;
-  DATA.files.forEach(folder=>{
-    html+=`<div class="file-folder">SEKTOR: ${folder.folder}</div>`;
-    folder.items.forEach(item=>{
-      html+=`<div class="file" onclick="openFile('${item.x}')"><div class="n">Dokument: ${esc(item.n)}</div><div class="d">${esc(item.d)}</div></div>`;
-    });
-  });
-  html+=`</div>`;
-  w.body.innerHTML=html;
-}
-window.openFile=(k)=>{
-  const content=DATA.fileContents[k];
-  if(!content)return;
-  const fname=DATA.files.flatMap(f=>f.items).find(i=>i.x===k)?.n||k;
-  const id="file_"+k;
-  const w=makeWindow(id,"Odczyt: "+fname,"",{w:580,h:420});
-  w.body.innerHTML=`<pre class="term">${esc(content)}</pre>`;
-};
-
-function openLogs(){
-  if(!STATE.logsUnlocked){openMinigame();return;}
-  trackObj("logs");
-  const w=makeWindow("logs","Telemetria.log — ODBLOKOWANE","",{w:740,h:500});
-  w.body.innerHTML=`<pre class="term">${DATA.logs}</pre>`;
+function loadChat(idx) {
+    const c = DATA.chats[idx];
+    document.getElementById('chatTitle').textContent = c.name;
+    const bubbles = c.msgs.map(m => `
+        <div class="bubble ${m.f}">
+            ${m.x}
+            <span class="bubble-time">${m.t}</span>
+        </div>
+    `).join('');
+    const body = document.getElementById('chatBody');
+    body.innerHTML = bubbles;
+    setTimeout(() => body.scrollTop = body.scrollHeight, 50);
+    showPane('chatLayout');
 }
 
-const MINIGAME_PUZZLES=[
-  {
-    desc:"Wykryto asynchroniczną transmisję UDP zakłócającą systemy sterowania. Odzyskaj poprawny adres IP atakującego węzła.",
-    log:`[NET] Połączenie nieautoryzowane na porcie 8042.
-[SYS] Flaga bezpieczeństwa: OVERRIDE_STEERING_ENGAGED
-[NET] Odrzucono uwierzytelnienie. Dostęp wymuszony błędem przepełnienia.
-[NET] Adres źródłowy ukryty pod maską. Ekstrakcja częściowa: 44.120.██.██`,
-    question:"Podaj prawidłowy adres IP atakującego, na podstawie pozostawionego skanu w plikach systemowych.",
-    opts:["44.120.88.12","44.120.12.88","185.220.101.5","44.120.0.1"],
-    answer:0,
-    hint:"Sprawdź 'skan_sieciowy.json' w systemie plików zrzucony o Pt 01:10."
-  },
-  {
-    desc:"Atakujący umieścił specyficzny plik binarny (payload) w pamięci pojazdu przed wyłączeniem sterowania.",
-    log:`[SYS] Ostrzeżenie: Plik wykonawczy uruchomiony z uprawnieniami root.
-[SYS] Zatrzymanie modułu: AI_Collision_Avoidance.
-[FILE] Nazwa procesu w pamięci: ????????.exe
-[ALARM] Krytyczna prędkość 160km/h bez możliwości hamowania.`,
-    question:"Jak brzmi nazwa złośliwego oprogramowania użytego do przejęcia pojazdu?",
-    opts:["Override_Steering.exe","NexoTech_Kill.exe","Steering_Bypass.exe","Autodrive_Hack.exe"],
-    answer:0,
-    hint:"Nazwa ta znajduje się w tym samym raporcie sieciowym z plików zrzutowych."
-  },
-  {
-    desc:"Narzędzie to zostało nabyte na czarnym rynku chwilę przed katastrofą.",
-    log:`[NET] Skaner wyłapuje zapytania do węzłów DarkDrop.
-[SYS] Piotr zgłasza zainteresowanie w zakupie exploita zero-day dla systemu NT-OS 4.0.
-[NET] Odpowiedź od sprzedającego 'DarkVendor'.
-[NET] Transakcja zakończona. Odbiorca: ████████.`,
-    question:"Kto sfinalizował zakup luki Zero-Day?",
-    opts:["Kameleon","Piotr","Anna_Redakcja","Szef_IT"],
-    answer:0,
-    hint:"Sprzedawca w DarkDropie zdradził Piotrowi, kto zdążył kupić exploit."
-  },
-  {
-    desc:"Weryfikacja intencji. Świadome działanie atakującego zostało powiązane z wymuszeniem ciszy w związku ze śledztwem.",
-    log:`[MAIL] 03:22 - Zaszyfrowana wiadomość e-mail odbita przez 14 węzłów.
-[TXT] "Zniszcz swoje dyski albo podzielisz jego los."
-[TXT] "Dziennikarzyna niczego nie opublikuje."
-[SIG] Klucz publiczny przypisany do profilu: ████████`,
-    question:"Do jakiego wniosku prowadzi ta groźba?",
-    opts:["Morderstwo miało zapobiec wyciekowi danych.","Piotr planował oszukać ubezpieczyciela.","Anna próbowała przejąć materiał badawczy.","Ktoś chciał zarobić na spadku akcji NexoTech."],
-    answer:0,
-    hint:"Autor e-maila wyraźnie napisał: 'Dziennikarzyna niczego nie opublikuje'."
-  },
-  {
-    desc:"Walidacja czasu katastrofy potwierdza bezpośrednie połączenie z przejęciem sterowania pojazdu.",
-    log:`[SYS] 22:10 — Rozpoczęcie nasłuchu na węzłach telemetrii.
-[SYS] 22:12 — Uruchomienie sniffera sieciowego.
-[SYS] 22:15 — Utrata łączności komunikatora z Mikołajem.
-[SYS] Rozbieżność w logach: Pożar auta nastąpił dokładnie o ??:??`,
-    question:"O której godzinie system zarejestrował ostateczną kolizję w skanie sieciowym?",
-    opts:["22:15:42","22:12:05","22:14:30","02:45:00"],
-    answer:0,
-    hint:"Skan sieciowy precyzyjnie opisuje utratę sygnału tuż przed końcem połączenia z dziennikarzem."
-  },
+function loadMail(idx) {
+    const m = DATA.mails[idx];
+    document.getElementById('mailBody').innerHTML = `
+        <div class="mail-view">
+            <h2>${m.sub}</h2>
+            <div class="mail-meta">Od: <b>${m.from}</b><br>Data: ${m.time}</div>
+            <div class="mail-content">${m.body}</div>
+        </div>
+    `;
+    showPane('mailLayout');
+}
+
+function openFileViewer(idx) {
+    const f = DATA.files[idx];
+    openWindow('fileViewer_' + idx, f.n, `<div style="padding:20px; font-family:monospace; font-size:14px; white-space:pre-wrap; color:#334155;">${f.content}</div>`);
+}
+
+let mgTimer, mgTime = 60, mgStep = 0;
+const MG_DATA = [
+    { 
+        text: "[MODUŁ WERYFIKACJI]\nSystem policyjny odnotował zakup internetowy środka chemicznego. Ze względu na potencjalne zatrucie, wskaż poprawny preparat nabyty przez użytkownika komputera.", 
+        q: "Jaki preparat chwastobójczy kupił niedawno Adam?", 
+        opts: ["ROUNDUP Flex", "Domestos", "Nawoz-Pro", "Odszczurzarz"], 
+        ans: 0 
+    },
+    { 
+        text: "[MODUŁ WERYFIKACJI]\nKonflikt o narzędzie pracy był jednym z powodów narastającej agresji. Grzesiu posiadał sprzęt, który był przedmiotem wystawionym w internecie.", 
+        q: "Wiertarkę jakiej firmy Grzesiu zabrał Adamowi?", 
+        opts: ["Bosch", "DeWalt", "Makita", "Parkside"], 
+        ans: 2 
+    },
+    { 
+        text: "[MODUŁ WERYFIKACJI]\nUstalono źródło i sposób przyjęcia ogromnej, letalnej dawki substancji psychoaktywnej u ofiary. Sposób przyjęcia sugeruje drogę pokarmową.", 
+        q: "W jakiej formie Grzesiu spożył syntetyczne THC?", 
+        opts: ["Palił skręta", "Zjadł 'ziołowe ciasteczka'", "Wypił nalewkę", "Wziął tabletki"], 
+        ans: 1 
+    }
 ];
 
-let mgPuzzleIdx=0;
-let mgCorrect=0;
-let mgWrong=0;
-let mgTimer=null;
-let mgTimeLeft=60;
-
-function openMinigame(){
-  mgPuzzleIdx=0;mgCorrect=0;mgWrong=0;
-  const w=makeWindow("mg","DEKRYPTACJA: Telemetria_wypadek.log","",{w:600,h:600});
-  renderMgPuzzle(w);
-}
-
-function renderMgPuzzle(w){
-  if(!STATE.windows.mg)return;
-  clearInterval(mgTimer);
-  if(mgPuzzleIdx>=MINIGAME_PUZZLES.length){
-    if(mgCorrect>=3){
-      w.body.innerHTML=`<div class="mg" style="justify-content:center;align-items:center;text-align:center;gap:16px">
-        <div style="color:var(--green);font-size:18px;letter-spacing:5px;font-weight:900;text-shadow:0 0 15px var(--green)">DEKRYPTACJA ZAKOŃCZONA</div>
-        <div style="color:var(--cyan);font-size:12px">Poziom poprawności: ${mgCorrect}/${MINIGAME_PUZZLES.length} węzłów.</div>
-        <div style="color:#e6ccb3;font-size:13px;margin-top:10px">Odszyfrowane logi telemetrii pojazdu dodane do systemu.</div>
-      </div>`;
-      setTimeout(()=>{
-        STATE.logsUnlocked=true;
-        closeWin("mg");
-        renderIcons();
-        toast("SUKCES: Odszyfrowano logi awaryjne pojazdu autonomicznego.");
-        openLogs();
-        trackObj("logs");
-        renderObjectives();
-      },2000);
-    }else{
-      w.body.innerHTML=`<div class="mg" style="justify-content:center;align-items:center;text-align:center;gap:16px">
-        <div style="color:var(--red);font-size:18px;letter-spacing:5px;font-weight:900;text-shadow:0 0 15px var(--red)">BŁĄD DEKRYPTACJI</div>
-        <div style="color:var(--muted);font-size:12px">Zbyt niska precyzja: ${mgCorrect}/${MINIGAME_PUZZLES.length}. Minimalny wymóg to 3.</div>
-        <button style="margin-top:20px;padding:12px 24px;background:var(--red);color:#fff;border:none;font-size:12px;letter-spacing:3px;font-weight:bold;text-transform:uppercase" onclick="retryMg()">REINICJUJ ALGORYTM</button>
-      </div>`;
-    }
-    return;
-  }
-  mgTimeLeft=60;
-  const p=MINIGAME_PUZZLES[mgPuzzleIdx];
-  const pips=MINIGAME_PUZZLES.map((_,i)=>{
-    let cls="mg-pip";
-    if(i<mgPuzzleIdx)cls+=" done";
-    else if(i===mgPuzzleIdx)cls+=" cur";
-    return `<div class="${cls}"></div>`;
-  }).join("");
-  const opts=p.opts.map((o,i)=>`<button class="mg-opt" onclick="mgAnswer(${i})">${esc(o)}</button>`).join("");
-  w.body.innerHTML=`<div class="mg">
-    <div class="mg-head">REKONSTRUKCJA: Etap ${mgPuzzleIdx+1} / ${MINIGAME_PUZZLES.length}</div>
-    <div class="mg-progress">${pips}</div>
-    <div class="mg-desc">${esc(p.desc)}</div>
-    <div class="mg-puzzle">${p.log.replace(/████████/g,'<span class="corrupt">████████</span>').replace(/██/g,'<span class="corrupt">██</span>').replace(/\?\?\?\?\?\?\?\?/g,'<span class="corrupt">????????</span>').replace(/\?\?:\?\?/g,'<span class="corrupt">??:??</span>')}</div>
-    <div style="font-size:12px;color:var(--cyan);letter-spacing:1px;font-weight:bold">${esc(p.question)}</div>
-    <div class="mg-opts">${opts}</div>
-    <div class="mg-timer" id="mgT">T-MINUS ${mgTimeLeft}s</div>
-    <div class="mg-status" id="mgStatus">CZEKAM NA WPROWADZENIE DANYCH</div>
-  </div>`;
-  mgTimer=setInterval(()=>{
-    if(!STATE.windows.mg){clearInterval(mgTimer);return;}
-    mgTimeLeft--;
-    const t=document.getElementById("mgT");
-    if(t){t.textContent="T-MINUS "+mgTimeLeft+"s";if(mgTimeLeft<=15)t.classList.add("warn");}
-    if(mgTimeLeft<=0){
-      clearInterval(mgTimer);
-      mgWrong++;
-      const st=document.getElementById("mgStatus");
-      if(st){st.textContent="[ BŁĄD TIMEOUTU ]";st.style.color="var(--red)";}
-      setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},1000);
-    }
-  },1000);
-}
-
-window.mgAnswer=function(idx){
-  clearInterval(mgTimer);
-  const p=MINIGAME_PUZZLES[mgPuzzleIdx];
-  const opts=document.querySelectorAll(".mg-opt");
-  const st=document.getElementById("mgStatus");
-  if(idx===p.answer){
-    mgCorrect++;
-    if(opts[idx])opts[idx].classList.add("correct");
-    if(st){st.textContent="[ SEKWENCJA PRAWIDŁOWA ]";st.style.color="var(--green)";}
-    setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},1000);
-  }else{
-    mgWrong++;
-    if(opts[idx])opts[idx].classList.add("wrong");
-    if(opts[p.answer])opts[p.answer].classList.add("correct");
-    if(st){st.textContent=`[ BŁĄD ] HINT: ${p.hint}`;st.style.color="var(--red)";}
-    setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},1500);
-  }
-};
-
-window.retryMg=function(){
-  mgPuzzleIdx=0;mgCorrect=0;mgWrong=0;
-  renderMgPuzzle(STATE.windows.mg);
-};
-
-function openSnake(){
-  const w=makeWindow("snake","Widmo.exe","",{w:460,h:540});
-  let snakeState="waiting";
-  let px=10,py=10,xv=0,yv=0,trail=[],tail=5,score=0;
-  const GS=18,TC=24;
-  window.killSnake=false;
-  let ax=Math.floor(Math.random()*TC),ay=Math.floor(Math.random()*TC);
-  const render=()=>{
-    w.body.innerHTML=`<div class="snake-wrap">
-      <div class="snake-ui">
-        <span>KLASTRY: <b id="snkScore" style="color:var(--amber)">${score}</b></span>
-        <span style="color:var(--muted)">PROTOKÓŁ WIDMO</span>
-        <span>REKORD: <b id="snkBest" style="color:var(--cyan)">${window._snakeBest||0}</b></span>
-      </div>
-      <canvas id="snakeCanvas" width="${TC*GS}" height="${TC*GS}"></canvas>
-      <div id="snakeMsg"></div>
-    </div>`;
-    drawFrame();
-  };
-  const drawFrame=()=>{
-    const canvas=document.getElementById("snakeCanvas");
-    if(!canvas)return;
-    const ctx=canvas.getContext("2d");
-    ctx.fillStyle="#050200";
-    ctx.fillRect(0,0,TC*GS,TC*GS);
-    ctx.fillStyle="rgba(255,153,0,.04)";
-    for(let i=0;i<TC;i++)for(let j=0;j<TC;j++){if((i+j)%2===0)ctx.fillRect(i*GS,j*GS,GS,GS);}
-    trail.forEach((seg,i)=>{
-      const alpha=0.3+0.7*(i/trail.length);
-      ctx.fillStyle=`rgba(255,204,0,${alpha})`;
-      ctx.shadowColor="rgba(255,204,0,.5)";ctx.shadowBlur=8;
-      ctx.fillRect(seg.x*GS+1,seg.y*GS+1,GS-2,GS-2);
-    });
-    ctx.shadowBlur=0;
-    ctx.fillStyle="#e60000";ctx.shadowColor="rgba(230,0,0,.8)";ctx.shadowBlur=12;
-    ctx.fillRect(ax*GS+2,ay*GS+2,GS-4,GS-4);ctx.shadowBlur=0;
-    if(snakeState==="waiting"){
-      ctx.fillStyle="rgba(0,0,0,.8)";ctx.fillRect(0,0,TC*GS,TC*GS);
-      ctx.fillStyle="#ffcc00";ctx.font="bold 15px Consolas,monospace";ctx.textAlign="center";
-      ctx.fillText("NACIŚNIJ KIERUNEK",TC*GS/2,TC*GS/2);
-      ctx.fillStyle="#cca37a";ctx.font="12px Consolas,monospace";
-      ctx.fillText("Pochłaniaj złośliwe węzły kodu.",TC*GS/2,TC*GS/2+24);
-    }
-    if(snakeState==="over"){
-      ctx.fillStyle="rgba(10,0,0,.85)";ctx.fillRect(0,0,TC*GS,TC*GS);
-      ctx.fillStyle="#ff0000";ctx.font="900 18px Consolas,monospace";ctx.textAlign="center";
-      ctx.fillText("AWARIA LOGICZNA",TC*GS/2,TC*GS/2-10);
-      ctx.fillStyle="#ffcc00";ctx.font="12px Consolas,monospace";
-      ctx.fillText(`Klastry odzyskane: ${score}`,TC*GS/2,TC*GS/2+14);
-      ctx.fillStyle="#804000";
-      ctx.fillText("Klawisz kierunku aby zrestartować.",TC*GS/2,TC*GS/2+34);
-    }
-  };
-  const keyPush=(e)=>{
-    const map={37:[-1,0],38:[0,-1],39:[1,0],40:[0,1]};
-    if(!map[e.keyCode])return;
-    const [nx,ny]=map[e.keyCode];
-    if(nx!==-xv||ny!==-yv){xv=nx;yv=ny;}
-    if(snakeState==="waiting"){snakeState="running";px=Math.floor(TC/2);py=Math.floor(TC/2);trail=[{x:px,y:py}];tail=5;score=0;const s=document.getElementById("snkScore");if(s)s.textContent=score;snkLoop();}
-    if(snakeState==="over"){snakeState="running";px=Math.floor(TC/2);py=Math.floor(TC/2);xv=nx;yv=ny;trail=[{x:px,y:py}];tail=5;score=0;const s=document.getElementById("snkScore");if(s)s.textContent=score;snkLoop();}
-  };
-  document.addEventListener("keydown",keyPush);
-  const snkLoop=()=>{
-    if(window.killSnake){document.removeEventListener("keydown",keyPush);return;}
-    if(snakeState!=="running"){setTimeout(snkLoop,100);return;}
-    px+=xv;py+=yv;
-    if(px<0)px=TC-1;if(px>=TC)px=0;if(py<0)py=TC-1;if(py>=TC)py=0;
-    const hit=trail.some((s,i)=>i<trail.length-1&&s.x===px&&s.y===py);
-    if(hit){snakeState="over";if(!window._snakeBest||score>window._snakeBest)window._snakeBest=score;drawFrame();return;}
-    trail.push({x:px,y:py});while(trail.length>tail)trail.shift();
-    if(ax===px&&ay===py){tail++;score+=10;const s=document.getElementById("snkScore");if(s)s.textContent=score;do{ax=Math.floor(Math.random()*TC);ay=Math.floor(Math.random()*TC);}while(trail.some(s=>s.x===ax&&s.y===ay));}
-    drawFrame();setTimeout(snkLoop,80);
-  };
-  render();setTimeout(drawFrame,50);
-}
-
-function openTicTacToe(){
-  window.killTTT=false;
-  const w=makeWindow("ttt","Krypto-Krzyżyk","",{w:380,h:540});
-  let board=Array(9).fill(null);
-  let playerTurn=true;
-  let scores={W:0,L:0,D:0};
-  let difficulty="medium";
-  let gameOver=false;
-
-  function checkWinner(b){
-    const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(const [a,x,c] of lines){if(b[a]&&b[a]===b[x]&&b[a]===b[c])return{winner:b[a],line:[a,x,c]};}
-    if(b.every(Boolean))return{winner:"D"};
-    return null;
-  }
-
-  function minimax(b,isMax,depth){
-    const res=checkWinner(b);
-    if(res){if(res.winner==="O")return 10-depth;if(res.winner==="X")return depth-10;return 0;}
-    if(isMax){let best=-Infinity;for(let i=0;i<9;i++){if(!b[i]){b[i]="O";best=Math.max(best,minimax(b,false,depth+1));b[i]=null;}}return best;}
-    else{let best=Infinity;for(let i=0;i<9;i++){if(!b[i]){b[i]="X";best=Math.min(best,minimax(b,true,depth+1));b[i]=null;}}return best;}
-  }
-
-  function aiMove(){
-    if(gameOver||!playerTurn===false)return;
-    const empty=board.map((v,i)=>v?null:i).filter(v=>v!==null);
-    if(!empty.length)return;
-    let idx;
-    if(difficulty==="easy"){
-      idx=empty[Math.floor(Math.random()*empty.length)];
-    }else if(difficulty==="medium"){
-      if(Math.random()<0.4){idx=empty[Math.floor(Math.random()*empty.length)];}
-      else{let best=-Infinity,bestMove=empty[0];for(const i of empty){board[i]="O";const s=minimax(board,false,0);board[i]=null;if(s>best){best=s;bestMove=i;}}idx=bestMove;}
-    }else{
-      let best=-Infinity,bestMove=empty[0];
-      for(const i of empty){board[i]="O";const s=minimax(board,false,0);board[i]=null;if(s>best){best=s;bestMove=i;}}
-      idx=bestMove;
-    }
-    board[idx]="O";
-    playerTurn=true;
-    const res=checkWinner(board);
-    if(res){gameOver=true;if(res.winner==="O")scores.L++;else if(res.winner==="D")scores.D++;}
-    render();
-  }
-
-  function handleClick(i){
-    if(gameOver||!playerTurn||board[i])return;
-    board[i]="X";
-    playerTurn=false;
-    const res=checkWinner(board);
-    if(res){gameOver=true;if(res.winner==="X")scores.W++;else if(res.winner==="D")scores.D++;render();return;}
-    render();
-    setTimeout(()=>{if(!window.killTTT)aiMove();},400);
-  }
-
-  function resetGame(){board=Array(9).fill(null);playerTurn=true;gameOver=false;render();}
-
-  function render(){
-    if(window.killTTT)return;
-    const result=checkWinner(board);
-    const winLine=result?.line||[];
-    let status="CZEKAM NA DECYZJĘ (X)";
-    if(result){
-      if(result.winner==="X")status="[ ODCZYT ZATWIERDZONY ]";
-      else if(result.winner==="O")status="[ KONTROLA PRZEJĘTA ]";
-      else status="[ ZAKLESZCZENIE ]";
-    }else if(!playerTurn)status="OBLICZANIE WEKTORA...";
-    const cells=board.map((v,i)=>{
-      const wl=winLine.includes(i)?" win-line":"";
-      return `<div class="ttt-cell${v?" "+v:""}${wl}" onclick="tttClick(${i})">${v||""}</div>`;
-    }).join("");
-    w.body.innerHTML=`<div class="ttt-wrap">
-      <div class="ttt-header">KRYPTO-KRZYŻYK</div>
-      <div class="ttt-score"><span>Przełamania: <b>${scores.W}</b></span><span>Paty: <b>${scores.D}</b></span><span>Blokady: <b style="color:var(--red)">${scores.L}</b></span></div>
-      <div class="ttt-diff">
-        <button class="ttt-btn${difficulty==="easy"?" active":""}" onclick="tttDiff('easy')">LVL.1</button>
-        <button class="ttt-btn${difficulty==="medium"?" active":""}" onclick="tttDiff('medium')">LVL.2</button>
-        <button class="ttt-btn${difficulty==="hard"?" active":""}" onclick="tttDiff('hard')">LVL.3</button>
-      </div>
-      <div class="ttt-board">${cells}</div>
-      <div class="ttt-status" style="color:${result?result.winner==="X"?'var(--green)':result.winner==="O"?'var(--red)':'var(--cyan)':'#fff'}">${status}</div>
-      <button class="ttt-btn" onclick="tttReset()">RESET TABLICY</button>
-    </div>`;
-  }
-
-  window.tttClick=i=>handleClick(i);
-  window.tttReset=()=>resetGame();
-  window.tttDiff=d=>{difficulty=d;resetGame();};
-  render();
-}
-
-function openRPS(){
-  const w=makeWindow("rps","Sieć-Węzeł-Wirus","",{w:440,h:520});
-  let scores={W:0,L:0,D:0};
-  let choosing=true;
-  const choices=["🕸️","🔌","🦠"];
-  
-  function play(pi){
-    if(!choosing)return;
-    choosing=false;
-    const ci=Math.floor(Math.random()*3);
-    let result,rclass;
-    if(pi===ci){result="ZDERZENIE PAKIETÓW";rclass="draw";scores.D++;}
-    else if((pi===0&&ci===2)||(pi===1&&ci===0)||(pi===2&&ci===1)){result="INFEKCJA UDANA";rclass="win";scores.W++;}
-    else{result="ODRZUCONO PRZEZ FIREWALL";rclass="lose";scores.L++;}
-    render(pi,ci,result,rclass);
-    setTimeout(()=>{choosing=true;render();},2000);
-  }
-
-  function render(pi,ci,result,rclass){
-    const ph=pi!==undefined?choices[pi]:"❓";
-    const ch=ci!==undefined?choices[ci]:"❓";
-    const res=result?`<div class="rps-result ${rclass||''}">${result}</div>`:`<div class="rps-result"></div>`;
-    const btns=choices.map((c,i)=>`<button class="rps-choice" onclick="rpsPlay(${i})" ${!choosing?"disabled":""}>${c}</button>`).join("");
-    w.body.innerHTML=`<div class="rps-wrap">
-      <div class="ttt-header">SIEĆ > WIRUS > WĘZEŁ > SIEĆ</div>
-      <div class="rps-score">
-        <span class="rs">Penetracje <b>${scores.W}</b></span>
-        <span class="ds">Zderzenia <b>${scores.D}</b></span>
-        <span class="ls">Blokady <b>${scores.L}</b></span>
-      </div>
-      <div class="rps-arena">
-        <div class="rps-side">
-          <div class="rps-hand${!choosing?" shake":""}">${ph}</div>
-          <div class="rps-label">TWOJA AKCJA</div>
+function openDecodeGame() {
+    mgStep = 0; 
+    mgTime = 90;
+    const content = `
+        <div class="mg-container">
+            <div style="font-weight:900; color:var(--danger); margin-bottom:15px; font-size:12px; letter-spacing:1px; text-transform:uppercase;">WERYFIKACJA DOSTĘPU DO AKT</div>
+            <div class="mg-log" id="mgLog"></div>
+            <div class="mg-question" id="mgQ"></div>
+            <div class="mg-options" id="mgOpts"></div>
+            <div class="mg-timer-bar"><div class="mg-timer-fill" id="mgTimerFill"></div></div>
+            <div style="text-align:center; font-weight:800; color:var(--primary); margin-top:10px; font-size:12px;" id="mgTimerText">Czas: 90s</div>
         </div>
-        <div class="rps-vs">//</div>
-        <div class="rps-side">
-          <div class="rps-hand${!choosing?" shake":""}">${ch}</div>
-          <div class="rps-label">SYSTEM OBRONNY</div>
-        </div>
-      </div>
-      ${res}
-      <div class="rps-choices">${btns}</div>
-      <button class="ttt-btn" onclick="rpsReset()">WYCZYŚĆ REJESTR</button>
-    </div>`;
-  }
-
-  window.rpsPlay=i=>play(i);
-  window.rpsReset=()=>{scores={W:0,L:0,D:0};choosing=true;render();};
-  render();
+    `;
+    openWindow('decode', 'Odblokuj Akta Policji', content);
+    renderMgStep();
+    
+    clearInterval(mgTimer);
+    mgTimer = setInterval(() => {
+        mgTime--;
+        const txt = document.getElementById('mgTimerText');
+        const fill = document.getElementById('mgTimerFill');
+        if(txt) txt.textContent = `Czas: ${mgTime}s`;
+        if(fill) {
+            fill.style.width = (mgTime / 90 * 100) + '%';
+            if(mgTime <= 15) fill.style.background = 'var(--danger)';
+        }
+        if(mgTime <= 0) {
+            clearInterval(mgTimer);
+            closeWindow('decode');
+            showPopup('Brak dostępu', 'Czas minął. Przeczytaj wiadomości, by zdobyć poprawne odpowiedzi.');
+        }
+    }, 1000);
 }
 
-function openReadme(){
-  trackObj("start");
-  const w=makeWindow("readme","INSTRUKCJA ANALITYCZNA (Sprawa 8829)","",{w:620,h:540});
-  w.body.innerHTML=`<div class="readme">
-<h2>NEXOTECH CYBER SECURITY</h2>
-<p>Sygnatura awaryjna: <b>#8829</b><br>Podmiot: Śmierć niezależnego reportera (Mikołaj S.) w obiekcie testowym pojazdu autonomicznego NT-OS 4.0.<br>Status maszyny: Obraz dyskowy podejrzanego, montowanie Air-Gap (Zabezpieczone).</p>
-
-<hr>
-
-<p>To terminal należący do Piotra, pracownika działu R&D naszej firmy, który uzyskał nieautoryzowany dostęp do telemetrii i wymieniał wiadomości z ofiarą. Musimy udowodnić zarządowi, że błędy maszyn nie wynikają z naszej winy technologicznej, lecz z celowego sabotażu.</p>
-
-<h3>Cel Zgłoszenia</h3>
-<p>Masz 15 minut do czasu, aż nasz wewnętrzny system czyszczący sformatuje ten dysk jako obiekt niebezpieczny. Musisz ustalić trzy fakty dotyczące tego rzekomego wypadku: <b>Tożsamość organizatora</b>, <b>Wektor ataku</b> oraz <b>Motyw</b>.</p>
-
-<h3>Zasoby do Dyspozycji</h3>
-<p>Dysk to snapshot przechwycony przed jego zniszczeniem. Zawiera zdecentralizowany komunikator (SecureComm), przeglądarkę, skrzynkę korporacyjną i DarkDrop. Posiada kluczowe pliki tekstowe pozostawione w pośpiechu przez użytkownika.</p>
-
-<p>Kluczowe dane z telemetrii wypadku są wciąż zaszyfrowane z powodu awarii zasilania. Będziesz musiał poddać je ręcznej dekryptacji w module 'Telemetria'.</p>
-
-<h3>Zagrożenie</h3>
-<p>Zabezpieczenia sieciowe są niestabilne. System wykrywa odciski palców znanego najemnika korporacyjnego (Alias: KAMELEON). Spodziewaj się prób odzyskania lub zniszczenia dowodów w trakcie trwania analizy.</p>
-
-<hr>
-
-<p>Jeśli zbierzesz dość dowodów, uruchom procedurę 'ZATWIERDŹ ANALIZĘ' z paska głównego. Niespójny raport sprawi, że kierownictwo NexoTech zignoruje groźbę.</p>
-
-<div class="stamp">WARNING: Każda czynność jest logowana przez protokół audytu (ID tag: 3950863804). Nie zepsuj tego. Masz jeden strzał.</div>
-
-<div class="case-id">OBIEKT #8829 // OMEGA CLEARANCE // NEXOTECH CORP</div>
-</div>`;
+function renderMgStep() {
+    if(mgStep >= MG_DATA.length) {
+        clearInterval(mgTimer);
+        STATE.reportUnlocked = true;
+        document.getElementById('iconReport').classList.remove('locked-icon');
+        document.getElementById('glyphReport').textContent = "📄";
+        closeWindow('decode');
+        openApp('report');
+        return;
+    }
+    const d = MG_DATA[mgStep];
+    document.getElementById('mgLog').textContent = d.text;
+    document.getElementById('mgQ').textContent = d.q;
+    const optsHtml = d.opts.map((o, i) => `<button class="mg-btn" onclick="checkMg(${i})">${o}</button>`).join('');
+    document.getElementById('mgOpts').innerHTML = optsHtml;
 }
 
-function openVerdict(){
-  STATE.verdictStage=1;
-  STATE.verdictWho=null;
-  STATE.verdictHow=null;
-  document.getElementById("vdStage1").classList.add("active");
-  document.getElementById("vdStage2").classList.remove("active");
-  document.getElementById("vdStage3").classList.remove("active");
-  document.getElementById("vdNextBtn").style.display="";
-  document.getElementById("vdSubmitBtn").style.display="none";
-  document.getElementById("vdBreadcrumb").textContent="Etap 1 z 3 — Cel Wiodący";
-  document.querySelectorAll('input[name="who"]').forEach(r=>r.checked=false);
-  document.querySelectorAll('input[name="how"]').forEach(r=>r.checked=false);
-  document.querySelectorAll('input[name="why"]').forEach(r=>r.checked=false);
-  document.getElementById("verdictModal").classList.add("on");
+window.checkMg = function(idx) {
+    const btns = document.querySelectorAll('.mg-btn');
+    if(idx === MG_DATA[mgStep].ans) {
+        btns[idx].classList.add('correct');
+        setTimeout(() => { mgStep++; renderMgStep(); }, 600);
+    } else {
+        btns[idx].classList.add('wrong');
+        mgTime -= 15; 
+    }
 }
-function closeVerdict(){document.getElementById("verdictModal").classList.remove("on");}
 
-window.verdictNext=function(){
-  if(STATE.verdictStage===1){
-    const sel=document.querySelector('input[name="who"]:checked');
-    if(!sel)return;
-    STATE.verdictWho=sel.value;
-    STATE.verdictStage=2;
-    document.getElementById("vdStage1").classList.remove("active");
-    document.getElementById("vdStage2").classList.add("active");
-    document.getElementById("vdBreadcrumb").innerHTML=`Etap 2 z 3 — Mechanika &nbsp;|&nbsp; <span class="sel">KTO: ${esc(sel.closest("label").querySelector("span").textContent)}</span>`;
-  }else if(STATE.verdictStage===2){
-    const sel=document.querySelector('input[name="how"]:checked');
-    if(!sel)return;
-    STATE.verdictHow=sel.value;
-    STATE.verdictStage=3;
-    document.getElementById("vdStage2").classList.remove("active");
-    document.getElementById("vdStage3").classList.add("active");
-    document.getElementById("vdNextBtn").style.display="none";
-    document.getElementById("vdSubmitBtn").style.display="";
-    document.getElementById("vdBreadcrumb").innerHTML=`Etap 3 z 3 — Przyczyna &nbsp;|&nbsp; <span class="sel">Sekcje zablokowane</span>`;
-  }
-};
+function openVerdict() {
+    STATE.vStep = 1;
+    STATE.vAnswers = {};
+    document.querySelectorAll('.v-step').forEach(e => e.classList.remove('active'));
+    document.getElementById('vStep1').classList.add('active');
+    document.getElementById('vBtnNext').style.display = 'block';
+    document.getElementById('vBtnSubmit').style.display = 'none';
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+    document.getElementById('verdictModal').classList.add('active');
+}
 
-window.submitVerdict=function(){
-  if(STATE.endGameDone)return;
-  const whyNode=document.querySelector('input[name="why"]:checked');
-  if(!whyNode)return;
-  const why=whyNode.value;
-  const who=STATE.verdictWho;
-  const how=STATE.verdictHow;
-  STATE.endGameDone=true;
-  closeVerdict();
+function closeVerdict() {
+    document.getElementById('verdictModal').classList.remove('active');
+}
 
-  const WIN=who==="kameleon"&&how==="remote"&&why==="silence";
-  const WRONG_WHO_PIOTR=who==="piotr";
-  const WRONG_WHO_ANNA=who==="anna";
+function nextVerdict() {
+    if(STATE.vStep === 1) {
+        const sel = document.querySelector('input[name="v_who"]:checked');
+        if(!sel) return showPopup('Uwaga', 'Wybierz odpowiedź, aby przejść dalej.');
+        STATE.vAnswers.who = sel.value;
+        document.getElementById('vStep1').classList.remove('active');
+        document.getElementById('vStep2').classList.add('active');
+        STATE.vStep = 2;
+    } else if(STATE.vStep === 2) {
+        const sel = document.querySelector('input[name="v_how"]:checked');
+        if(!sel) return showPopup('Uwaga', 'Wybierz odpowiedź, aby przejść dalej.');
+        STATE.vAnswers.how = sel.value;
+        document.getElementById('vStep2').classList.remove('active');
+        document.getElementById('vStep3').classList.add('active');
+        document.getElementById('vBtnNext').style.display = 'none';
+        document.getElementById('vBtnSubmit').style.display = 'block';
+        STATE.vStep = 3;
+    }
+}
 
-  let stamp,txt,cls;
+function submitVerdict() {
+    const sel = document.querySelector('input[name="v_why"]:checked');
+    if(!sel) return showPopup('Uwaga', 'Wybierz powód konfliktu.');
+    STATE.vAnswers.why = sel.value;
+    closeVerdict();
+    evaluateEnding();
+}
 
-  if(WIN){
-    stamp="ANALIZA POPRAWNA - RAPORT PRZYJĘTY";cls="win";
-    txt=`Wiedziałeś, gdzie szukać.
+function evaluateEnding() {
+    const a = STATE.vAnswers;
+    const win = a.who === 'grzesiu' && a.how === 'thc' && a.why === 'sprzet';
+    const adamJail = a.who === 'adam';
+    
+    const scr = document.getElementById('endingScreen');
+    const title = document.getElementById('endTitle');
+    const text = document.getElementById('endText');
+    const icon = document.getElementById('endIcon');
+    const btn = document.getElementById('endBtnAction');
 
-Atakujący z DarkNetu znany jako Kameleon zdobył narzędzie exploitujące systemy autonomiczne NT-OS 4.0 bezpośrednio na czarnym rynku. Gdy Mikołaj, posiadający artykuł demaskujący mordercze błędy technologiczne NexoTech, wsiadł do swojego wozu, jego los był przypieczętowany.
-
-Kameleon włamał się przez zewnętrzny port UDP 8042 używając adresu IP 44.120.88.12. Przesłał payload 'Override_Steering.exe', co skutkowało wyłączeniem protokołów bezpieczeństwa zaledwie na kilka minut przed uderzeniem. Jego wiadomości w SecureComm potwierdzają motyw – miał zadbać, aby "dziennikarzyna niczego nie opublikował", działając w imieniu sił, dla których upadek NexoTech był nieakceptowalny.
-
-Piotr jedynie starał się ratować sprawę, zrzucając logi z serwera, po czym zapadł się pod ziemię, wiedząc, że korporacja zrzuci na niego winę. Twój precyzyjny raport ocala mu życie, a zarząd NexoTech musi stawić czoła federalnym oskarżeniom.
-
-System telemetrii wreszcie wyjawił swoją mroczną tajemnicę.`;
-  }else if(WRONG_WHO_PIOTR){
-    stamp="RAPORT ODRZUCONY - FATALNY BŁĄD";cls="lose";
-    txt=`Oskarżyłeś głównego sygnalistę.
-
-Kierownictwo NexoTech klaszcze w dłonie. Twój raport to dla nich wybawienie - doskonała linia obrony przed giełdą. Wypadek zrzuca się na zdesperowanego pracownika, który rzekomo mścił się na dziennikarzu. 
-
-Piotr, ukrywający się od nocy zdarzenia, zostaje odnaleziony przez policję dwa tygodnie później. Twój raport służy jako główny materiał dowodowy skazujący go na dożywocie. Prawdziwy sprawca, Kameleon, otrzymuje milczącą nagrodę finansową i znika w cyfrowym cieniu, przygotowując kolejne cele do uciszenia.
-
-Telemetria jasno wskazywała na zewnętrzny adres IP połączony z siecią DarkDrop. Nie uwzględniłeś tego w swoich ostatecznych wnioskach.
-
-Brak profesjonalizmu doprowadził do skazania niewinnego.`;
-  }else if(WRONG_WHO_ANNA){
-    stamp="NIEPRAWIDŁOWA KORELACJA MOTYWU";cls="lose";
-    txt=`Oskarżyłeś Annę, kierując się motywem chciwości wydawniczej.
-
-Logika była wadliwa, a dowody przeciwko niej nie istniały. Prokuratura szybko odrzuciła twój raport, kiedy Anna udowodniła, że opublikowanie materiału było jej życiowym celem. Zlecenie audytu z twojej strony uznano za fabrykację wymierzoną przeciwko wolnej prasie.
-
-Sprawa wypadku autonomicznego trafia do archiwum oznaczona jako "usterka mechaniczna". Akcje NexoTech chwilowo spadają, by po dwóch miesiącach wzbić się na historyczne maksimum. Kolejne ofiary systemów z wadliwym AI pojawią się w przyszłości.
-
-Zignorowałeś wiadomości zaszyfrowane w poczcie Piotra. Zignorowałeś groźby Kameleona. Szukałeś spisku tam, gdzie był on najmniejszy, przeoczając najciemniejszego aktora tego dramatu.`;
-  }else if(who==="unknown"){
-    stamp="ANALIZA NIEKOMPLETNA";cls="lose";
-    txt=`Zatwierdziłeś raport pozbawiony spójnego wniosku.
-
-Zarząd korporacji uśmiechnął się z politowaniem. Raport, w którym ekspert śledczy wpisuje "Brak możliwości weryfikacji", to przyznanie się do bezradności. Sformułowali oświadczenie prasowe: "Niezależni eksperci udowodnili brak ingerencji zewnętrznej w systemy naszego samochodu."
-
-Tymczasem Kameleon wciąż działa, a brudnopis Piotra – który mógł posłużyć jako ostatni wskaźnik – nigdy nie trafi w odpowiednie ręce. Wszystkie elementy, od zakupionego exploita Override_Steering, przez logi telemetrii, po otwarte groźby śmierci, były przed tobą.
-
-Nie potrafiłeś połączyć wątków.`;
-  }else{
-    stamp="SPRZECZNE DANE W RAPCIE";cls="lose";
-    txt=`Twoje tezy wzajemnie się wykluczyły.
-
-Dział analizy jakości odrzuca twój raport w kilka minut po jego wpłynięciu. Powiązanie podmiotu, narzędzia zbrodni i motywu było logicznie niemożliwe. Wskazujesz na atak zdalny, lecz złą osobę, albo poprawnego zabójcę, lecz twierdzisz, że posłużył się ingerencją fizyczną, zjechaniem z drogi lub zmotywowany był rzeczami, na które nie ma pokrycia w logach.
-
-W śledztwach cybernetycznych każdy bit musi stanowić zamknięty ciąg powiązań z tożsamością i metodą działania. Tutaj zabrakło logiki i uważności.
-
-Ciało dziennikarza pozostaje na cmentarzu jako symbol błędu pojazdu, a sprawa NexoTech zostaje zamknięta definitywnie i bez wyroków skazujących. Przegrałeś walkę o prawdę.`;
-  }
-  showEnding(who+how+why,stamp,cls==="win"?"win":"lose",txt);
-};
-
-function showEnding(key,stamp,winLose,txt){
-  const e=document.getElementById("ending");
-  const s=document.getElementById("endStamp");
-  const t=document.getElementById("endTxt");
-  const b=document.getElementById("endBtns");
-  
-  s.textContent=stamp;
-  s.className="stamp "+(winLose==="win"?"win":"lose");
-  t.innerHTML='<span class="crt"></span>';
-  
-  if(winLose==="win"){
-    b.innerHTML=`<button class="end-btn" onclick="window.location.href='howlora3.html'">ZAINICJUJ HOWLORA v7.0 (CZĘŚĆ 3) &gt;&gt;</button>`;
-  } else {
-    b.innerHTML=`<button class="end-btn" onclick="location.reload()">ZAINICJUJ REBOOT</button>`;
-  }
-  
-  e.classList.add("on");
-  let i=0;
-  const tick=()=>{
-    if(i>=txt.length)return;
-    i++;
-    t.innerHTML=txt.slice(0,i).replace(/\n/g,"<br>")+'<span class="crt"></span>';
-    setTimeout(tick,txt[i-1]==="\n"?250:20);
-  };
-  setTimeout(tick,1000);
+    if(win) {
+        icon.textContent = "⚖️";
+        title.textContent = "Oczyszczony z Zarzutów";
+        title.style.color = "var(--success)";
+        text.textContent = "Prawidłowo połączyłeś wszystkie fakty.\n\nChoć Adam pisał w notatniku oskarżycielskie groźby i kłócił się o wiertarkę, nie zabił Grześka. Z wiadomości wynikało, że Grzesiu sam upiekł niezwykle silne 'ziołowe ciasteczka'. Po ich zjedzeniu dostał ataku paniki i tachykardii, przez co potknął się i uderzył głową o metalową kosiarkę, o którą toczył się spór.\n\nPolicja zamyka śledztwo uznając zdarzenie za śmiertelny, nieszczęśliwy wypadek pod wpływem środków psychoaktywnych. Adam wraca do rodziny na niedzielny obiad z okazji Dnia Ojca.";
+        btn.textContent = "ZAINICJUJ HOWLORA v7.0 >>";
+        btn.onclick = () => window.location.href = 'howlora3.html';
+    } else if(adamJail) {
+        icon.textContent = "🚓";
+        title.textContent = "Skazany za Zabójstwo";
+        title.style.color = "var(--danger)";
+        text.textContent = "Pogrzebałeś niewinnego człowieka własnymi, niespójnymi zeznaniami.\n\nChoć raport medyczny jasno wskazywał na wypadek wywołany silnym odurzeniem Grześka, ty przyznałeś się do winy pod wpływem stresu. Mściwe SMSy Adama i groźby w notatkach posłużyły prokuraturze za motyw. \n\nAdam W. zostaje skazany na wiele lat więzienia, choć prawdziwą przyczyną śmierci była blacha feralnych ciastek upieczonych przez samego denata.";
+        btn.textContent = "RESTART SYSTEMU";
+        btn.onclick = () => location.reload();
+    } else {
+        icon.textContent = "❌";
+        title.textContent = "Brak Logiki w Zeznaniach";
+        title.style.color = "var(--danger)";
+        text.textContent = "Podane przez Ciebie fakty całkowicie się wykluczają.\n\nŚledczy nie wierzą w twoje wyjaśnienia. Opowieści o truciznach z allegro czy włamywaczach są sprzeczne z wynikami autopsji (potężne stężenie THC i rana tłuczona od kosiarki). \n\nTwoje zeznania wydają się śledczym celowym mataczeniem. Adam zostaje zatrzymany w areszcie śledczym do czasu dokładnego zbadania sprawy. Następnym razem czytaj raporty uważniej.";
+        btn.textContent = "RESTART SYSTEMU";
+        btn.onclick = () => location.reload();
+    }
+    
+    scr.classList.add('active');
 }
 </script>
 </body>
