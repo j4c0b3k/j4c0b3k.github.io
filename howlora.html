@@ -1,3 +1,2389 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>HOWLORA.OS // Sprawa #4471 — Maria I.</title>
+    <style>
+        :root{
+          --bg:#04060a;
+          --panel:#0b1016;
+          --panel2:#101820;
+          --line:#192030;
+          --line2:#22303f;
+          --text:#c8d2da;
+          --muted:#6d7c8a;
+          --green:#3dfca0;
+          --green-dim:#1a8050;
+          --amber:#f5c842;
+          --red:#ff2b4a;
+          --cyan:#2ee0ff;
+          --magenta:#e83dfb;
+          --violet:#8b6cf7;
+        }
+        *{box-sizing:border-box;margin:0;padding:0;touch-action:manipulation;}
+        html,body{height:100%;width:100%;overflow:hidden;background:#000;color:var(--text);font-family:"Consolas","SFMono-Regular",ui-monospace,monospace;user-select:none;}
+        button{font-family:inherit;cursor:pointer;}
+        a{color:var(--cyan)}
+        input,textarea,select{font-family:inherit;font-size:16px !important;}
+
+        #devicePopup { position: fixed; inset: 0; background: rgba(2, 5, 8, 0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        .pop-box { border: 1px solid rgba(46,224,255,0.3); background: #050a0f; border-radius: 8px; width: 100%; max-width: 520px; box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(46,224,255,0.1); max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+        .pop-header { background: linear-gradient(90deg, rgba(46,224,255,0.1), transparent); color: var(--cyan); border-bottom: 1px solid rgba(46,224,255,0.2); font-weight: 900; letter-spacing: 3px; padding: 16px; font-size: 13px; text-align: center; text-transform: uppercase; }
+        .pop-content { padding: 20px 24px; overflow-y: auto; }
+        .pop-radar-wrap { display: flex; justify-content: center; align-items: center; padding: 30px 0; }
+        .pop-radar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(46,224,255,0.3); position: relative; }
+        .pop-radar::before { content: ""; position: absolute; inset: 2px; border-radius: 50%; border: 1px dashed var(--cyan); animation: spin 4s linear infinite; }
+        .pop-radar::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 70%, rgba(46,224,255,0.6) 100%); animation: spin 1.5s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .sys-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .sys-card { background: rgba(10, 18, 28, 0.6); border: 1px solid var(--line2); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 5px; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; border-left: 3px solid var(--line2); }
+        .sys-card.show { opacity: 1; transform: translateY(0); }
+        .sys-card.hl { border-left-color: var(--cyan); }
+        .sys-card.hl-warn { border-left-color: var(--amber); }
+        .sys-card .lbl { font-size: 9px; color: var(--muted); font-weight: bold; letter-spacing: 1px; }
+        .sys-card .val { font-size: 12px; color: #d8e2ea; font-weight: 600; word-break: break-word; }
+        .sys-card .val.cyan { color: var(--cyan); text-shadow: 0 0 8px rgba(46,224,255,0.4); }
+        .sys-card .val.warn { color: var(--amber); text-shadow: 0 0 8px rgba(245,200,66,0.4); }
+        .pop-disclaimer { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.5; padding: 10px; background: #080c10; border-radius: 4px; margin-bottom: 10px; border: 1px solid var(--line2); }
+        .pop-btn { background: var(--cyan); color: #000; border: none; padding: 14px; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; text-transform: uppercase; display: none; box-shadow: 0 0 15px rgba(46,224,255,0.3); }
+        .pop-btn:hover { background: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.6); }
+
+        #bootOverlay{ position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden; display:none; }
+        #stagePower{ position:absolute;inset:0;display:flex;align-items:center;justify-content:center; flex-direction:column;gap:16px; }
+        #powerLed{width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 20px var(--green);animation:ledBlink .4s steps(2) infinite}
+        @keyframes ledBlink{50%{opacity:0}}
+        #powerText{color:#1a3a20;font-size:11px;letter-spacing:4px;text-transform:uppercase}
+
+        #stageBios{ position:absolute;inset:0;display:none;padding:40px; background:#000; }
+        #biosText{font-size:12px;color:#bbb;line-height:1.8;text-shadow:none}
+        #biosText .ok{color:var(--green)}
+        #biosText .fail{color:var(--red)}
+
+        #stageLogo{ position:absolute;inset:0;display:none; background:#000; flex-direction:column;align-items:center;justify-content:center;gap:0; }
+        #stageLogoInner{ display:flex;flex-direction:column;align-items:center;gap:0; animation:logoFadeIn .5s ease-out; }
+        @keyframes logoFadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+        .boot-logo-mark{position:relative;width:120px;height:120px;margin-bottom:16px;}
+        .boot-logo-mark svg{width:100%;height:100%;display:block;}
+        .boot-wordmark{font-size:32px;font-weight:900;letter-spacing:10px; background:linear-gradient(135deg,#2ee0ff,#8b6cf7,#e83dfb); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; text-transform:uppercase; text-align: center;}
+        .boot-sub{font-size:10px;letter-spacing:6px;color:var(--muted);margin-top:6px;text-transform:uppercase; text-align: center;}
+
+        #stageLoading{ position:absolute;inset:0;display:none; flex-direction:column;align-items:center;justify-content:center;gap:0; }
+        #loadLore{max-width:620px;color:#d8e0e8;font-size:16px;line-height:1.7;text-align:center;min-height:60px;margin-bottom:32px;padding:0 20px}
+        #loadLore .caret{display:inline-block;width:9px;height:17px;background:#d8e0e8;vertical-align:-3px;margin-left:2px;animation:blink 1s steps(2) infinite}
+        @keyframes blink{50%{opacity:0}}
+        #loadLines{font-size:11px;color:var(--green);line-height:1.6;text-shadow:0 0 4px rgba(61,252,160,.4);min-height:120px;text-align:left;width:540px;max-width:90vw;padding:0 4px}
+        #loadBarWrap{width:540px;max-width:90vw;margin-top:20px}
+        #loadBarLabel{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:6px}
+        #loadBar{width:100%;height:3px;background:#111;border-radius:2px;overflow:hidden}
+        #loadBarFill{height:100%;width:0;background:linear-gradient(90deg,var(--green-dim),var(--green));border-radius:2px;transition:width .12s ease;box-shadow:0 0 10px var(--green)}
+
+        #stageLogin{ position:absolute;inset:0;display:none; flex-direction:column;align-items:center;justify-content:center;gap:20px; }
+        .login-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#1c2836,#0c131e);border:2px solid var(--line2);display:grid;place-items:center;font-size:28px;font-weight:900;color:#c8d4e0;box-shadow:0 0 20px rgba(46,224,255,.1)}
+        .login-name{font-size:14px;color:#d8e2ea;letter-spacing:4px;text-transform:uppercase}
+        .login-role{font-size:10px;color:var(--muted);letter-spacing:2px; text-align: center; padding: 0 10px;}
+        #loginBar{width:200px;height:2px;background:#111;border-radius:2px;overflow:hidden;margin-top:8px}
+        #loginBarFill{height:100%;width:0;background:var(--cyan);border-radius:2px;transition:width 1.8s ease}
+        #loginStatus{font-size:10px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;min-height:16px;text-align:center}
+
+        #desktopReveal{animation:revealDesktop .6s ease-out}
+        @keyframes revealDesktop{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:scale(1)}}
+
+        #bootSkip{position:fixed;bottom:22px;right:26px;color:var(--muted);font-size:11px;background:none;border:1px solid var(--line2);padding:5px 12px;border-radius:2px;letter-spacing:1px;z-index:10000;}
+        #bootSkip:hover{color:var(--green);border-color:var(--green-dim)}
+
+        #desktop{position:fixed;inset:0;display:none;flex-direction:column;
+          background:
+            radial-gradient(1400px 800px at 15% 5%, rgba(46,224,255,.045), transparent 55%),
+            radial-gradient(1000px 700px at 90% 95%, rgba(232,61,251,.04), transparent 55%),
+            radial-gradient(800px 600px at 50% 50%, rgba(139,108,247,.025), transparent 60%),
+            linear-gradient(170deg,#03060c 0%,#060a10 100%);
+        }
+        #desktop.on{display:flex}
+        #desktop::before{
+          content:"";position:absolute;inset:0;pointer-events:none;
+          background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px);
+          mix-blend-mode:overlay;opacity:.4;
+        }
+        #desktop::after{
+          content:"";position:absolute;inset:0;pointer-events:none;
+          background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);
+        }
+
+        .wall-big{position:absolute;right:44px;top:28px;text-align:right;color:#12202e;font-size:88px;font-weight:900;letter-spacing:8px;line-height:.9;pointer-events:none;z-index:1;}
+        .wall-big span{color:#1a2c3e;font-size:38px;letter-spacing:14px;display:block;margin-top:4px}
+        .wall-sub{position:absolute;right:46px;top:250px;color:#1a2c3e;font-size:10px;letter-spacing:8px;text-transform:uppercase;pointer-events:none;z-index:1}
+        .wall-info{position:absolute;left:24px;top:18px;color:#16232f;font-size:10px;letter-spacing:1.5px;line-height:1.6;text-transform:uppercase;pointer-events:none;z-index:1;}
+        .wall-info b{color:#1e3040}
+
+        #objPanel{ position:absolute;top:70px;left:24px;width:240px;z-index:10;pointer-events:none; }
+        #objPanel .obj-head{font-size:9px;letter-spacing:3px;color:var(--violet);text-transform:uppercase;margin-bottom:8px;opacity:.7}
+        #objPanel .obj-item{ font-size:11px;color:#8a9ba9;line-height:1.5;padding:4px 0; border-left:2px solid #1e2a36;padding-left:8px;margin-bottom:4px; letter-spacing:.5px;transition:all .3s; }
+        #objPanel .obj-item.done{color:#3a5240;border-color:#2a4a34;text-decoration:line-through;opacity:.5}
+        #objPanel .obj-item.active{color:#b0c4d0;border-color:var(--violet)}
+        #objPanel .obj-caret{display:inline-block;width:6px;height:11px;background:var(--violet);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(2) infinite}
+
+        #icons{position:absolute;inset:0;pointer-events:none;z-index:2;}
+        .icon{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:5px;width:100px;padding:9px 6px;border:1px solid transparent;border-radius:6px;cursor:pointer;text-align:center;transition:background .15s, border-color .15s, transform .15s;}
+        .icon:hover{background:rgba(46,224,255,.05);border-color:rgba(46,224,255,.2);transform:translateY(-2px)}
+        .icon.launching{animation:iconLaunch .25s ease-out}
+        @keyframes iconLaunch{0%{transform:scale(1)}50%{transform:scale(.9)}100%{transform:scale(1)}}
+        .icon .glyph{position:relative;width:50px;height:50px;border-radius:10px;display:grid;place-items:center;font-size:22px;font-weight:800;background:linear-gradient(160deg,#141e28,#0b1219);border:1px solid var(--line2);box-shadow:inset 0 1px 0 rgba(255,255,255,.035), 0 4px 14px rgba(0,0,0,.5);color:var(--cyan);text-shadow:0 0 8px rgba(46,224,255,.5);}
+        .icon.locked .glyph{color:var(--red);text-shadow:0 0 8px rgba(255,43,74,.6)}
+        .icon.game .glyph{color:var(--green);text-shadow:0 0 8px rgba(61,252,160,.6)}
+        .icon.lore-app .glyph{color:var(--violet);text-shadow:0 0 8px rgba(139,108,247,.6)}
+        .icon .lbl{font-size:10px;color:#b0bcc8;letter-spacing:.5px}
+
+        .icon-badge { position: absolute; top: -6px; right: -6px; background: var(--red); color: #fff; font-size: 11px; font-weight: bold; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(255,43,74,0.6); z-index: 10; }
+
+        .icon.readme-hl { position: relative; }
+        .icon.readme-hl .glyph{ box-shadow: 0 0 20px var(--green), inset 0 0 10px var(--green); border-color: var(--green); animation: pulseReadme 1.5s infinite alternate; }
+        .icon.readme-hl::after { content: "↓ OTWÓRZ MNIE"; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); color: var(--green); font-size: 10px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 8px var(--green); animation: readmeBounce 1s infinite alternate; pointer-events: none; margin-top: 4px; }
+        @keyframes pulseReadme { from { transform: scale(1); box-shadow: 0 0 10px var(--green); } to { transform: scale(1.1); box-shadow: 0 0 30px var(--green); } }
+        @keyframes readmeBounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(6px); } }
+
+        .win{position:absolute;min-width:300px;min-height:200px;background:var(--panel);border:1px solid var(--line2);border-radius:8px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.7), 0 0 0 1px rgba(46,224,255,.02);overflow:hidden;transform-origin:center center;animation:winOpen .2s cubic-bezier(.2,.9,.3,1.1);}
+        @keyframes winOpen{from{opacity:0;transform:scale(.9) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+        .win.closing{animation:winClose .15s ease-in forwards}
+        @keyframes winClose{to{opacity:0;transform:scale(.95) translateY(-4px)}}
+        .win.minimized{display:none}
+        .win .tb{height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;background:linear-gradient(180deg,#131d28,#0d151e);border-bottom:1px solid var(--line2);cursor:move;flex-shrink:0;}
+        .win .tb .dot{width:9px;height:9px;border-radius:50%;background:#273240;border:1px solid #384855}
+        .win .tb .title{flex:1;font-size:11px;color:#c0ccda;letter-spacing:1.5px;text-transform:uppercase;padding-left:6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none;}
+        .win .tb .ctl{display:flex;gap:6px; z-index:50;}
+        .win .tb .ctl button{width:24px;height:22px;border:1px solid var(--line2);background:#0e161e;color:#8a9aaa;border-radius:3px;font-size:12px;line-height:1;cursor:pointer; display:flex; align-items:center; justify-content:center; padding-bottom: 2px;}
+        .win .tb .ctl button:hover{background:#182230;color:#fff}
+        .win .tb .ctl .x:hover{background:var(--red);color:#fff;border-color:var(--red)}
+        .win .body{flex:1;overflow:auto;background:var(--panel);color:var(--text);font-size:13px;display:flex;flex-direction:column;}
+        .win.focus{box-shadow:0 30px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(46,224,255,.28)}
+        .win.focus .tb{background:linear-gradient(180deg,#182534,#101e2c)}
+        .win .grip{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,#2a3a4c 50%,#2a3a4c 62%,transparent 62%,transparent 76%,#2a3a4c 76%,#2a3a4c 88%,transparent 88%);}
+
+        #taskbar{position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(180deg,#09101a,#05090e);border-top:1px solid var(--line2);display:flex;align-items:center;gap:8px;padding:0 8px;z-index:50;}
+        #start{display:flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--line2);border-radius:4px;background:#0a1420;}
+        #start .logo-tb{font-size:11px;font-weight:900;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        #start .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);animation:pulse 1.6s infinite;flex-shrink:0}
+        @keyframes pulse{50%{opacity:.3}}
+        #tasks{display:flex;gap:5px;flex:1;overflow:hidden;margin-left:4px}
+        .task{display:flex;align-items:center;gap:5px;height:30px;padding:0 11px;font-size:10px;color:#9aaabb;background:#0c141e;border:1px solid var(--line2);border-radius:3px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.8px;}
+        .task:hover{background:#132030;color:#fff}
+        .task.active{border-color:var(--cyan);color:var(--cyan);box-shadow:inset 0 -2px 0 var(--cyan)}
+        #clock-area{color:#8899aa;font-size:11px;padding:0 12px;border-left:1px solid var(--line2);height:30px;display:flex;align-items:center;letter-spacing:1px;white-space:nowrap}
+        #verdictBtn{height:32px;padding:0 15px;background:linear-gradient(180deg,#c81830,#7a0e1e);color:#fff;font-weight:900;letter-spacing:2px;font-size:10px;border:1px solid #e03050;border-radius:3px;box-shadow:0 0 12px rgba(255,43,74,.5), inset 0 1px 0 rgba(255,255,255,.15);animation:glow 2s infinite alternate;}
+        #verdictBtn:hover{filter:brightness(1.15)}
+        @keyframes glow{from{box-shadow:0 0 6px rgba(255,43,74,.3), inset 0 1px 0 rgba(255,255,255,.15)} to{box-shadow:0 0 20px rgba(255,43,74,.9), inset 0 1px 0 rgba(255,255,255,.25)}}
+
+        #timerDisplay{ display:flex;align-items:center;gap:8px;padding:0 14px;border-left:1px solid var(--line2);height:36px; }
+        #timerDisplay .t-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+        #timerDisplay .t-val{font-size:16px;font-weight:900;letter-spacing:3px;color:var(--amber);font-variant-numeric:tabular-nums;text-shadow:0 0 8px rgba(245,200,66,.5);}
+        #timerDisplay.urgent .t-val{color:var(--red);text-shadow:0 0 10px rgba(255,43,74,.7);animation:tpulse .6s infinite alternate}
+        @keyframes tpulse{from{opacity:.7}to{opacity:1}}
+        #timerDisplay .t-bar{width:60px;height:3px;background:#1a2030;border-radius:2px;overflow:hidden}
+        #timerDisplay .t-bar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--amber));border-radius:2px;transition:width .9s linear}
+
+        .app{display:flex;height:100%;color:#d5dce5;flex:1;}
+        .sidebar{width:210px;background:#090f16;border-right:1px solid var(--line2);display:flex;flex-direction:column;flex-shrink:0;}
+        .sidebar .head{padding:10px 14px;font-size:9px;letter-spacing:2.5px;color:var(--muted);border-bottom:1px solid var(--line);text-transform:uppercase;flex-shrink:0;}
+        .list{display:flex;flex-direction:column;flex:1;overflow-y:auto;}
+        .row{display:flex;gap:10px;align-items:center;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;color:#b8c4d0;}
+        .row:hover{background:#0e1820}
+        .row.active{background:#132030;color:#fff;border-left:2px solid var(--cyan);padding-left:11px}
+        .row .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1c2836,#0c131e);display:grid;place-items:center;font-weight:900;color:#c8d4e0;flex-shrink:0;border:1px solid var(--line2);font-size:12px;}
+        .row .meta{flex:1;overflow:hidden;pointer-events:none;}
+        .row .meta .n{font-size:12px;color:#dce5ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .row .meta .p{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+        .row .time{font-size:9px;color:var(--muted);white-space:nowrap;pointer-events:none;}
+        .unread{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);flex-shrink:0}
+        
+        .pane{flex:1;display:flex;flex-direction:column;min-width:0;}
+        .pane .ph{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--line2);background:#090f16;font-size:11px;letter-spacing:1px;flex-shrink:0;}
+        .back{background:#0e1820;color:var(--cyan);border:1px solid var(--cyan);padding:4px 10px;border-radius:3px;font-size:10px;letter-spacing:1px;}
+        .back:hover{background:var(--cyan);color:#000}
+        .pane .pc{flex:1;overflow-y:auto;padding:14px;}
+        .empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:11px;letter-spacing:1px;text-align:center;padding:20px}
+        
+        .bub{max-width:78%;padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.55;margin-bottom:8px;word-wrap:break-word}
+        .bub.them{background:#142030;color:#d5dde6;border-bottom-left-radius:2px}
+        .bub.me{background:linear-gradient(135deg,#0d5570,#083645);color:#e4f4f8;margin-left:auto;border-bottom-right-radius:2px}
+        .bub.flagged{background:linear-gradient(135deg,#3a0a12,#1a050a);border:1px solid rgba(255,43,74,.3)}
+        .bub .ts{display:block;font-size:9px;color:#6a7a88;margin-top:4px;letter-spacing:.8px}
+        .bub.me .ts{color:#7aaabb}
+
+        .mail-row{padding:11px 13px}
+        .mail-row .from{font-size:12px;color:#d8e2ea;font-weight:700}
+        .mail-row .sub{font-size:11px;color:#b8c4ce;margin-top:2px}
+        .mail-row .pv{font-size:10px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .mail-view h3{font-size:14px;color:#fff;margin-bottom:6px}
+        .mail-view .meta{font-size:11px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px;line-height:1.7}
+        .mail-view .body-txt{font-size:13px;line-height:1.75;color:#ccd5de;white-space:pre-wrap}
+
+        .match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;padding:14px}
+        .ad-item{background:#0d141c;border:1px solid var(--line2);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;display:flex;}
+        .ad-item:hover{transform:translateY(-2px);border-color:var(--amber)}
+        .ad-item .pic{width:78px;background:linear-gradient(135deg,#28200f,#16120a);display:grid;place-items:center;font-size:26px;color:var(--amber);text-shadow:0 0 12px rgba(245,200,66,.5);border-right:1px solid var(--line2)}
+        .ad-item .info{padding:10px;font-size:12px;flex:1;pointer-events:none;}
+        .ad-item .info .n{color:#fff;font-weight:700;margin-bottom:4px;line-height:1.3}
+        .ad-item .info .p{color:var(--green);font-weight:800;font-size:14px;margin-bottom:4px}
+        .ad-item .info .a{color:var(--muted);font-size:10px}
+        .ad-item .info .sold{color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+        .ad-item .info .sold.yes{color:#3a6040}
+
+        #notesArea{width:100%;height:100%;background:#09101a;border:none;color:#c8d5de;padding:16px;font-family:"Consolas",monospace;font-size:13px;line-height:1.65;outline:none;resize:none;}
+
+        .brw .url{padding:7px;border-bottom:1px solid var(--line2);background:#090f16;font-size:10px;color:var(--muted)}
+        .brw .url b{color:var(--cyan)}
+        .hist-row{padding:9px 13px;border-bottom:1px solid var(--line);font-size:12px}
+        .hist-row .t{color:#d8e2ea}
+        .hist-row .u{color:var(--cyan);font-size:10px;margin-top:2px; word-break: break-all;}
+        .hist-row .ts{color:var(--muted);font-size:10px;margin-top:2px}
+        .hist-cat{padding:6px 13px;font-size:9px;letter-spacing:2px;color:var(--muted);background:#09101a;text-transform:uppercase;border-bottom:1px solid var(--line)}
+
+        .file{padding:9px 13px;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer}
+        .file:hover{background:#0e1820}
+        .file .n{color:var(--cyan);pointer-events:none;}
+        .file .d{color:var(--muted);font-size:10px;margin-top:2px;pointer-events:none;}
+        .file-folder{padding:7px 13px;font-size:9px;letter-spacing:2px;color:var(--muted);background:#09101a;text-transform:uppercase;border-bottom:1px solid var(--line)}
+        pre.term{padding:14px;background:#030709;color:var(--green);font-size:11px;line-height:1.65;white-space:pre-wrap;font-family:"Consolas",monospace;text-shadow:0 0 4px rgba(61,252,160,.3);height:100%;overflow-y:auto}
+        pre.term .hl{color:var(--red);text-shadow:0 0 6px rgba(255,43,74,.6);font-weight:700}
+        pre.term .ok{color:var(--amber)}
+        pre.term .dim{color:#3a4a5a}
+
+        .readme{padding:20px;font-size:13px;line-height:1.7;color:#c8d5de;overflow-y:auto}
+        .readme h2{color:var(--violet);letter-spacing:3px;margin-bottom:14px;font-size:13px;text-transform:uppercase;border-bottom:1px solid var(--line2);padding-bottom:10px}
+        .readme h3{color:var(--amber);margin:18px 0 8px;font-size:11px;letter-spacing:2px;text-transform:uppercase}
+        .readme p{margin-bottom:10px;color:#b8c8d5}
+        .readme .stamp{margin-top:20px;padding:12px 16px;border:1px solid #1e2c38;background:#09101a;font-size:11px;color:var(--muted);letter-spacing:.5px;line-height:1.6;font-style:italic}
+        .readme .stamp::before{content:"⚠ ";color:var(--amber)}
+        .readme hr{border:none;border-top:1px solid var(--line2);margin:18px 0}
+        .readme .case-id{font-size:9px;letter-spacing:4px;color:#2a3a4c;text-align:right;margin-top:24px}
+
+        #snakeCanvas{background:#03060a;border:1px solid var(--line2);display:block;margin:0 auto;box-shadow:0 0 20px rgba(61,252,160,.08),0 0 0 1px rgba(61,252,160,.06)}
+        .snake-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#030609;padding:16px;}
+        .snake-ui{color:var(--green);font-size:11px;margin-bottom:10px;letter-spacing:2px;width:100%;max-width:360px;display:flex;justify-content:space-between;text-shadow:0 0 6px rgba(61,252,160,.4)}
+        .snake-start{margin-top:14px;padding:8px 20px;background:transparent;color:var(--green);border:1px solid var(--green);font-size:11px;letter-spacing:2px;border-radius:3px;text-shadow:0 0 6px rgba(61,252,160,.4);}
+        .snake-start:hover{background:var(--green);color:#000}
+        .snake-over{color:var(--red);font-size:13px;margin-top:12px;letter-spacing:2px;text-shadow:0 0 8px rgba(255,43,74,.6)}
+        
+        .mobile-dpad { display: none; text-align: center; margin-top: 15px; }
+        .mobile-dpad button { width: 50px; height: 50px; margin: 5px; font-size: 20px; border-radius: 8px; background: rgba(61,252,160,0.1); border: 2px solid var(--green); color: var(--green); font-weight: bold; }
+        .mobile-dpad button:active { background: var(--green); color: #000; }
+
+        .ttt-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#030609;padding:16px;gap:14px}
+        .ttt-header{color:var(--cyan);font-size:11px;letter-spacing:2px;text-align:center}
+        .ttt-score{display:flex;gap:24px;font-size:10px;letter-spacing:1px}
+        .ttt-score span{color:var(--muted)}.ttt-score b{color:var(--amber)}
+        .ttt-board{display:grid;grid-template-columns:repeat(3,80px);grid-template-rows:repeat(3,80px);gap:4px}
+        .ttt-cell{background:#0d141c;border:1px solid var(--line2);border-radius:6px;display:grid;place-items:center;font-size:28px;font-weight:900;cursor:pointer;transition:background .12s;color:var(--cyan)}
+        .ttt-cell:hover:empty{background:#122030}
+        .ttt-cell.X{color:var(--cyan);text-shadow:0 0 10px rgba(46,224,255,.6)}
+        .ttt-cell.O{color:var(--red);text-shadow:0 0 10px rgba(255,43,74,.6)}
+        .ttt-cell.win-line{background:#0a2020;border-color:var(--green)}
+        .ttt-status{font-size:12px;color:#d8e2ea;letter-spacing:1px;min-height:20px;text-align:center}
+        .ttt-btn{padding:7px 18px;background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:3px;font-size:10px;letter-spacing:2px;}
+        .ttt-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+        .ttt-diff{display:flex;gap:8px;font-size:10px}
+        .ttt-diff button{padding:4px 10px;background:#0c141e;border:1px solid var(--line2);color:var(--muted);border-radius:3px;letter-spacing:1px;font-size:10px;}
+        .ttt-diff button.active{border-color:var(--amber);color:var(--amber)}
+
+        .rps-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#030609;padding:16px;gap:14px}
+        .rps-score{display:flex;gap:24px;font-size:11px;letter-spacing:1px;border:1px solid var(--line2);border-radius:6px;padding:8px 20px}
+        .rps-score .rs{color:var(--green)}.rps-score .ls{color:var(--red)}.rps-score .ds{color:var(--muted)}
+        .rps-score b{font-size:15px}
+        .rps-arena{display:flex;align-items:center;gap:24px;padding:16px 0}
+        .rps-side{display:flex;flex-direction:column;align-items:center;gap:8px}
+        .rps-hand{font-size:52px;transition:transform .2s;min-height:64px;display:flex;align-items:center}
+        .rps-hand.shake{animation:rpsShake .5s}
+        @keyframes rpsShake{0%,100%{transform:translateY(0)}25%{transform:translateY(-10px)}75%{transform:translateY(6px)}}
+        .rps-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+        .rps-vs{color:var(--muted);font-size:14px;font-weight:900}
+        .rps-choices{display:flex;gap:12px}
+        .rps-choice{width:72px;height:72px;border-radius:50%;border:2px solid var(--line2);background:#0d141c;font-size:32px;display:grid;place-items:center;cursor:pointer;transition:all .15s;}
+        .rps-choice:hover{border-color:var(--cyan);background:#102030;transform:scale(1.08)}
+        .rps-choice:disabled{cursor:not-allowed;opacity:.5}
+        .rps-result{font-size:13px;letter-spacing:2px;min-height:20px;text-align:center;font-weight:700}
+        .rps-result.win{color:var(--green);text-shadow:0 0 10px rgba(61,252,160,.5)}
+        .rps-result.lose{color:var(--red);text-shadow:0 0 10px rgba(255,43,74,.5)}
+        .rps-result.draw{color:var(--amber)}
+        .rps-reset{padding:6px 16px;background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:3px;font-size:10px;letter-spacing:2px;}
+        .rps-reset:hover{border-color:var(--cyan);color:var(--cyan)}
+
+        .mg{padding:16px;display:flex;flex-direction:column;gap:12px;height:100%;overflow:hidden}
+        .mg .mg-head{color:var(--amber);letter-spacing:3px;font-size:12px;text-align:center;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+        .mg .mg-desc{font-size:11px;color:var(--muted);line-height:1.6;text-align:center;padding:0 10px}
+        .mg .mg-puzzle{background:#030709;border:1px solid var(--line2);border-radius:4px;padding:12px;font-family:"Consolas",monospace;font-size:11px;line-height:1.7;color:var(--green);text-shadow:0 0 4px rgba(61,252,160,.3);flex:1;overflow-y:auto}
+        .mg .mg-puzzle .corrupt{color:var(--red);text-shadow:0 0 6px rgba(255,43,74,.5)}
+        .mg .mg-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .mg .mg-opt{padding:8px 12px;background:#0a1018;border:1px solid var(--line2);border-radius:4px;font-size:11px;color:#a0b0c0;cursor:pointer;text-align:left;line-height:1.4;}
+        .mg .mg-opt:hover{background:#122030;border-color:var(--cyan);color:var(--cyan)}
+        .mg .mg-opt.correct{background:#0a2018;border-color:var(--green);color:var(--green);animation:flashGreen .4s}
+        .mg .mg-opt.wrong{background:#1a0a10;border-color:var(--red);color:var(--red);animation:flashRed .4s}
+        @keyframes flashGreen{0%{background:#1a4030}100%{background:#0a2018}}
+        @keyframes flashRed{0%{background:#3a1020}100%{background:#1a0a10}}
+        .mg .mg-progress{display:flex;gap:6px;justify-content:center}
+        .mg .mg-pip{width:20px;height:4px;border-radius:2px;background:#1a2030}
+        .mg .mg-pip.done{background:var(--green);box-shadow:0 0 6px rgba(61,252,160,.6)}
+        .mg .mg-pip.fail{background:var(--red)}
+        .mg .mg-pip.cur{background:var(--amber)}
+        .mg .mg-status{font-size:11px;color:var(--muted);text-align:center;min-height:16px;letter-spacing:1px}
+        .mg .mg-timer{font-size:13px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-align:center;text-shadow:0 0 8px rgba(46,224,255,.5)}
+        .mg .mg-timer.warn{color:var(--red);text-shadow:0 0 10px rgba(255,43,74,.7)}
+
+        #verdictModal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:20000;display:none;align-items:center;justify-content:center;animation:fadeIn .2s;}
+        #verdictModal.on{display:flex}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        #verdictModal .box{width:640px;max-width:95vw;max-height:95vh;background:var(--panel);border:1px solid #320a18;border-radius:10px;padding:28px;box-shadow:0 0 60px rgba(255,43,74,.25);overflow-y:auto; -webkit-overflow-scrolling: touch;}
+        #verdictModal h2{color:var(--red);letter-spacing:4px;font-size:15px;margin-bottom:4px;text-transform:uppercase;text-align:center}
+        #verdictModal .vd-sub{color:var(--muted);font-size:11px;text-align:center;margin-bottom:20px;line-height:1.6}
+        .vd-stage{margin-bottom:20px;display:none}
+        .vd-stage.active{display:block}
+        .vd-stage-head{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+        .vd-stage-head .s-num{width:20px;height:20px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);display:grid;place-items:center;font-size:10px;font-weight:900;color:var(--amber)}
+        .vd-stage-head .s-label{color:var(--amber);font-weight:700;font-size:11px;letter-spacing:2px}
+        .v-opts{display:flex;flex-direction:column;gap:8px}
+        .v-opt{display:flex;align-items:flex-start;gap:12px;background:#0c141d;border:1px solid var(--line2);padding:10px 13px;border-radius:6px;cursor:pointer}
+        .v-opt:hover{background:#102030;border-color:var(--cyan)}
+        .v-opt input{width:15px;height:15px;accent-color:var(--red);cursor:pointer;flex-shrink:0;margin-top:3px}
+        .v-opt .v-opt-body span{font-size:13px;color:#d8e2ea;display:block}
+        .v-opt .v-opt-body small{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.4}
+        #verdictModal .v-actions{display:flex;gap:10px;margin-top:20px}
+        #verdictModal .v-next{flex:2;padding:11px;background:var(--violet);color:#fff;border:none;font-weight:900;letter-spacing:2px;border-radius:4px;font-size:11px;}
+        #verdictModal .v-next:hover{background:#7a5ae0}
+        #verdictModal .v-submit{flex:2;padding:11px;background:var(--red);color:#fff;border:none;font-weight:900;letter-spacing:2px;border-radius:4px;font-size:11px;}
+        #verdictModal .v-submit:hover{background:#cc1830}
+        #verdictModal .v-cancel{flex:1;padding:11px;background:transparent;color:var(--muted);border:1px solid var(--line2);border-radius:4px;font-size:10px;letter-spacing:1px;}
+        #verdictModal .v-cancel:hover{color:#fff;border-color:#fff}
+        .vd-breadcrumb{font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:16px;border-bottom:1px solid var(--line2);padding-bottom:10px}
+        .vd-breadcrumb .sel{color:var(--cyan)}
+
+        #ending{position:fixed;inset:0;background:#000;z-index:30000;display:none;overflow-y:auto;padding:60px 20px;text-align:center;animation:fadeIn .4s;}
+        #ending.on{display:block;}
+        #ending .stamp{display:inline-block;white-space:nowrap;font-size:32px;font-weight:900;letter-spacing:8px;padding:12px 24px;border:4px solid;transform:rotate(-3deg);margin:0 auto 40px auto;text-transform:uppercase;animation:stampIn .5s cubic-bezier(.2,.9,.3,1.4);position:relative;z-index:20;}
+        @keyframes stampIn{from{opacity:0;transform:rotate(-3deg) scale(2)} to{opacity:1;transform:rotate(-3deg) scale(1)}}
+        #ending .stamp.win{color:var(--green);border-color:var(--green);text-shadow:0 0 20px rgba(61,252,160,.5);box-shadow:0 0 40px rgba(61,252,160,.2)}
+        #ending .stamp.lose{color:var(--red);border-color:var(--red);text-shadow:0 0 20px rgba(255,43,74,.5);box-shadow:0 0 40px rgba(255,43,74,.2)}
+        #ending .txt{display:block;max-width:720px;margin:0 auto 30px auto;font-size:16px;line-height:1.9;color:#c8d5de;text-align:left;letter-spacing:.5px;z-index:10;position:relative;}
+        #ending .txt .crt{display:inline-block;width:8px;height:16px;background:#c8d5de;vertical-align:-3px;margin-left:2px;animation:blink 1s steps(2) infinite}
+        #ending button.end-btn{display:inline-block;margin:20px 10px;padding:12px 28px;background:transparent;color:var(--green);border:1px solid var(--green);font-size:12px;letter-spacing:3px;border-radius:3px;font-weight:700;text-shadow:0 0 6px rgba(61,252,160,.5);cursor:pointer;}
+        #ending button.end-btn:hover{background:var(--green);color:#000;text-shadow:none}
+        #ending button.end-btn-next{color:var(--cyan);border-color:var(--cyan);text-shadow:0 0 6px rgba(46,224,255,.5);}
+        #ending button.end-btn-next:hover{background:var(--cyan);color:#000;text-shadow:none}
+
+        #toasts{position:fixed;left:18px;bottom:58px;display:flex;flex-direction:column;gap:7px;z-index:15000;pointer-events:none}
+        .toast{background:#0c141e;border:1px solid var(--cyan);border-left:3px solid var(--cyan);color:#d5dde6;padding:9px 13px;font-size:11px;letter-spacing:.8px;border-radius:3px;box-shadow:0 0 16px rgba(46,224,255,.18);animation:toastIn .22s;min-width:220px;}
+        .toast.vchat-toast{border-color:var(--red);border-left-color:var(--red);box-shadow:0 0 16px rgba(255,43,74,.2);}
+        @keyframes toastIn{from{transform:translateX(-18px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+        #hackOverlay{ position:fixed;inset:0;z-index:25000;display:none; background:rgba(20,0,0,0.85);backdrop-filter:blur(4px); align-items:center;justify-content:center; }
+        .hack-ui{ border:2px solid var(--red);box-shadow:0 0 40px rgba(255,43,74,0.6); background:#050000;padding:40px;text-align:center;width:600px; max-width: 95vw; animation:hackUIAnim 0.1s infinite alternate; }
+        @keyframes hackUIAnim{ from{transform:translate(1px,1px);} to{transform:translate(-1px,-1px);} }
+        .hack-title{color:var(--red);font-size:28px;font-weight:900;letter-spacing:6px;text-shadow:0 0 10px var(--red);margin-bottom:10px}
+        .hack-sub{color:#fff;font-size:12px;letter-spacing:2px;margin-bottom:20px}
+        .hack-glitch-text{color:var(--red);font-size:18px;font-weight:bold;margin-bottom:20px;animation:blink 0.5s infinite;}
+        .hack-bar{width:100%;height:10px;background:#220000;border:1px solid var(--red);margin-bottom:10px;overflow:hidden;}
+        .hack-bar-fill{height:100%;background:var(--red);width:100%;transition:width 1s linear;}
+        .hack-timer{font-size:32px;color:var(--red);font-weight:900;letter-spacing:4px;margin-bottom:20px}
+        .hack-box{border:1px dashed var(--red);padding:20px;background:rgba(255,0,0,0.05);}
+        .hack-code{font-size:24px;color:var(--amber);letter-spacing:6px;margin:10px 0;font-weight:bold;}
+
+        ::-webkit-scrollbar{width:7px;height:7px}
+        ::-webkit-scrollbar-track{background:#05090e}
+        ::-webkit-scrollbar-thumb{background:#1c2838;border-radius:4px}
+        ::-webkit-scrollbar-thumb:hover{background:#283a50}
+
+        @media (min-width: 769px) {
+            .echo-app.has-active .echo-list { display: none !important; }
+            .echo-app:not(.has-active) .echo-detail { display: none !important; }
+            .echo-app .echo-list { width: 100%; border-right: none; }
+        }
+
+        @media (max-width: 768px) {
+            .app.has-sidebar { position: relative; overflow: hidden; display: block; height: 100%; }
+            .app.has-sidebar .sidebar { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1), opacity 0.3s ease; z-index: 1; display: flex !important; flex-direction: column; background: var(--panel); border-right: none; }
+            .app.has-sidebar .pane { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); z-index: 2; display: flex !important; flex-direction: column; background: var(--panel); }
+            .app.has-sidebar.has-active .sidebar { transform: translateX(-30%); opacity: 0; pointer-events: none; }
+            .app.has-sidebar.has-active .pane { transform: translateX(0); }
+
+            .back { padding: 8px 14px; font-size: 12px; margin-right: 10px; }
+            .pane .ph { padding: 12px 14px; }
+            
+            .win .body { position: relative; padding: 0; }
+            
+            .list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .pc { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .row { min-height: 60px; }
+
+            .wall-big { font-size: 38px; right: 15px; top: 15px; letter-spacing: 4px; }
+            .wall-big span { font-size: 16px; letter-spacing: 6px; }
+            .wall-sub { right: 15px; top: 90px; }
+            .wall-info { top: auto; bottom: 65px; left: 10px; font-size: 9px; }
+            #objPanel { top: auto; bottom: 140px; left: 10px; right: 10px; width: auto; background: rgba(11,16,22,0.95); padding: 10px; border: 1px solid var(--line2); border-radius: 6px; z-index: 10; }
+            
+            #taskbar { padding: 0 4px; gap: 4px; z-index: 2000; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; justify-content: flex-start;}
+            #start { padding: 6px 8px; }
+            #start .logo-tb { display: none; }
+            #clock-area { display: none; }
+            #timerDisplay { padding: 0 6px; border-left: none; gap: 6px; flex-shrink:0; }
+            #timerDisplay .t-label { display: none; }
+            #timerDisplay .t-bar { width: 45px; }
+            #verdictBtn { padding: 0 10px; font-size: 9px; white-space: nowrap; flex-shrink:0; }
+
+            .icon { width: 80px; padding: 5px; }
+            .icon .glyph { width: 44px; height: 44px; font-size: 18px; }
+            .icon .lbl { font-size: 9px; }
+
+            .win { max-width: 95vw !important; max-height: 85vh !important; }
+            .win .tb .title { font-size: 10px; }
+
+            .hack-title { font-size: 20px; letter-spacing: 2px; }
+            .hack-timer { font-size: 24px; }
+
+            #verdictModal .box { width: 95%; padding: 15px; }
+            .v-opts { flex-direction: column; gap: 8px; }
+            .v-opt { padding: 8px; }
+            .v-opt-body span { font-size: 12px; }
+            .v-opt-body small { font-size: 9px; }
+            .v-actions { flex-direction: column; }
+
+            #ending { padding: 40px 15px; }
+            #ending .stamp { font-size: 22px; padding: 10px; letter-spacing: 4px; }
+            #ending .txt { font-size: 13px; }
+            #ending button.end-btn { margin: 8px 0; width: 100%; padding: 14px; }
+
+            .mobile-dpad { display: block; }
+            .chat-opts { flex-direction: column; }
+            .mg .mg-opts { grid-template-columns: 1fr; }
+            .rps-arena { flex-direction: column; gap: 10px; }
+            .rps-hand { font-size: 32px; min-height: 40px; }
+            .ttt-board { grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(3, 60px); }
+            .ttt-cell { font-size: 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .sys-info-grid { grid-template-columns: 1fr; gap: 8px; }
+            .pop-box { max-height: 85vh; width: 92%; }
+            .pop-content { padding: 16px; overflow-y: auto; }
+            .sys-card { padding: 10px; }
+            .pop-radar-wrap { padding: 20px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="devicePopup">
+    <div class="pop-box">
+        <div class="pop-header">Skaner Środowiska // Analiza 0x8A</div>
+        <div class="pop-content">
+            <div id="popRadarWrap" class="pop-radar-wrap">
+                <div class="pop-radar"></div>
+            </div>
+            <div id="sysInfoGrid" class="sys-info-grid" style="display:none;"></div>
+            <div class="pop-disclaimer">Wszystkie zebrane informacje są wykorzystywane wyłącznie w celach wizualnych. Twoje dane nie są rejestrowane ani przesyłane poza to urządzenie.</div>
+            <button id="popBtn" class="pop-btn" onclick="window.acceptDevicePopup()">WPROWADŹ DO SYSTEMU</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.closeWin = function(id) {
+        const w=STATE.windows[id];if(!w)return;
+        if(id==="notes"){const ta=w.body.querySelector("#notesArea");if(ta)STATE.notes=ta.value;}
+        w.el.classList.add("closing");
+        if(id==="snake")window.killSnake=true;
+        if(id==="ttt")window.killTTT=true;
+        setTimeout(()=>{w.el.remove();delete STATE.windows[id];renderTasks();},150);
+    };
+
+    window.minWin = function(id) {
+        const w=STATE.windows[id];if(!w)return;
+        if(id==="notes"){const ta=w.body.querySelector("#notesArea");if(ta)STATE.notes=ta.value;}
+        w.el.classList.add("minimized");renderTasks();
+    };
+
+    async function checkDevice() {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        const type = isMobile ? "URZĄDZENIE MOBILNE" : "STACJA ROBOCZA (PC)";
+        let os = "Nieznany OS", browser = "Nieznana Przeglądarka";
+        const ua = navigator.userAgent;
+
+        if (ua.includes("Win")) os = "Windows";
+        else if (ua.includes("Mac")) os = "MacOS";
+        else if (ua.includes("Linux")) os = "Linux";
+        if (/Android/.test(ua)) os = "Android";
+        if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
+
+        if (ua.includes("Chrome")) browser = "Chrome";
+        else if (ua.includes("Safari")) browser = "Safari";
+        else if (ua.includes("Firefox")) browser = "Firefox";
+        else if (ua.includes("Edge")) browser = "Edge";
+
+        const resStr = `${window.screen.width}x${window.screen.height} (${window.screen.colorDepth}-bit)`;
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Nieznana";
+        const cores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} rdzeni` : "Brak danych";
+        const ram = navigator.deviceMemory ? `${navigator.deviceMemory} GB+` : "Brak danych";
+        const net = navigator.connection ? navigator.connection.effectiveType.toUpperCase() : "Brak danych";
+
+        const stats = [
+            { l: "TYP KLIENTA", v: type, cl: "hl" },
+            { l: "SYSTEM", v: os, cl: "" },
+            { l: "PRZEGLĄDARKA", v: browser, cl: "" },
+            { l: "EKRAN", v: resStr, cl: "" },
+            { l: "PROCESOR (LOGICZNY)", v: cores, cl: "" },
+            { l: "PAMIĘĆ RAM", v: ram, cl: "" },
+            { l: "SIEĆ", v: net, cl: "" },
+            { l: "STREFA CZASOWA", v: tz, cl: "" }
+        ];
+
+        const grid = document.getElementById('sysInfoGrid');
+        grid.innerHTML = "";
+        stats.forEach((s) => {
+            const card = document.createElement('div');
+            card.className = `sys-card ${s.cl}`;
+            card.innerHTML = `<div class="lbl">${s.l}</div><div class="val ${s.cl === 'hl' ? 'cyan' : ''}">${s.v}</div>`;
+            grid.appendChild(card);
+        });
+
+        const geoCard = document.createElement('div');
+        geoCard.className = 'sys-card hl-warn';
+        geoCard.style.gridColumn = "1 / -1";
+        geoCard.innerHTML = `<div class="lbl">LOKALIZACJA & IP</div><div class="val warn" id="popGeo">Trwa ustalanie trasy...</div>`;
+        grid.appendChild(geoCard);
+
+        setTimeout(() => {
+            document.getElementById('popRadarWrap').style.display = 'none';
+            document.getElementById('sysInfoGrid').style.display = 'grid';
+
+            const cards = document.querySelectorAll('.sys-card');
+            cards.forEach((c, i) => {
+                setTimeout(() => c.classList.add('show'), i * 120);
+            });
+
+            setTimeout(() => {
+                document.getElementById('popBtn').style.display = 'block';
+            }, cards.length * 120 + 300);
+        }, 1200);
+
+        try {
+            let resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
+            let data = await resp.json();
+            let geoString = `${data.ip || "Nieznane IP"} [${data.city || "Nieznane miasto"}, ${data.country || "Nieznany kraj"}]`;
+            document.getElementById("popGeo").innerText = geoString;
+        } catch(e) {
+            document.getElementById("popGeo").innerText = "Połączenie zabezpieczone / VPN aktywny";
+        }
+    }
+    
+    window.acceptDevicePopup = function() {
+        document.getElementById("devicePopup").style.display = "none";
+        window.runBoot();
+    }
+
+    checkDevice();
+</script>
+
+<div id="bootOverlay" style="display:none">
+  <div id="stagePower">
+    <div id="powerLed"></div>
+    <div id="powerText">INICJALIZACJA SYSTEMU</div>
+  </div>
+  <div id="stageBios">
+    <div id="biosText"></div>
+  </div>
+  <div id="stageLogo">
+    <div id="stageLogoInner">
+      <div class="boot-logo-mark">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2ee0ff"/>
+              <stop offset="50%" stop-color="#8b6cf7"/>
+              <stop offset="100%" stop-color="#e83dfb"/>
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <circle cx="60" cy="60" r="56" fill="none" stroke="url(#lg1)" stroke-width="1.5" opacity=".4"/>
+          <circle cx="60" cy="60" r="42" fill="none" stroke="url(#lg1)" stroke-width=".8" opacity=".25" stroke-dasharray="4 6"/>
+          <polygon points="60,20 95,80 25,80" fill="none" stroke="url(#lg1)" stroke-width="2" filter="url(#glow)" opacity=".9"/>
+          <polygon points="60,38 80,72 40,72" fill="none" stroke="url(#lg1)" stroke-width="1" opacity=".4"/>
+          <circle cx="60" cy="60" r="4" fill="url(#lg1)" filter="url(#glow)"/>
+          <line x1="60" y1="20" x2="60" y2="12" stroke="url(#lg1)" stroke-width="1.5" opacity=".5"/>
+          <line x1="95" y1="80" x2="102" y2="87" stroke="url(#lg1)" stroke-width="1.5" opacity=".5"/>
+          <line x1="25" y1="80" x2="18" y2="87" stroke="url(#lg1)" stroke-width="1.5" opacity=".5"/>
+        </svg>
+      </div>
+      <div class="boot-wordmark">HOWLORA</div>
+      <div class="boot-sub">Digital Forensics OS &nbsp;·&nbsp; v5.0</div>
+    </div>
+  </div>
+  <div id="stageLoading">
+    <div id="loadLore"></div>
+    <div id="loadLines"></div>
+    <div id="loadBarWrap">
+      <div id="loadBarLabel">INICJALIZACJA OBRAZU DOWODOWEGO</div>
+      <div id="loadBar"><div id="loadBarFill"></div></div>
+    </div>
+  </div>
+  <div id="stageLogin">
+    <div class="login-avatar">J</div>
+    <div class="login-name">jakub.w</div>
+    <div class="login-role">KONTO UŻYTKOWNIKA — TRYB ŚLEDCZY</div>
+    <div id="loginBar"><div id="loginBarFill"></div></div>
+    <div id="loginStatus"></div>
+  </div>
+  <button id="bootSkip" onclick="window.skipBoot()">POMIŃ &gt;&gt;</button>
+</div>
+
+<div id="desktop">
+  <div class="wall-big">HOWLORA<span>OS v5.0</span></div>
+  <div class="wall-sub">SPRAWA #4471 // TAJNE</div>
+  <div class="wall-info">
+    <b>&gt;&gt;</b> OBRAZ: JAKUB_W.img<br>
+    <b>&gt;&gt;</b> DOSTĘP: TYLKO-ODCZYT<br>
+    <b>&gt;&gt;</b> ANALITYK: [TY]
+  </div>
+  <div id="objPanel"></div>
+  <div id="icons"></div>
+  <div id="taskbar">
+    <div id="start"><span class="dot"></span><span class="logo-tb">HOWLORA.OS</span></div>
+    <div id="tasks"></div>
+    <div id="timerDisplay">
+      <div>
+        <div class="t-label">POZOSTAŁY CZAS</div>
+        <div class="t-val" id="timerVal">12:00</div>
+      </div>
+      <div>
+        <div class="t-bar"><div class="t-bar-fill" id="timerBarFill" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div id="clock-area"></div>
+    <button id="verdictBtn" onclick="window.openVerdict()">▲ ZŁÓŻ RAPORT</button>
+  </div>
+  <div id="toasts"></div>
+</div>
+
+<div id="hackOverlay">
+  <div class="hack-ui">
+    <div class="hack-title">!!! SYSTEM COMPROMISED !!!</div>
+    <div class="hack-sub">REMOTE OVERRIDE DETECTED FROM [S3NDER_NODE]</div>
+    <div class="hack-glitch-text">ERASING JAKUB_W.img ...</div>
+    <div class="hack-bar"><div class="hack-bar-fill" id="hackProg"></div></div>
+    <div class="hack-timer" id="hackTimer">01:00</div>
+    <div class="hack-box">
+      <div style="color:var(--muted);font-size:11px;letter-spacing:1px">ENTER OVERRIDE CODE TO ABORT:</div>
+      <div class="hack-code" id="hackCodeDisp"></div>
+      <input type="text" id="hackInput" autocomplete="off" spellcheck="false" style="background:#000;color:var(--red);border:1px solid var(--red);padding:10px;text-align:center;width:80%;letter-spacing:4px;text-transform:uppercase;margin-bottom:15px;outline:none">
+      <br>
+      <button onclick="window.checkHack()" style="padding:10px 24px;background:var(--red);color:#fff;border:none;font-weight:bold;cursor:pointer;letter-spacing:2px">EXECUTE ABORT</button>
+    </div>
+  </div>
+</div>
+
+<div id="verdictModal">
+  <div class="box">
+    <h2>ZŁÓŻ RAPORT</h2>
+    <div class="vd-sub">Wymagane są trzy ustalenia. Niekompletny lub niespójny raport zostanie odrzucony.<br>Wszystkie wybory muszą być poparte dowodami.</div>
+    <div class="vd-breadcrumb" id="vdBreadcrumb">Etap 1 z 3</div>
+    <div class="vd-stage active" id="vdStage1">
+      <div class="vd-stage-head"><div class="s-num">1</div><div class="s-label">KTO</div><span style="color:var(--muted);font-size:9px">— Wskaż sprawcę</span></div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="who" value="jakub"><div class="v-opt-body"><span>Jakub W.</span><small>Właściciel dysku. Chłopak ofiary. Aktualnie zatrzymany. W aplikacji do przesyłania wiadomości znaleziono pisemne oświadczenie go obciążające.</small></div></label>
+        <label class="v-opt"><input type="radio" name="who" value="bartek"><div class="v-opt-body"><span>Bartek K.</span><small>Najbliższy kontakt Jakuba. Regularnie pojawia się w komunikacji. Pierwszy, który otrzymał możliwe wyznanie. Brak innego udokumentowanego motywu.</small></div></label>
+        <label class="v-opt"><input type="radio" name="who" value="sender"><div class="v-opt-body"><span>S3NDER (Tożsamość nieznana)</span><small>Anonimowy aktor pozostający w kontakcie z właścicielem dysku poprzez szyfrowane kanały przez kilka miesięcy. Relacja z ofiarą niejasna.</small></div></label>
+        <label class="v-opt"><input type="radio" name="who" value="unknown"><div class="v-opt-body"><span>Nie można ustalić</span><small>Dowody na tym dysku nie pozwalają na wiarygodną identyfikację sprawcy.</small></div></label>
+      </div>
+    </div>
+    <div class="vd-stage" id="vdStage2">
+      <div class="vd-stage-head"><div class="s-num">2</div><div class="s-label">JAK</div><span style="color:var(--muted);font-size:9px">— Wskaż metodę</span></div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="how" value="direct"><div class="v-opt-body"><span>Bezpośrednie działanie fizyczne w nocy zdarzenia</span><small>Podejrzany opuścił mieszkanie, udał się na znane miejsce i dokonał czynu przed powrotem. Dowody cyfrowe potwierdzają oś czasu.</small></div></label>
+        <label class="v-opt"><input type="radio" name="how" value="remote"><div class="v-opt-body"><span>Zdalny dostęp do systemu i manipulacja tożsamością</span><small>Zewnętrzny aktor uzyskał nieautoryzowany dostęp do sesji podejrzanego i podrzucił fałszywe dowody — w tym komunikaty — aby przekierować śledztwo.</small></div></label>
+        <label class="v-opt"><input type="radio" name="how" value="staged"><div class="v-opt-body"><span>Zaaranżowane spotkanie z osobą trzecią w celu izolacji ofiary</span><small>Podejrzany zmanipulował okoliczności tak, aby ofiara pozostała sama przez określony czas — używając innych osób jako nieświadomego alibi.</small></div></label>
+        <label class="v-opt"><input type="radio" name="how" value="unknown"><div class="v-opt-body"><span>Nie można ustalić</span><small>Dowody nie pozwalają na ustalenie wiarygodnego mechanizmu.</small></div></label>
+      </div>
+    </div>
+    <div class="vd-stage" id="vdStage3">
+      <div class="vd-stage-head"><div class="s-num">3</div><div class="s-label">DLACZEGO</div><span style="color:var(--muted);font-size:9px">— Wskaż motyw</span></div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="why" value="jealousy"><div class="v-opt-body"><span>Zazdrość o związek ofiary</span><small>Istniejący związek ofiary z inną osobą był udokumentowanym źródłem konfliktu. Na dysku istnieją dowody monitorowania tego związku.</small></div></label>
+        <label class="v-opt"><input type="radio" name="why" value="financial"><div class="v-opt-body"><span>Spór finansowy lub spadkowy</span><small>Zapisy sugerują, że między osobami z kręgu ofiary mógł istnieć konflikt finansowy. Niektóre transakcje na dysku pozostają niewyjaśnione.</small></div></label>
+        <label class="v-opt"><input type="radio" name="why" value="unknown"><div class="v-opt-body"><span>Nie można ustalić</span><small>Dowody nie pozwalają na pewne ustalenie motywu.</small></div></label>
+        <label class="v-opt"><input type="radio" name="why" value="obsession"><div class="v-opt-body"><span>Obsesja i patologiczne przywiązanie</span><small>Wzorzec zachowania spójny z długotrwałą inwigilacją i niemożnością akceptacji wyborów ofiary. Przed zdarzeniem nasilał się kontakt.</small></div></label>
+      </div>
+    </div>
+    <div class="v-actions">
+      <button class="v-cancel" onclick="window.closeVerdict()">ANULUJ</button>
+      <button class="v-next" id="vdNextBtn" onclick="window.verdictNext()">NASTĘPNY ETAP →</button>
+      <button class="v-submit" id="vdSubmitBtn" onclick="window.submitVerdict()" style="display:none">✓ ZŁÓŻ RAPORT KOŃCOWY</button>
+    </div>
+  </div>
+</div>
+
+<div id="ending">
+  <div class="stamp" id="endStamp"></div>
+  <div class="txt" id="endTxt"></div>
+  <div id="endBtns"></div>
+</div>
+
+<script>
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx;
+
+function initSnd(){
+  if(!actx) actx = new AudioCtx();
+  if(actx && actx.state === 'suspended') actx.resume();
+}
+
+function sndType(){
+  if(!actx || actx.state !== 'running') return;
+  const osc = actx.createOscillator();
+  const gain = actx.createGain();
+  osc.type = "square";
+  osc.frequency.setValueAtTime(150 + Math.random()*50, actx.currentTime);
+  gain.gain.setValueAtTime(0.003, actx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.03);
+  osc.connect(gain);
+  gain.connect(actx.destination);
+  osc.start();
+  osc.stop(actx.currentTime + 0.03);
+}
+
+function sndApp(){
+  if(!actx || actx.state !== 'running') return;
+  const osc = actx.createOscillator();
+  const gain = actx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(400, actx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(800, actx.currentTime + 0.08);
+  gain.gain.setValueAtTime(0.01, actx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.08);
+  osc.connect(gain);
+  gain.connect(actx.destination);
+  osc.start();
+  osc.stop(actx.currentTime + 0.08);
+}
+
+function sndNotif(){
+  if(!actx || actx.state !== 'running') return;
+  const osc = actx.createOscillator();
+  const gain = actx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(800, actx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(1200, actx.currentTime + 0.1);
+  gain.gain.setValueAtTime(0.05, actx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.2);
+  osc.connect(gain);
+  gain.connect(actx.destination);
+  osc.start();
+  osc.stop(actx.currentTime + 0.2);
+}
+
+const STATE={
+  windows:{},
+  zTop:100,
+  notes:"",
+  logsUnlocked:false,
+  igUnlocked:false,
+  contactsRead:{},
+  mailRead:{},
+  adRead:{},
+  activeChat:null,
+  activeAd:null,
+  activeMail:null,
+  endGameDone:false,
+  verdictStage:1,
+  verdictWho:null,
+  verdictHow:null,
+  objectives:{opened:new Set(),mailOpened:false,logsOpened:false},
+  timerStart:null,
+  totalSecs:12*60,
+  readmeOpened:false,
+  vchatUnread:0,
+  creepyStage:0,
+  creepyWaiting:false,
+  creepyNextTimer:null,
+  creepyWarnedGame:false,
+  creepyWarnedGame2:false,
+  hackInt:null,
+  hackTime:0,
+  hackCode:""
+};
+
+const DATA={
+  contacts:[
+    {id:"maria",name:"Maria I.",sub:"Gdzie jesteś? Miałeś już być...",time:"Czw 23:45",
+      msgs:[
+        {t:"Pon 10:15",f:"them",x:"Kuba, znowu widziałam tego faceta. Stał pod moim biurem jak wychodziłam."},
+        {t:"Pon 10:20",f:"me",x:"Jesteś pewna? Może to tylko zbieg okoliczności."},
+        {t:"Pon 10:21",f:"them",x:"Miał tę samą kurtkę. Patrzył prosto na mnie. Boję się."},
+        {t:"Pon 10:25",f:"me",x:"Zadzwonię do ciebie jak tylko skończę ten cholerny raport. Obiecuję. Będę wieczorem."},
+        {t:"Pon 10:26",f:"them",x:"Dobrze. Czekam. Kocham cię."},
+        {t:"Pon 10:27",f:"me",x:"Ja ciebie też. Wszystko będzie dobrze."},
+        {t:"Śr 19:30",f:"them",x:"Kupiłam wino na jutro :)"},
+        {t:"Śr 19:45",f:"me",x:"Super, nie mogę się doczekać."},
+        {t:"Czw 22:30",f:"them",x:"Gdzie jesteś? Miałeś być u mnie..."},
+        {t:"Czw 23:15",f:"them",x:"Kuba, martwię się. Odbierz telefon."},
+        {t:"Czw 23:45",f:"them",x:"Słyszałam coś na klatce schodowej. Ktoś tam jest."}
+      ]},
+    {id:"bartek",name:"Bartek K.",sub:"gramy w niedzielę?",time:"11:03",
+      msgs:[
+        {t:"Pon 14:22",f:"them",x:"oglądałeś wczoraj City z Arsenalem?"},
+        {t:"Pon 14:28",f:"me",x:"tak. katastrofa. w pełni zasłużona."},
+        {t:"Pon 14:29",f:"them",x:"bartek.k dołączył do czatu i jest wściekły"},
+        {t:"Pon 14:31",f:"me",x:"😂 dobra, ale przyznaj że druga połowa była słaba"},
+        {t:"Pon 15:00",f:"them",x:"niczego nie przyznam. gramy w niedzielę?"},
+        {t:"Pon 15:01",f:"me",x:"tak. o 15. przynieś piwo tym razem"},
+        {t:"Wt 09:14",f:"them",x:"skończyłeś ten raport o który sapał adamski?"},
+        {t:"Wt 09:20",f:"me",x:"wysłałem wczoraj o północy. przeżyje."},
+        {t:"Wt 09:21",f:"them",x:"legenda. idziemy na piwo dzisiaj?"},
+        {t:"Wt 09:22",f:"me",x:"nie dam rady. do Marii wpada kuzynka z Gdańska. jakiś rodzinny spęd."},
+        {t:"Wt 09:23",f:"them",x:"nieźle. dobra, to w przyszłym tygodniu"},
+        {t:"Śr 19:45",f:"them",x:"stary, znalazłem to ogłoszenie z gramofonem"},
+        {t:"Śr 19:46",f:"me",x:"wiem. piszę do gościa od trzech dni."},
+        {t:"Śr 19:47",f:"them",x:"serio?? Maria się popłacze ze szczęścia"},
+        {t:"Śr 19:48",f:"me",x:"taki jest plan. tylko ani słowa jej o tym."},
+        {t:"Śr 19:49",f:"them",x:"jasne. ale to jest piękny sprzęt."},
+        {t:"Czw 14:00",f:"them",x:"kiedy odbierasz?"},
+        {t:"Czw 14:04",f:"me",x:"dzisiaj wieczorem. sprzedawca chce się spotkać późno. trochę dziwne, ale to ostatnia taka sztuka w okolicy."},
+        {t:"Czw 14:05",f:"them",x:"rozumiem. warto. napisz jak wrócisz"},
+        {t:"Czw 22:55",f:"me",x:"wychodzę. sprzedawca jest za klubem NOIR. będę za godzinę."},
+        {t:"Czw 22:56",f:"them",x:"okej. uważaj na siebie, zimno dzisiaj"},
+        {t:"Pt 02:14",f:"me",x:"bartek. zrobiłem to. napisałem wyznanie. skrzywdziłem marię. przepraszam. usuń to.",flag:true},
+        {t:"Pt 08:02",f:"them",x:"STARY CO TY GADASZ. KUBA. DZWOŃ DO MNIE TERAZ. O CZYM TY MÓWISZ."},
+        {t:"Pt 08:07",f:"them",x:"Jestem pod twoim blokiem"},
+        {t:"Pt 08:11",f:"me",x:"o czym ty w ogóle mówisz? wróciłem o 4 i padłem. jakie wyznanie?"},
+        {t:"Pt 08:12",f:"them",x:"wiadomość którą mi wysłałeś o 2 w nocy"},
+        {t:"Pt 08:13",f:"me",x:"bartek, nie wysyłałem nic o 2 w nocy. stałem pod NOIR ponad godzinę czekając na kolesia, który nie przyszedł. ogłoszenie zniknęło."},
+        {t:"Pt 08:15",f:"them",x:"to dlaczego mam od ciebie taką wiadomość?"},
+        {t:"Pt 08:20",f:"me",x:"nie wiem. nie ogarniam co się dzieje. Maria nie odbiera telefonu."},
+        {t:"Pt 09:02",f:"them",x:"policja tu jest. co się dzieje?!"},
+      ]},
+    {id:"mom",name:"Mama",sub:"Zadzwoń kiedy możesz",time:"Śr 18:40",
+      msgs:[
+        {t:"Pon 10:00",f:"them",x:"Dzień dobry kochanie. Jak tam u ciebie?"},
+        {t:"Pon 10:44",f:"me",x:"dobrze mamo, dużo pracy"},
+        {t:"Pon 10:45",f:"them",x:"A jadłeś coś dzisiaj konkretnego?"},
+        {t:"Pon 10:46",f:"me",x:"tak"},
+        {t:"Pon 10:47",f:"them",x:"z warzywami?"},
+        {t:"Pon 10:48",f:"me",x:"...tak"},
+        {t:"Pon 10:49",f:"them",x:"Jakoś ci nie wierzę, Kuba 😄"},
+        {t:"Wt 14:22",f:"them",x:"Ciocia Hania pyta czy wpadniesz na imieniny w sobotę? Będzie Marek z dziećmi."},
+        {t:"Wt 14:50",f:"me",x:"nie dam rady mamo. mam plany z Marią na weekend. pozdrów ich."},
+        {t:"Wt 14:51",f:"them",x:"Jasne. Z niej to szczęściara. Kiedy ją w końcu do nas przywieziesz?"},
+        {t:"Wt 14:53",f:"me",x:"już niedługo 🙂"},
+        {t:"Śr 18:35",f:"them",x:"Oglądałam dzisiaj te stare płyty taty. Pamiętasz jak słuchaliście ich razem w soboty?"},
+        {t:"Śr 18:36",f:"me",x:"pamiętam. to były dobre czasy."},
+        {t:"Śr 18:37",f:"them",x:"Byłby z ciebie bardzo dumny. Zadzwoń jak znajdziesz chwilę."},
+        {t:"Śr 18:40",f:"me",x:"zadzwonię w czwartek wieczorem. dobranoc mamo"},
+      ]},
+    {id:"boss",name:"R. Adamski",sub:"Q3 raport — ostatnia szansa",time:"Czw 17:12",
+      msgs:[
+        {t:"Pon 09:00",f:"them",x:"Kuba. Raport Q3 miał być na piątek. Jest poniedziałek."},
+        {t:"Pon 09:15",f:"me",x:"Pracuję nad tym. Miałem awarię serwera przez weekend."},
+        {t:"Pon 09:16",f:"them",x:"Nie interesują mnie wymówki. Potrzebuję tego raportu."},
+        {t:"Wt 23:59",f:"me",x:"Wysłane. Sprawdź maila."},
+        {t:"Śr 08:12",f:"them",x:"Mam. W końcu. Prezentacja w czwartek o 14:00. Omawiasz sekcję 4."},
+        {t:"Śr 08:20",f:"me",x:"Jasne."},
+        {t:"Czw 12:44",f:"them",x:"W twoich slajdach do sekcji 4 jest literówka na stronie 6. Popraw to przed 14:00."},
+        {t:"Czw 12:58",f:"me",x:"Poprawione i wysłane ponownie."},
+        {t:"Czw 17:12",f:"them",x:"Dobra robota dzisiaj Kuba. Do poniedziałku."},
+      ]},
+    {id:"tomek",name:"Tomek (Siłownia)",sub:"nogi sobota 9:00",time:"Czw 20:01",
+      msgs:[
+        {t:"Pon 18:00",f:"them",x:"człowieku, zniknąłeś z powierzchni ziemi. dwa razy olałeś trening."},
+        {t:"Pon 18:08",f:"me",x:"sorki. masakra w pracy. wracam do żywych."},
+        {t:"Pon 18:09",f:"them",x:"jasne, jasne. wtorek 18:00. zero wymówek."},
+        {t:"Pon 18:10",f:"me",x:"będę"},
+        {t:"Wt 21:30",f:"them",x:"no dobra, faktycznie przyszedłeś. szacun."},
+        {t:"Wt 21:31",f:"me",x:"przecież mówiłem"},
+        {t:"Czw 20:00",f:"them",x:"nogi w sobotę 9:00, znowu nie znikaj"},
+        {t:"Czw 20:01",f:"me",x:"będę. w piątek wieczorem mam coś zaplanowane, ale sobota mi pasuje."},
+      ]},
+    {id:"ola",name:"Ola W.",sub:"przypominam o urodzinach",time:"Śr 20:45",
+      msgs:[
+        {t:"Wt 15:00",f:"them",x:"Kuba!! przypominam, urodziny Marii są w SOBOTĘ"},
+        {t:"Wt 15:04",f:"me",x:"wiem, wiem. mam już coś zaplanowane."},
+        {t:"Wt 15:05",f:"them",x:"serio?? a co to?!"},
+        {t:"Wt 15:06",f:"me",x:"nie powiem. bo zaraz jej wypaplasz."},
+        {t:"Wt 15:07",f:"them",x:"jestem OBRAŻONA. wcale bym nie powiedziała. no dobra, może bym powiedziała. nie mów mi."},
+        {t:"Śr 20:44",f:"them",x:"wspominała, że ostatnio bardzo późno siedzisz w pracy"},
+        {t:"Śr 20:45",f:"me",x:"tak. raport Q3. ale już skończony."},
+        {t:"Śr 20:46",f:"them",x:"mówiła też, że od jakiegoś czasu czuje się nieswojo. jakby ktoś ją śledził. nie wiem czy to ze stresu, czy o co chodzi"},
+        {t:"Śr 20:47",f:"me",x:"wiem. mi też o tym wspominała. trochę się tym martwię."},
+        {t:"Śr 20:49",f:"them",x:"pewnie to nic takiego, ale może zadzwoń do niej dzisiaj wieczorem"},
+        {t:"Śr 20:50",f:"me",x:"tak, zadzwonię. dzięki że dajesz znać."},
+        {t:"Czw 11:20",f:"them",x:"będziesz na sobotnim obiedzie urodzinowym?"},
+        {t:"Czw 11:22",f:"me",x:"jasne. przecież to ja go organizuję 😄"},
+        {t:"Czw 11:23",f:"them",x:"no tak. wow. faktycznie zapomniałam. okej, do soboty!"},
+      ]},
+    {id:"marek",name:"Marek (IT)",sub:"zgłoszenie #8821 rozwiązane",time:"Czw 08:55",
+      msgs:[
+        {t:"Czw 08:50",f:"them",x:"Hej, twój token do VPN wygasł. Odnowiłem, powinno śmigać."},
+        {t:"Czw 08:55",f:"me",x:"Super, dzięki Marek."},
+        {t:"Czw 08:56",f:"them",x:"Daję też znać — ktoś próbował wbić na twój pulpit zdalny z zewnętrznego IP we wtorek. Wygląda na skanowanie botem, nie na celowy atak. Zablokowaliśmy."},
+        {t:"Czw 09:00",f:"me",x:"Okej. Dobrze, że to wyłapałeś. Zmieniać hasło?"},
+        {t:"Czw 09:01",f:"them",x:"Nie zaszkodzi. Zwłaszcza na prywatnych kontach."},
+        {t:"Czw 09:02",f:"me",x:"Zmienię."},
+      ]},
+  ],
+  ads:[
+    {id:"anna",title:"Technics SL-1200 MK2 1994 (Stan idealny)",price:"€150",seller:"Anna_Collects",glyph:"📻",
+      msgs:[
+        {t:"Pon 20:04",f:"them",x:"Cześć. Nadal dostępne."},
+        {t:"Wt 09:30",f:"me",x:"Witaj! Tak, bardzo zainteresowany. To MK2? To dla mojej dziewczyny na urodziny."},
+        {t:"Wt 09:35",f:"them",x:"Tak MK2. Serwisowany w ubiegłym roku. Slipmat w zestawie."},
+        {t:"Wt 11:00",f:"me",x:"Świetnie. Czy mogę odebrać w ten weekend?"},
+        {t:"Wt 14:22",f:"them",x:"Cały weekend pracuję. Mogłabym w wieczór powszedni, późno. Albo w czwartek w nocy."},
+        {t:"Wt 14:40",f:"me",x:"Czwartek pasuje. O której?"},
+        {t:"Wt 15:01",f:"them",x:"1:00 w nocy czwartek-piątek. Kończę zmianę o północy. Za NOIR na Wodnej. Tylko gotówka."},
+        {t:"Wt 15:20",f:"me",x:"Dość późno. Okej, jeśli to jedyny termin. Umowa."},
+        {t:"Śr 10:00",f:"them",x:"Potwierdzone. Drzwi na tyłach. Szukaj niebieskiego vana."},
+        {t:"Czw 18:30",f:"them",x:"Dalej przyjdziesz dziś wieczór?"},
+        {t:"Czw 18:45",f:"me",x:"Tak. Będę miał €150 gotówką."},
+        {t:"Czw 23:52",f:"me",x:"Jadę. 10 minut."},
+        {t:"Pt 01:08",f:"me",x:"Jestem tutaj. Gdzie jesteś?"},
+        {t:"Pt 01:38",f:"me",x:"Czekam 30 minut. Czy przyjdziesz?"},
+        {t:"Pt 02:04",f:"me",x:"Wracam do domu. Napisz jak chcesz zmienić termin."},
+        {t:"Pt 12:00",f:"me",x:"Twoje ogłoszenie jest usunięte. Dzięki za zmarnowanie mi nocy."},
+      ]},
+    {id:"bike",title:"Trek FX3 (2021) — prawie nowy",price:"€320",seller:"Pavel_B",glyph:"🚲",
+      msgs:[
+        {t:"Pon 08:00",f:"them",x:"Nadal dostępny. Dobry stan."},
+        {t:"Pon 09:30",f:"me",x:"Ile mniej więcej kilometrów?"},
+        {t:"Pon 09:44",f:"them",x:"Może 200. Używałem jedno lato i potem leżał."},
+        {t:"Pon 10:00",f:"me",x:"Kusi. Przemyślę."},
+        {t:"Śr 14:00",f:"them",x:"Nadal jest jeśli masz ochotę. Mogę dać €290."},
+        {t:"Śr 14:10",f:"me",x:"Doceniam, ale chyba podam sobie spokój na razie. Powodzenia."},
+      ],sold:true},
+    {id:"lamp",title:"Stojąca lampa mid-century — mosiądz",price:"€55",seller:"Zuzia_vintage",glyph:"💡",
+      msgs:[
+        {t:"Nd 16:00",f:"them",x:"Piękna sztuka, okablowanie oryginalne wykonane przez elektryka."},
+        {t:"Nd 18:30",f:"me",x:"Czy ma oryginalny klosz?"},
+        {t:"Nd 18:32",f:"them",x:"Tak! Oryginalny klosz ze szkła bursztynowego."},
+        {t:"Nd 18:35",f:"me",x:"Czy sprawdzi się w nowoczesnym mieszkaniu? Sufity 2,8m."},
+        {t:"Nd 18:40",f:"them",x:"Absolutnie. Wysokość regulowana 140–175cm."},
+        {t:"Nd 18:42",f:"me",x:"Okej, jestem zainteresowany. Maria by ją pokochała właściwie."},
+        {t:"Pon 11:00",f:"them",x:"Super! Mogę w środę wieczór?"},
+        {t:"Pon 11:05",f:"me",x:"Sprawdzę i wrócę do ciebie."},
+      ]},
+    {id:"sofa",title:"IKEA KIVIK (3-miejscowa, ciemnoszara)",price:"€60",seller:"Ola_praga",glyph:"🛋",
+      msgs:[
+        {t:"Sob 10:00",f:"them",x:"Wolna niedziela jeśli chcesz zobaczyć."},
+        {t:"Sob 11:15",f:"me",x:"Czy są jakieś uszkodzenia? Na zdjęciach wygląda dobrze."},
+        {t:"Sob 11:20",f:"them",x:"Drobne zużycie na prawym podłokietniku. Poza tym idealny."},
+        {t:"Sob 11:22",f:"me",x:"€40?"},
+        {t:"Sob 11:30",f:"them",x:"Nie."},
+        {t:"Sob 11:32",f:"me",x:"Fair enough. Przemyślę."},
+      ]},
+    {id:"records",title:"Kolekcja winyli — lata 60–80 (40 LP)",price:"€90",seller:"DJMarcin",glyph:"💿",
+      msgs:[
+        {t:"Pt 20:00",f:"them",x:"Głównie polski jazz + trochę europejskich importów. Wszystko oryginalne tłoczenia."},
+        {t:"Pt 21:30",f:"me",x:"Jest jakiś Miles Davis?"},
+        {t:"Pt 21:35",f:"them",x:"Sketches of Spain i Porgy & Bess. Oba VG++."},
+        {t:"Pt 21:38",f:"me",x:"Niesamowite. Czy całość jest do negocjacji?"},
+        {t:"Pt 21:40",f:"them",x:"€90 to już dobra cena. €80 jeśli odbierzesz w ten weekend."},
+        {t:"Pt 21:42",f:"me",x:"Sobota?"},
+        {t:"Pt 21:43",f:"them",x:"Pasuje."},
+        {t:"Sob 15:00",f:"me",x:"Jadę."},
+        {t:"Sob 16:30",f:"them",x:"Miło cię poznać. Ciesz się nimi."},
+        {t:"Sob 16:32",f:"me",x:"Warte każdego złotego. Dzięki."},
+      ],sold:true},
+  ],
+  mails:[
+    {id:"m_sender1",from:"S3NDER@proton.me",sub:"[szyfrowane] Wiem co jej powiedziałeś",time:"Pon 03:22",
+      body:"jakub.\n\nwiem co jej powiedziałeś w sobotę. myślisz że nie mówi ludziom o rzeczach? mnie mówi.\n\nnie jesteś tym za kogo ona cię uważa.\n\n— S."},
+    {id:"m_netflix",from:"no-reply@netflix.com",sub:"Twoja faktura październikowa",time:"Pon 04:00",
+      body:"Cześć Jakub,\n\nTwoja miesięczna płatność €12,99 została przetworzona.\n\nSubskrypcja: Standard (HD)\nNastępna data rozliczenia: 1 listopada\n\nDziękujemy za bycie subskrybentem."},
+    {id:"m_glos",from:"newsletter@gazetacodzienna.pl",sub:"Dzisiejsze wydanie — środa",time:"Śr 07:00",
+      body:"Jakubie, dzień dobry!\n\nW dzisiejszym wydaniu:\n- Wyniki wyborów samorządowych w pięciu województwach\n- Wywiad z nowym dyrektorem filharmonii\n- Pogoda na weekend: ciepłej nie będzie\n- Sport: Legia vs Lech — analiza przed meczem\n\n--- KĄCIK ROZRYWKI ---\nKrzyżówka #44:\nHasło z wczoraj to 'GRAMOFON'.\nKod dzisiejszej e-gazetki: 8042.\n\nCzytaj dalej na gazetacodzienna.pl"},
+    {id:"m_security",from:"security@vchat.io",sub:"Alert bezpieczeństwa — nowe urządzenie",time:"Pt 02:10",
+      body:"Cześć Jakub,\n\nWykryliśmy nowe logowanie do twojego konta V-Chat.\n\nNazwa urządzenia: S3NDER_NODE\nLokalizacja: Nieznana (trasowanie zanonimizowane)\nGodzina: 02:10:44\n\nJeśli to byłeś ty, żadna akcja nie jest potrzebna.\n\nJeśli nie rozpoznajesz tego, zabezpiecz konto na vchat.io/security"},
+    {id:"m_zalando",from:"orders@zalando.pl",sub:"Twoje zamówienie zostało wysłane",time:"Śr 12:00",
+      body:"Cześć Jakub,\n\nTwoje zamówienie #ZL-7834921 zostało wysłane!\n\nArtykuły:\n- Kurtka zimowa Adidas (r. M, czarna) — €119,90\n\nOczekiwany czas dostawy: 2–3 dni robocze\nNumer śledzenia: PL9932840041\n\nŚledź paczkę na zalando.pl/orderstatus"},
+    {id:"m_adamski",from:"r.adamski@corp.local",sub:"Raport Q3 — PILNE",time:"Pon 09:00",
+      body:"Jakub,\n\nRaport Q3 był na ubiegły piątek. Mam prezentację zarządu w czwartek o 14:00. Potrzebuję sekcji 4 najpóźniej do wtorku o północy.\n\nTo nie jest prośba.\n\n— R. Adamski"},
+    {id:"m_sender2",from:"S3NDER@proton.me",sub:"[szyfrowane] ostatnie ostrzeżenie",time:"Czw 23:11",
+      body:"jakub.\n\nona nie chciała słuchać.\n\ndałem jej wybór. wybrała źle.\n\nnie znajdziesz tej wiadomości później. zadbam o to.\n\n— S."},
+    {id:"m_spotify",from:"no-reply@spotify.com",sub:"Twoje tygodniowe podsumowanie",time:"Czw 20:00",
+      body:"Hej Jakub,\n\nOto co słuchałeś w tym tygodniu:\n\n🎵 Najlepsi artyści: Ryuichi Sakamoto, Jan A.P. Kaczmarek, Radiohead\n🎶 Najlepszy utwór: 'Merry Christmas Mr. Lawrence' — odtworzony 6 razy\n\nSłuchałeś przez 14 godz. 32 min w tym tygodniu.\n\nKontynuuj słuchanie w Spotify."},
+    {id:"m_echotrade",from:"no-reply@echotrade.local",sub:"Ogłoszenie usunięte przez sprzedającego",time:"Pt 02:15",
+      body:"Ogłoszenie '1994 Technics SL-1200 MK2 (Stan idealny)' zostało trwale usunięte przez sprzedającego 'Anna_Collects'.\n\nWszystkie powiązane wiadomości i historia transakcji zostały usunięte z konta sprzedającego.\n\nW razie pytań skontaktuj się z support@echotrade.local"},
+    {id:"m_bank",from:"alerts@bankpkol.pl",sub:"Wypłata gotówki z bankomatu",time:"Czw 23:35",
+      body:"Informacja o operacji\n\nKarta: **** 4411\nOperacja: Wypłata gotówki\nKwota: PLN 700,00\nData: Czwartek, 23:35\nBankomat: ul. Foksal 3, Warszawa\n\nJeśli to nie Ty — skontaktuj się z nami natychmiast."},
+    {id:"m_pzla",from:"updates@pzla.pl",sub:"Maraton Warszawski — rejestracja 2025",time:"Wt 13:00",
+      body:"Hej!\n\nRejestracja na Maraton Warszawski 2025 ruszy w poniedziałek 4 listopada.\n\nJako uczestnik z ubiegłego roku masz 24h wcześniejszy dostęp.\n\nWięcej informacji: pzla.pl/maraton2025"},
+    {id:"m_sender3",from:"S3NDER@proton.me",sub:"[szyfrowane] ona była moja pierwsza",time:"Pon 03:44",
+      body:"widziałem was oboje w czwartek. na targu. wyglądała na szczęśliwą.\n\nze mną nigdy nie była tak szczęśliwa.\n\nzabrałeś coś co nie było twoje do zabrania.\n\n— S."},
+    {id:"m_airpods",from:"no-reply@apple.com",sub:"Potwierdzenie zamówienia Apple",time:"Sob 11:22",
+      body:"Dziękujemy za zakup!\n\nZamówienie #APL-8847221\n\nArtykuły:\n- Apple AirPods Pro (2. generacja) — 1099,00 zł\n\nStatus: ANULOWANE przez kupującego 21-11-2024\n\nZwrot zostanie przetworzony w ciągu 5–7 dni roboczych.\n\nNotatka klienta do obsługi zamówienia: \"Zmieniłem zdanie — kupię go w prezencie w innym miejscu\"\n\n— Sklep Apple"},
+  ],
+  history:[
+    {cat:"PRACA",entries:[
+      {t:"Q3 odchylenie przychodów formuła excel",u:"stackoverflow.com",ts:"Pon 10:22"},
+      {t:"sumif wiele kryteriów google sheets",u:"support.google.com",ts:"Pon 11:44"},
+      {t:"corp.local konfiguracja vpn windows 11",u:"corp.local/it/docs",ts:"Czw 08:48"},
+    ]},
+    {cat:"ZAKUPY I SPRAWY",entries:[
+      {t:"technics 1200 mk2 przewodnik po cenach 2024",u:"discogs.com/forum",ts:"Pon 20:10"},
+      {t:"checklista kupującego stary gramofon",u:"vinylengine.com",ts:"Pon 20:34"},
+      {t:"echotrade anna_collects profil",u:"echotrade.local/u/anna_collects",ts:"Wt 09:15"},
+      {t:"airpods pro gdzie kupić warszawa",u:"google.com/search",ts:"Sob 10:55"},
+      {t:"apple airpods pro cena polska",u:"apple.com/pl",ts:"Sob 11:00"},
+      {t:"najlepsze buty do biegania 2024 do 400 zł",u:"google.com/search",ts:"Wt 19:30"},
+      {t:"zalando kurtka zimowa adidas rozmiar M",u:"zalando.pl",ts:"Śr 08:30"},
+      {t:"kwiaciarnia śródmieście dostawa sobota",u:"google.com/search",ts:"Czw 16:50"},
+    ]},
+    {cat:"CZAS WOLNY",entries:[
+      {t:"ryuichi sakamoto merry christmas mr lawrence",u:"youtube.com/watch",ts:"Pon 22:00"},
+      {t:"jan ap kaczmarek kawałki na fortepian",u:"youtube.com/watch",ts:"Wt 21:45"},
+      {t:"NOIR club wodna 12 godziny",u:"google.com/search",ts:"Wt 22:10"},
+      {t:"NOIR club — wejście od tyłu dojazd",u:"maps.app/noir_back",ts:"Czw 23:28"},
+      {t:"maraton warszawski 2025 rejestracja",u:"pzla.pl/maraton2025",ts:"Wt 13:10"},
+      {t:"sprzedający nie pojawił się co robię",u:"reddit.com/r/warszawa",ts:"Pt 03:50"},
+    ]},
+    {cat:"OBAWY",entries:[
+      {t:"oznaki że ktoś śledzi ciebie lub twojego partnera",u:"google.com/search",ts:"Śr 14:05"},
+      {t:"jak sprawdzić czy ktoś czyta twoje wiadomości",u:"superuser.com",ts:"Czw 09:10"},
+      {t:"lokalizacja logów połączeń pulpitu zdalnego windows",u:"superuser.com/q/4471",ts:"Pt 09:14"},
+      {t:"czy ktoś może wysyłać wiadomości z twojego konta bez dostępu",u:"security.stackexchange.com",ts:"Pt 09:45"},
+    ]},
+  ],
+  files:[
+    {folder:"PULPIT",items:[
+      {n:"dziennik_prywatny.txt",d:"4 KB — zmodyfikowany Śr 22:40",x:"diary"},
+      {n:"plan_urodziny_sob.docx",d:"18 KB — zmodyfikowany Czw 09:00",x:"plan"},
+      {n:"NOIR_ulotka_pt.jpg",d:"480 KB — zmodyfikowany Czw 22:50",x:"flyer"},
+      {n:"lista_winyli.txt",d:"1 KB — zmodyfikowany Sob 17:00",x:"records"},
+    ]},
+    {folder:"ODZYSKANE (fragmentaryczne)",items:[
+      {n:"echotrade_cache_anna.json",d:"2 KB — odzyskane z temp",x:"anna_cache"},
+      {n:"log_sesji_0214.log",d:"1 KB — odzyskane (nadpisane)",x:"rdp_log"},
+      {n:"img_nieznane_urzadzenie.txt",d:"<1 KB — odzyskane z dziennika zdarzeń",x:"dev_log"},
+    ]},
+    {folder:"ZDJĘCIA",items:[
+      {n:"lato_lody.png",d:"2.1 MB — 14 sierpnia",x:"img1"},
+      {n:"screen_wiadomosci.png",d:"840 KB — Wtorek 14:22",x:"img2"},
+      {n:"ciemna_uliczka.png",d:"1.8 MB — Czw 23:50",x:"img3"},
+    ]}
+  ],
+  fileContents:{
+    diary:`środa — późno
+
+nie wiem dlaczego to piszę. nigdy nie prowadziłem dziennika. ale od jakiegoś
+czasu dużo myślę i nie mogę z nikim o tym porozmawiać.
+
+maria powiedziała dziś znowu że myśli że ktoś ją śledzi.
+wspomniała o tym po raz pierwszy trzy tygodnie temu — powiedziała że zauważyła
+tego samego mężczyznę dwa razy w pobliżu jej biura w różne dni. powiedziałem
+jej że to pewnie zbieżność. mam nadzieję że miałem rację.
+
+czasem ma takie przeczucia. wrażliwość na rzeczy. ale to czuło się inaczej.
+mówiła o tym cicho, ostrożnie dobierając słowa.
+
+powinienem był drążyć. powinienem był poprosić ją żeby go opisała.
+
+zamiast tego obejrzeliśmy film i zjedliśmy obiad i powiedziałem sobie że
+poczuje się lepiej do weekendu. wieczorem wyglądała dobrze.
+
+- - -
+
+w sobotę kupiłem kolekcję winyli od tego gościa z pragi.
+głównie polski jazz z lat 60. i 70., kilka europejskich importów.
+miles davis też się trafił czego się nie spodziewałem. maria będzie
+to kochać. dorastała słuchając takiej muzyki z ojcem.
+
+gramofon to nadal trudna część. ten na echotrade wygląda idealnie
+ale sprzedający dziwnie zachowuje się z terminami. spotkaj się ze mną
+o północy za nocnym klubem. oczywiście podejrzane. ale to jej urodziny.
+nie mogę przyjść z pustymi rękami i szukam tego modelu od miesięcy.
+
+- - -
+
+jej kuzynka odwiedziła nas w zeszłym tygodniu. są blisko w taki sposób
+który bierze się z dzielenia babci i bardzo małego mieszkania w gdańsku
+przez dwa lata jako dzieci. mnóstwo prywatnych żartów które w pełni
+nie rozumiem. siedziały do 2 w nocy śmiejąc się z czegoś co wydarzyło
+się w 2011 roku.
+
+poszedłem wcześniej spać i nie miałem nic przeciwko. niektóre rzeczy
+nie są moją częścią.
+
+- - -
+
+krótko pokłóciliśmy się o ferie w grudniu. ona chce gdzieś ciepło.
+ja chcę odwiedzić babcię która nie czuje się dobrze. myślę że zrobimy
+oboje. zazwyczaj znajdujemy sposób.
+
+nie piszę o niczym ważnym. myślę że właśnie o to chodzi.`,
+
+    plan:`plan urodzin — maria — sobota
+
+MIEJSCE: stolik dla 8 w Restauracja Nuta, Hoża 51, 19:30
+  — rezerwacja potwierdzona na 'Wierzbicki'
+  — zapytałem o pianistę jazzowego, powiedzieli że tak
+
+GOŚCIE:
+  Bartek ✓
+  Ola ✓
+  Piotrek (znajomy Marii z Gdańska) ?
+  Kasia & Tomasz ? (czekam na wiadomość)
+  Kuzynka Marii Zuzanna — MOŻE, jest nieprzewidywalna
+
+PREZENT — główny:
+  1994 Technics SL-1200 MK2 (EchoTrade — Anna_Collects)
+  odbiór w czwartek w nocy (potwierdzony)
+  schować u Bartka do soboty
+
+  JEŚLI GRAMOFON NIE WYJDZIE:
+  backup: lampa od zuzia_vintage + kolekcja winyli (już kupiona)
+
+UWAGA: płyta Apple AirPods Pro które planowałem też kupić —
+zamówiłem na apple.com ale anulowałem — dostanę ją razem z gramofonem
+żeby mieć komplet na sobotę. idealny zestaw.
+
+KWIATY:
+  zamówienie z kwiaciarni śródmieście — białe i pomarańczowe
+  dostawa do restauracji
+
+TORT:
+  makowiec, z tej piekarni na Chmielnej którą lubi
+  odbiór w sobotę po południu
+
+UWAGA: nie mówić Oli o gramofonie. powie Marii.
+(adnotacja: [anulowane — lokal jeszcze nie skontaktowany od Czw])`,
+
+    flyer:`[obraz binarny — podgląd niedostępny]
+
+Tekst wyodrębniony z metadanych obrazu:
+
+  NOIR
+  każdy piątek
+  muzyka na żywo od północy
+  wstęp gratis przed 01:00
+  Wodna 12, wejście od tyłu przez zaułek
+  bez rezerwacji`,
+
+    records:`lista winyli — rzeczy do poszukania
+
+Miles Davis — Kind of Blue (najlepiej oryginalne tłoczenie)
+Czesław Niemen — Sukces (jakiekolwiek tłoczenie)
+Krzysztof Komeda — Astigmatic
+Tomasz Stańko — Balladyna
+Radiohead — Kid A (jakieś tłoczenie z przyzwoitym masteringiem)
+Jan A.P. Kaczmarek — cokolwiek
+
+już mam:
+  - Sketches of Spain (od Marcina — doskonały stan)
+  - Porgy & Bess (od Marcina)
+  - sporo polskiego jazzu z zakupu na pradze — przeglądam`,
+
+    anna_cache:`{
+  "listing_id": "ECH-0094471",
+  "title": "Technics SL-1200 MK2 1994 (Stan idealny)",
+  "seller": "Anna_Collects",
+  "price": 150,
+  "currency": "EUR",
+  "created_at": "2024-11-19T19:44:02Z",
+  "deleted_at": "2024-11-22T04:31:10Z",
+  "deletion_reason": "seller_initiated",
+
+  "seller_metadata": {
+    "account_age_days": 8,
+    "verified": false,
+    "device_fingerprint": "S3NDER_NODE",
+    "registration_ip": "185.220.101.x (węzeł wyjściowy TOR)"
+  },
+
+  "note": "[fragment cache — odzyskany z katalogu temp przed nadpisaniem]"
+}`,
+
+    rdp_log:`[LOG SESJI — CZĘŚCIOWE ODZYSKANIE]
+[nadpisany o 02:14:10 — fragment zrekonstruowany z bufora cieni]
+
+02:10:44  POŁĄCZENIE  źródło=185.220.101.x  dev_id="S3NDER_NODE"
+02:10:51  AUTH         odtworzenie tokenu (token sesji z zdarzenia blokady Czw 23:46)
+02:10:58  PULPIT       zdalna sesja aktywna — brak lokalnego wejścia klawiatury/myszy
+02:13:51  FOCUS        V-Chat.exe (okno przeniesione na pierwszy plan)
+02:14:02  WEJŚCIE      zdalna klawiatura — wiadomość wysłana do kontaktu "bartek.k"
+02:14:04  TREŚĆ        [zredagowana w odzyskaniu — patrz: log V-Chat]
+02:14:08  ZAMKNIĘCIE   V-Chat.exe
+02:14:09  ROZŁĄCZENIE  zdalna sesja zakończona
+02:14:10  CZYSZCZENIE  log sesji zaplanowany do nadpisania
+
+[odzyskanie kończy się — pozostałe dane nieodzyskiwalne]`,
+
+    dev_log:`[DZIENNIK ZDARZEŃ WINDOWS — POŁĄCZENIE URZĄDZENIA]
+
+ID zdarzenia: 2003
+Znacznik czasu: Czw 23:46:02
+Zdarzenie: Blokada ekranu (zainicjowana przez użytkownika)
+
+ID zdarzenia: 6005
+Znacznik czasu: Pt 02:10:44
+Zdarzenie: Nieznane urządzenie połączone z usługą pulpitu zdalnego
+Nazwa urządzenia: S3NDER_NODE
+Metoda uwierzytelniania: Odtworzenie tokenu (brak monitu o poświadczenia)
+Lokalna sesja użytkownika: WSTRZYMANA (blokada ekranu aktywna)
+
+ID zdarzenia: 6006
+Znacznik czasu: Pt 02:14:09
+Zdarzenie: Zdalna sesja zakończona
+Czas trwania: 3m 25s
+
+Uwaga: Ta nazwa urządzenia nie pasuje do żadnego urządzenia
+w rejestrze urządzeń Jakuba W. Podczas okna sesji
+do tej maszyny nie podłączono fizycznie żadnego sprzętu.`,
+  },
+  logs:`[SYS] HOWLORA.OS — Dziennik dysku dowodowego (JAKUB_W.img)
+[SYS] Hash obrazu: 9f1c2e44...d38b3a — zweryfikowany OK
+[SYS] Tabela partycji: NTFS, 512GB
+[SYS] Czas montowania: sesja analizy
+
+<span class="dim">───────────────────────────────────────────────────────
+AKTYWNOŚĆ W CZWARTEK
+───────────────────────────────────────────────────────</span>
+[SYS] boot jądra @ Czw 07:58:40  — normalne
+[NET] sieć wifi "HOME_5G" @ Czw 08:00:01
+[USR] logowanie jakub.w @ Czw 08:00:09 (odcisk palca)
+[APP] browser.exe otwarty @ Czw 08:45 — dokumentacja VPN corp.local
+[APP] VPN corp.local połączony @ Czw 09:05
+[APP] excel.exe otwarty @ Czw 09:12 — Q3_raport_final.xlsx
+[APP] excel.exe zamknięty @ Czw 17:08
+[APP] EchoTrade.exe otwarty @ Czw 17:30
+[APP] V-Chat.exe otwarty @ Czw 21:15
+[APP] EchoTrade.exe otwarty @ Czw 21:45
+[USR] blokada ekranu @ Czw 23:46:02 (zainicjowana przez użytkownika)
+[NET] urządzenie opuszcza zasięg wifi @ Czw 23:47:10
+
+<span class="dim">───────────────────────────────────────────────────────
+PIĄTEK — OKNO ANOMALII (23:47 → 04:32)
+URZĄDZENIE OFFLINE (brak sieci lokalnej)
+───────────────────────────────────────────────────────</span>
+
+<span class="ok">[NET] >>> WYKRYTO POŁĄCZENIE PRZYCHODZĄCE <<<</span>
+<span class="hl">[NET] 02:10:44  źródło=185.220.101.x (wyjście TOR)  dev="S3NDER_NODE"
+[USR] ZAINICJOWANO SESJĘ ZDALNĄ — ekran zablokowany, brak fizycznego wejścia
+[APP] V-Chat.exe aktywowany @ 02:13:51 (zdalnie)
+[APP] V-Chat.exe wiadomość WYSŁANA → bartek.k @ 02:14:02
+      treść: "bartek. zrobiłem to. napisałem wyznanie..."
+[APP] V-Chat.exe zamknięty @ 02:14:08
+[USR] zdalna sesja ZAKOŃCZONA @ 02:14:09
+[NET] sesja wyczyszczona @ 02:14:10</span>
+
+<span class="dim">───────────────────────────────────────────────────────
+PIĄTEK — POWRÓT URZĄDZENIA
+───────────────────────────────────────────────────────</span>
+[NET] ponowne połączenie wifi "HOME_5G" @ Pt 04:32:51
+[USR] logowanie jakub.w @ Pt 04:33:02 (odcisk palca — fizyczne)
+[APP] EchoTrade.exe otwarty @ Pt 04:33:18
+[NET] żądanie echotrade.local/u/anna_collects — 404 USUNIĘTE
+[APP] browser.exe otwarty @ Pt 09:10
+[SYS] sesja analizy rozpoczyna się @ [teraz]
+
+[SYS] brak pasujących sygnatur złośliwego oprogramowania
+[SYS] brak zainstalowanego oprogramowania szyfrującego
+[SYS] 3 pliki odzyskane z /temp (patrz: /odzyskane/)`,
+};
+
+window.openTrash = function(){
+  trackObj("start");
+  const w=makeWindow("trash","Kosz","",{w:520,h:380});
+  w.body.innerHTML=`
+      <div class="list">
+        <div class="file-folder">📁 USUNIĘTE ELEMENTY</div>
+        <div class="file" onclick="window.openTrashFile()"><div class="n">📄 dziennik_kopia_robocza.txt</div><div class="d">Usunięto: Wtorek 23:14</div></div>
+      </div>
+  `;
+};
+
+window.openTrashFile = function(){
+  const w=makeWindow("trash_file","dziennik_kopia_robocza.txt","",{w:500,h:400});
+  w.body.innerHTML=`<pre class="term">Wtorek.
+Znowu to samo. Myszka na ekranie przesunęła się sama na ułamek sekundy, a potem okno V-Chat zminimalizowało się bez mojego kliknięcia.
+Marek z IT mówił wczoraj, że to pewnie jakiś zautomatyzowany skaner sieciowy szuka otwartych portów i stąd ten monit o logowaniu. Oby miał rację.
+Zignoruję to. Mam za dużo na głowie z raportem dla Adamskiego.
+Maria wciąż mówi o tym facecie pod jej biurem. Zaczynam się martwić. Może powinienem to zgłosić.</pre>`;
+};
+
+window.toggleIgComments = function(id){
+  const el = document.getElementById("ig_com_"+id);
+  if(el){
+    el.style.display = el.style.display === "none" ? "block" : "none";
+  }
+};
+
+window.openIG = function(){
+  if(!STATE.igUnlocked){
+    const w = makeWindow("ig_lock", "Instantgram — Blokada", "", {w:300, h:200});
+    w.body.innerHTML = `
+      <div style="padding:20px;text-align:center;display:flex;flex-direction:column;gap:10px;justify-content:center;height:100%">
+        <div style="color:var(--magenta);font-size:24px">📷</div>
+        <div style="font-size:11px;color:var(--muted);letter-spacing:1px">WPROWADŹ KOD DOSTĘPU</div>
+        <input type="password" id="igPin" maxlength="4" style="background:#0a1018;border:1px solid var(--line2);color:#fff;padding:8px;text-align:center;font-size:16px;letter-spacing:8px;width:120px;margin:0 auto" autocomplete="off">
+        <button onclick="window.checkIGPin()" style="padding:10px 16px;background:var(--magenta);color:#fff;border:none;border-radius:4px;font-size:11px;margin-top:10px;font-weight:bold;letter-spacing:1px">ODBLOKUJ</button>
+        <div id="igError" style="color:var(--red);font-size:10px;min-height:14px"></div>
+      </div>
+    `;
+    return;
+  }
+  const w = makeWindow("ig", "Instantgram", "", {w:420, h:560});
+  w.body.innerHTML = `
+    <div class="ig-feed" style="background:#000;height:100%;overflow-y:auto;padding-bottom:20px">
+      <div style="padding:14px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:10px;background:#050505;position:sticky;top:0;z-index:10">
+         <div style="font-size:18px;color:var(--magenta)">📷</div>
+         <div style="font-size:14px;font-weight:bold;color:#fff;letter-spacing:1px">Instantgram</div>
+      </div>
+      <div style="margin-bottom:20px;border-bottom:1px solid var(--line2)">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(45deg, #ff2b4a, #8b6cf7);display:grid;place-items:center;font-size:10px;color:#fff;font-weight:bold">K</div>
+          <div style="font-size:12px;font-weight:bold;color:#e0eaf0">kerwzy <span style="color:var(--cyan)">✓</span></div>
+        </div>
+        <div style="width:100%;height:300px;background:linear-gradient(135deg, #1a0510, #0a0510);display:grid;place-items:center;font-size:40px">😎</div>
+        <div style="padding:10px 14px;font-size:12px;color:#c8d5de;line-height:1.5">
+          <b>kerwzy</b> Znowu na szczycie. W sumie nic nowego, bycie po prostu najlepszym we wszystkim powoli staje się nudne 🥱🏆 #king #zawszenapropsie #sukces
+        </div>
+        <div style="padding:0 14px 14px;display:flex;gap:16px;color:var(--muted);font-size:11px;font-weight:bold;cursor:pointer" onclick="window.toggleIgComments('kerwzy')">
+          <span>❤️ 142 tys.</span><span>💬 12,4 tys. (Kliknij aby rozwinąć)</span>
+        </div>
+        <div id="ig_com_kerwzy" style="display:none;padding:0 14px 14px;font-size:11px;color:#b8c4d0;border-top:1px solid #1a2030;padding-top:10px;">
+          <div style="margin-bottom:6px"><b>mati_88:</b> Gdzie to stary? Wygląda grubo.</div>
+          <div style="margin-bottom:6px"><b>kerwzy:</b> @mati_88 Wczoraj, 01:15, pod klubem NOIR 😎 Jakiś dzban w niebieskim vanie zablokował mi wjazd na VIP parking, ale ja i tak wjechałem.</div>
+          <div style="margin-bottom:6px"><b>zuzia_vintage:</b> Zazdroo! Baw się dobrze!</div>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;border-bottom:1px solid var(--line2)">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(45deg, #f09433, #e6683c);display:grid;place-items:center;font-size:10px;color:#fff;font-weight:bold">Z</div>
+          <div style="font-size:12px;font-weight:bold;color:#e0eaf0">Zuzia_vintage</div>
+        </div>
+        <div style="width:100%;height:300px;background:linear-gradient(135deg, #2a1f1a, #1a100a);display:grid;place-items:center;font-size:40px">🪔</div>
+        <div style="padding:10px 14px;font-size:12px;color:#c8d5de;line-height:1.5">
+          <b>Zuzia_vintage</b> Kolejna piękna lampa z lat 70. 💡✨ Gotowa do nowego domu! #midcentury #vintage
+        </div>
+        <div style="padding:0 14px 14px;display:flex;gap:16px;color:var(--muted);font-size:11px;font-weight:bold;">
+          <span>❤️ 124</span><span>💬 12</span>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;border-bottom:1px solid var(--line2)">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(45deg, #3dfca0, #1a8050);display:grid;place-items:center;font-size:10px;color:#fff;font-weight:bold">C</div>
+          <div style="font-size:12px;font-weight:bold;color:#e0eaf0">cyber_sec_PL <span style="color:var(--cyan)">✓</span></div>
+        </div>
+        <div style="width:100%;height:300px;background:linear-gradient(135deg, #0a1a2a, #050a10);display:grid;place-items:center;font-size:40px">🚨</div>
+        <div style="padding:10px 14px;font-size:12px;color:#c8d5de;line-height:1.5">
+          <b>cyber_sec_PL</b> UWAGA! Ostatnio działa jakiś gościu, który hakuje telefony przez publiczne sieci i włamuje się na konta V-Chat. Używa zanonimizowanych węzłów i kradnie tokeny sesji. Uważajcie na niezaufane Wi-Fi i sprawdzajcie swoje aktywne sesje w ustawieniach! 🛡️💻 #cyberbezpieczenstwo #uwaga #haker
+        </div>
+        <div style="padding:0 14px 14px;display:flex;gap:16px;color:var(--muted);font-size:11px;font-weight:bold;">
+          <span>❤️ 892</span><span>💬 104</span>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;border-bottom:1px solid var(--line2)">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(45deg, #e83dfb, #8b6cf7);display:grid;place-items:center;font-size:10px;color:#fff;font-weight:bold">O</div>
+          <div style="font-size:12px;font-weight:bold;color:#e0eaf0">ola_w</div>
+        </div>
+        <div style="width:100%;height:300px;background:linear-gradient(135deg, #2a0a1a, #10050a);display:grid;place-items:center;font-size:40px">🥂</div>
+        <div style="padding:10px 14px;font-size:12px;color:#c8d5de;line-height:1.5">
+          <b>ola_w</b> Najlepszy rocznik! 🥂 Urodzinowy weekend start! Gotowi na jutro @maria_i 🎉
+        </div>
+        <div style="padding:0 14px 14px;display:flex;gap:16px;color:var(--muted);font-size:11px;font-weight:bold;">
+          <span>❤️ 45</span><span>💬 3</span>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;border-bottom:1px solid var(--line2)">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(45deg, #2ee0ff, #1c2836);display:grid;place-items:center;font-size:10px;color:#fff;font-weight:bold">M</div>
+          <div style="font-size:12px;font-weight:bold;color:#e0eaf0">maciej_k</div>
+        </div>
+        <div style="width:100%;height:300px;background:linear-gradient(135deg, #05101a, #0a1520);display:grid;place-items:center;font-size:40px">☕</div>
+        <div style="padding:10px 14px;font-size:12px;color:#c8d5de;line-height:1.5">
+          <b>maciej_k</b> Poranna kawa na mieście. Czekam na weekend... 😴☕
+        </div>
+        <div style="padding:0 14px 14px;display:flex;gap:16px;color:var(--muted);font-size:11px;font-weight:bold;">
+          <span>❤️ 12</span><span>💬 1</span>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+window.checkIGPin = function(){
+  const val = document.getElementById("igPin").value;
+  if(val === "8042"){
+    STATE.igUnlocked = true;
+    window.closeWin("ig_lock");
+    window.openIG();
+  } else {
+    document.getElementById("igError").textContent = "NIEPRAWIDŁOWY KOD";
+    setTimeout(()=>document.getElementById("igError").textContent="", 2000);
+  }
+};
+
+const APPS=[
+  {id:"vchat",   name:"V-Chat",      glyph:"V",   open:()=>window.openVChat()},
+  {id:"echo",    name:"EchoTrade",   glyph:"🏷",   open:()=>window.openEcho()},
+  {id:"mail",    name:"Skrzynka",    glyph:"✉",   open:()=>window.openMail()},
+  {id:"notes",   name:"Notatki",     glyph:"📝",  open:()=>window.openNotes()},
+  {id:"browser", name:"Przeglądarka",glyph:"⌬",   open:()=>window.openBrowser()},
+  {id:"files",   name:"Pliki",       glyph:"▣",   open:()=>window.openFiles()},
+  {id:"logs",    name:"Logi systemu",glyph:"⚠",   open:()=>window.openLogs(), locked:true},
+  {id:"ig",      name:"Instantgram", glyph:"📷",  open:()=>window.openIG()},
+  {id:"trash",   name:"Kosz",        glyph:"🗑️",   open:()=>window.openTrash()},
+  {id:"snake",   name:"Snake.exe",   glyph:"🐍",  open:()=>window.openSnake(), game:true},
+  {id:"ttt",     name:"Kółko-Krzyżyk",glyph:"✕", open:()=>window.openTicTacToe(), game:true},
+  {id:"rps",     name:"Kamień Nożyce",glyph:"✊", open:()=>window.openRPS(), game:true},
+  {id:"readme",  name:"README",      glyph:"?",   open:()=>window.openReadme()},
+];
+
+const OBJECTIVES=[
+  {id:"start",   text:"Uruchom wszystkie aplikacje na dysku"},
+  {id:"vchat",   text:"Przejrzyj historię wiadomości"},
+  {id:"mail",    text:"Zbadaj korespondencję e-mail"},
+  {id:"files",   text:"Otwórz wszystkie odzyskane pliki"},
+  {id:"logs",    text:"Odszyfruj i przejrzyj logi systemowe"},
+  {id:"verdict", text:"Złóż raport"},
+];
+
+function renderObjectives(){
+  const panel=document.getElementById("objPanel");
+  const opened=STATE.objectives.opened;
+  const completed=new Set([...opened]);
+  if(STATE.logsUnlocked) completed.add("logs");
+  let html=`<div class="obj-head">CELE</div>`;
+  OBJECTIVES.forEach(o=>{
+    const done=completed.has(o.id)&&o.id!=="verdict";
+    const cur=!done&&o.id===OBJECTIVES.find(x=>!completed.has(x.id)||x.id==="verdict")?.id;
+    let cls="obj-item"+(done?" done":cur?" active":"");
+    html+=`<div class="${cls}">${done?"✓ ":cur?"→ ":"  "}${o.text}${cur&&!done?'<span class="obj-caret"></span>':""}</div>`;
+  });
+  panel.innerHTML=html;
+}
+
+const LORE_PL="Maria I. zginęła wczoraj w nocy.\nMiała 20 lat. Za dwa dni były jej urodziny.\nTo jest komputer jej chłopaka.\nMasz 12 minut.";
+
+const BOOT_LINES_PL=[
+  "BIOS v5.0 … OK",
+  "POST … OK",
+  "Montowanie obrazu dowodowego: JAKUB_W.img",
+  "Weryfikacja hash: dopasowanie SHA-256 [9f1c2e44…d38b3a] … OK",
+  "Ładowanie profilu użytkownika: jakub.w",
+  "Deszyfrowanie danych aplikacji …",
+  "Indeksowanie systemu plików: 21 448 plików",
+  "Odzyskiwanie usuniętych wpisów z /temp …",
+  "3 pliki odzyskane.",
+  "Inicjalizacja HOWLORA.OS …",
+];
+
+let bootStarted=false;
+
+window.runBoot = function(e){
+  if(e && e.preventDefault) e.preventDefault();
+  if(bootStarted) return;
+  bootStarted=true;
+  initSnd();
+  const init = document.getElementById("initScreen");
+  if(init) init.remove();
+  document.getElementById("bootOverlay").style.display = "block";
+  setTimeout(()=>{
+    showStage("stageBios");
+    runBios();
+  },800);
+};
+
+window.skipBoot = function(){
+  initSnd();
+  document.getElementById("bootOverlay").remove();
+  const btn = document.getElementById("bootSkip");
+  if(btn) btn.remove();
+  revealDesktop();
+};
+
+function showStage(id){
+  ["stagePower","stageBios","stageLogo","stageLoading","stageLogin"].forEach(s=>{
+    const el=document.getElementById(s);
+    if(el){
+      el.style.display=(s===id)?"flex":"none";
+    }
+  });
+}
+
+function runBios(){
+  const biosEl=document.getElementById("biosText");
+  const lines=[
+    {t:"HOWLORA SYSTEMS — BIOS v5.0",c:"ok"},
+    {t:"CPU: Intel Core i7-12700H @ 2.30GHz ... OK",c:"ok"},
+    {t:"RAM: 16384 MB DDR5 ... OK",c:"ok"},
+    {t:"Dysk: 512GB NVMe SSD ... OK",c:"ok"},
+    {t:"Kontroler sieci ... OK",c:"ok"},
+    {t:"Moduł bezpieczeństwa TPM 2.0 ... OK",c:"ok"},
+    {t:"Bootowanie z: HOWLORA.OS v5.0",c:""},
+  ];
+  let i=0;
+  const addLine=()=>{
+    if(i>=lines.length){
+      setTimeout(()=>{showLogoStage();},400);
+      return;
+    }
+    const div=document.createElement("div");
+    const l=lines[i];
+    div.innerHTML=l.c==="ok"?`<span class="ok">${esc(l.t)}</span>`:esc(l.t);
+    biosEl.appendChild(div);
+    i++;
+    setTimeout(addLine,120+Math.random()*80);
+  };
+  addLine();
+}
+
+function showLogoStage(){
+  showStage("stageLogo");
+  setTimeout(()=>{showLoadingStage();},1400);
+}
+
+function showLoadingStage(){
+  showStage("stageLoading");
+  const lore=document.getElementById("loadLore");
+  typeLore(lore,LORE_PL,()=>{
+    const log=document.getElementById("loadLines");
+    const fill=document.getElementById("loadBarFill");
+    let i=0;
+    const step=()=>{
+      if(i>=BOOT_LINES_PL.length){
+        fill.style.width="100%";
+        setTimeout(()=>{showLoginStage();},500);
+        return;
+      }
+      const div=document.createElement("div");
+      div.textContent="> "+BOOT_LINES_PL[i];
+      log.appendChild(div);
+      log.scrollTop=log.scrollHeight;
+      fill.style.width=((i+1)/BOOT_LINES_PL.length*100)+"%";
+      i++;
+      setTimeout(step,180+Math.random()*160);
+    };
+    setTimeout(step,300);
+  });
+}
+
+function showLoginStage(){
+  showStage("stageLogin");
+  const barFill=document.getElementById("loginBarFill");
+  const status=document.getElementById("loginStatus");
+  const msgs=["WERYFIKACJA TOŻSAMOŚCI","ŁADOWANIE PROFILU","MONTOWANIE DYSKU DOWODOWEGO","DOSTĘP PRZYZNANY"];
+  let i=0;
+  setTimeout(()=>{barFill.style.width="100%";},100);
+  const tick=()=>{
+    if(i>=msgs.length){
+      setTimeout(()=>{finishBoot();},600);
+      return;
+    }
+    status.textContent=msgs[i++];
+    setTimeout(tick,500);
+  };
+  setTimeout(tick,400);
+}
+
+function typeLore(el,text,cb){
+  let i=0;
+  el.innerHTML='<span class="caret"></span>';
+  const tick=()=>{
+    if(i>=text.length){if(cb)setTimeout(cb,500);return;}
+    const ch=text[i++];
+    el.innerHTML=text.slice(0,i).replace(/\n/g,"<br>")+'<span class="caret"></span>';
+    if(ch!==" " && ch!=="\n") sndType();
+    setTimeout(tick,ch==="\n"?400:(Math.random()*30+30));
+  };
+  tick();
+}
+
+function finishBoot(){
+  const overlay=document.getElementById("bootOverlay");
+  const skip=document.getElementById("bootSkip");
+  if(overlay){overlay.style.transition="opacity .5s";overlay.style.opacity="0";setTimeout(()=>{overlay.remove();if(skip)skip.remove();},520);}
+  revealDesktop();
+}
+
+const creepyConvo = [
+  {
+    msg: "Przestań zajmować się tą sprawą.",
+    opts: ["Kim jesteś?", "O co ci chodzi?"],
+    replies: ["Kimś, kto wie co zrobiłeś.", "O to, żebyś zostawił ten komputer w spokoju."]
+  },
+  {
+    msg: "Do niczego nie dojdziesz.",
+    opts: ["Znalazłem logi.", "Zostaw mnie w spokoju."],
+    replies: ["Logi można sfałszować. Tak jak wszystko inne.", "Ona też tak mówiła."]
+  },
+  {
+    msg: "Dobrze wiem, że sprawdzasz ten komputer.",
+    opts: ["Skąd to wiesz?", "Nic na mnie nie masz."],
+    replies: ["Widzę wszystko. Uważaj na siebie, Jakub.", "Zobaczymy co powie prokurator."]
+  },
+  {
+    msg: "Twój czas ucieka.",
+    opts: ["Powiem o tobie policji.", "Czego ode mnie chcesz?"],
+    replies: ["Powodzenia w szukaniu ducha.", "Prawdy, z którą nie potrafisz żyć."]
+  }
+];
+
+function scheduleCreepy(delay){
+   STATE.creepyNextTimer = setTimeout(triggerCreepyPhase, delay);
+}
+
+function triggerCreepyPhase(){
+    let isGame = (STATE.windows.snake && !STATE.windows.snake.el.classList.contains("minimized")) ||
+                 (STATE.windows.ttt && !STATE.windows.ttt.el.classList.contains("minimized")) ||
+                 (STATE.windows.rps && !STATE.windows.rps.el.classList.contains("minimized"));
+
+    if (isGame && !STATE.creepyWarnedGame) {
+       STATE.creepyWarnedGame = true;
+       receiveCreepyMessage("Maria nie żyje, Jakub siedzi w areszcie, a ty grasz w gierki? Myślisz, że to zabawa?");
+       scheduleCreepy(60000);
+       return;
+    }
+
+    const left = Math.max(0, STATE.totalSecs - Math.floor((Date.now()-STATE.timerStart)/1000));
+    if (isGame && left < 300 && !STATE.creepyWarnedGame2) {
+       STATE.creepyWarnedGame2 = true;
+       receiveCreepyMessage("Zostało ci kilka minut, a ty marnujesz czas na gry. On i tak zostanie skazany.");
+       scheduleCreepy(60000);
+       return;
+    }
+
+    if(STATE.creepyStage >= creepyConvo.length) return;
+    const stageData = creepyConvo[STATE.creepyStage];
+    receiveCreepyMessage(stageData.msg);
+    STATE.creepyWaiting = true;
+    if(STATE.windows.vchat) renderVChat(STATE.windows.vchat);
+}
+
+function receiveCreepyMessage(text){
+    sndNotif();
+    let c = DATA.contacts.find(x => x.id === "unknown");
+    if(!c){
+      c = {id:"unknown",name:"???",sub:"",time:"Teraz",msgs:[]};
+      DATA.contacts.unshift(c);
+    } else {
+      DATA.contacts = DATA.contacts.filter(x => x.id !== "unknown");
+      DATA.contacts.unshift(c);
+    }
+    c.msgs.push({t:"Teraz", f:"them", x:text, flag:true});
+    c.sub = text;
+    c.time = "Teraz";
+
+    const vchatWin = STATE.windows.vchat;
+    const isActive = vchatWin && STATE.activeChat === "unknown" && !vchatWin.el.classList.contains("minimized");
+
+    if(!isActive){
+        STATE.vchatUnread++;
+    } else {
+        STATE.vchatUnread = 0;
+    }
+    renderIcons();
+
+    if(vchatWin) renderVChat(vchatWin);
+
+    const t = document.createElement("div");
+    t.className = "toast vchat-toast";
+    t.innerHTML = '<div style="color:var(--red);font-weight:bold;margin-bottom:4px;font-size:10px;letter-spacing:1px">✉ NIEZNANY NUMER</div><div style="color:#d5dde6;font-size:12px">'+esc(text)+'</div>';
+    document.getElementById("toasts").appendChild(t);
+    setTimeout(()=>{t.style.transition="opacity .5s";t.style.opacity="0";setTimeout(()=>t.remove(),500);},6000);
+}
+
+window.replyCreepy = function(optIdx){
+    STATE.creepyWaiting = false;
+    const stageData = creepyConvo[STATE.creepyStage];
+    const myText = stageData.opts[optIdx];
+    const hisReply = stageData.replies[optIdx];
+
+    let c = DATA.contacts.find(x => x.id === "unknown");
+    c.msgs.push({t:"Teraz", f:"me", x:myText});
+    if(STATE.windows.vchat) renderVChat(STATE.windows.vchat);
+
+    setTimeout(() => {
+        receiveCreepyMessage(hisReply);
+        STATE.creepyStage++;
+        scheduleCreepy(60000);
+    }, 3000);
+};
+
+function startCreepyMessages(){
+    scheduleCreepy(60000);
+}
+
+function startHackAttack(){
+   if(STATE.endGameDone) return;
+   document.getElementById("hackOverlay").style.display="flex";
+   sndNotif(); setTimeout(sndNotif, 300); setTimeout(sndNotif, 600);
+   
+   STATE.hackTime = 60;
+   STATE.hackCode = "OVR-4471";
+   
+   document.getElementById("hackCodeDisp").textContent = STATE.hackCode;
+   document.getElementById("hackInput").value = "";
+   document.getElementById("hackInput").style.borderColor = "var(--red)";
+   document.getElementById("hackInput").focus();
+   
+   STATE.hackInt = setInterval(()=>{
+     STATE.hackTime--;
+     const ht = document.getElementById("hackTimer");
+     const hp = document.getElementById("hackProg");
+     if(ht) ht.textContent = "00:"+(STATE.hackTime<10?"0":"")+STATE.hackTime;
+     if(hp) hp.style.width = (STATE.hackTime/60 * 100) + "%";
+     if(STATE.hackTime<=0){
+        clearInterval(STATE.hackInt);
+        hackFailed();
+     }
+   },1000);
+}
+
+window.checkHack = function(){
+   const val = document.getElementById("hackInput").value.trim().toUpperCase();
+   if(val === STATE.hackCode){
+      clearInterval(STATE.hackInt);
+      document.getElementById("hackOverlay").style.display="none";
+      toast("HACK BLOCKED: Zdalny atak odparty pomyślnie.");
+   } else {
+      document.getElementById("hackInput").value = "";
+      document.getElementById("hackInput").style.borderColor = "#ff2b4a";
+      document.getElementById("hackInput").style.boxShadow = "0 0 10px #ff2b4a";
+      setTimeout(()=>{
+         document.getElementById("hackInput").style.boxShadow = "none";
+      }, 200);
+   }
+};
+
+function hackFailed(){
+   document.getElementById("hackOverlay").style.display="none";
+   STATE.timerStart -= 180000;
+   toast("YOU GOT HACKED: Utracono 3 minuty czasu analizy!");
+}
+
+function revealDesktop(){
+  const d=document.getElementById("desktop");
+  d.classList.add("on","desktopReveal");
+  renderIcons();
+  startClock();
+  startTimer();
+  renderObjectives();
+  startCreepyMessages();
+  setTimeout(startHackAttack, 180000);
+  setTimeout(()=>toast("System gotowy. Dysk zamontowany tylko do odczytu."),700);
+  setTimeout(()=>toast("3 pliki odzyskane z /temp. Patrz: Pliki."),2200);
+  setTimeout(()=>toast("Wskazówka: Zacznij od aplikacji README."),3800);
+}
+
+function renderIcons(){
+  const c=document.getElementById("icons");
+  c.innerHTML="";
+  const isMobile = window.innerWidth <= 768;
+  const iconW=isMobile?80:100, iconH=isMobile?80:100, gap=isMobile?15:20;
+  const cols=isMobile ? Math.floor((window.innerWidth-20)/(iconW+gap)) : Math.min(6, APPS.length);
+  const totalW=cols*iconW+(cols-1)*gap;
+  const startX=Math.max(10, (window.innerWidth-totalW)/2);
+  const startY=isMobile ? 30 : Math.max(20, (window.innerHeight-46)/2 - 80);
+
+  APPS.forEach((a,i)=>{
+    const locked=a.locked&&!STATE.logsUnlocked;
+    const d=document.createElement("div");
+    d.className="icon"+(locked?" locked":"")+(a.game?" game":"")+(a.id==="readme"&&!STATE.readmeOpened?" readme-hl":"");
+    let badgeHtml = "";
+    if(a.id === "vchat" && STATE.vchatUnread > 0){
+        badgeHtml = `<div class="icon-badge">${STATE.vchatUnread}</div>`;
+    }
+    d.innerHTML=`<div class="glyph" style="position:relative">${locked?"🔒":a.glyph}${badgeHtml}</div><div class="lbl">${a.name}</div>`;
+    d.style.position="absolute";
+    d.style.left=startX+(i%cols)*(iconW+gap)+"px";
+    d.style.top=startY+Math.floor(i/cols)*(iconH+gap)+"px";
+    c.appendChild(d);
+    bindIconDrag(d, a);
+  });
+}
+
+function bindIconDrag(el, a){
+  let sx,sy,ox,oy,drag=false,moved=false;
+  const start=(e)=>{
+    if(e.button!==undefined&&e.button!==0)return;
+    drag=true;moved=false;
+    const pt=e.touches?e.touches[0]:e;
+    sx=pt.clientX;sy=pt.clientY;ox=el.offsetLeft;oy=el.offsetTop;
+    el.style.zIndex=100;
+  };
+  const move=(e)=>{
+    if(!drag)return;
+    const pt=e.touches?e.touches[0]:e;
+    if(Math.abs(pt.clientX-sx)>8||Math.abs(pt.clientY-sy)>8)moved=true;
+    if(moved){
+      el.style.left=(ox+pt.clientX-sx)+"px";
+      el.style.top=(oy+pt.clientY-sy)+"px";
+      if(e.cancelable) e.preventDefault();
+    }
+  };
+  const end=(e)=>{
+    if(!drag)return;
+    drag=false;el.style.zIndex="";
+    if(!moved) launchApp(a);
+  };
+
+  el.addEventListener("mousedown",start);
+  el.addEventListener("touchstart",start,{passive:false});
+  window.addEventListener("mousemove",move);
+  window.addEventListener("touchmove",move,{passive:false});
+  window.addEventListener("mouseup",end);
+  window.addEventListener("touchend",end);
+}
+
+function launchApp(a){
+  sndApp();
+  const iconEl=document.querySelector(`#icons .icon:nth-child(${APPS.indexOf(a)+1})`);
+  if(iconEl){iconEl.classList.add("launching");setTimeout(()=>iconEl.classList.remove("launching"),260);}
+  if(a.id==="readme"){
+     if(iconEl) iconEl.classList.remove("readme-hl");
+     STATE.readmeOpened = true;
+  }
+  a.open();
+}
+
+function startClock(){
+  const el=document.getElementById("clock-area");
+  const upd=()=>{
+    const d=new Date();
+    el.textContent=`◉ ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+  };
+  upd();setInterval(upd,1000);
+}
+
+function startTimer(){
+  STATE.timerStart=Date.now();
+  const total=STATE.totalSecs;
+  const val=document.getElementById("timerVal");
+  const fill=document.getElementById("timerBarFill");
+  const disp=document.getElementById("timerDisplay");
+  const upd=()=>{
+    const elapsed=Math.floor((Date.now()-STATE.timerStart)/1000);
+    const left=Math.max(0,total-elapsed);
+    const m=Math.floor(left/60);
+    const s=left%60;
+    val.textContent=`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+    fill.style.width=(left/total*100)+"%";
+    if(left<=120) disp.classList.add("urgent");
+    if(left<=0&&!STATE.endGameDone){
+      STATE.endGameDone=true;
+      showEnding("timeout","CZAS UPŁYNĄŁ","lose",
+        "12-minutowe okno analizy zostało zamknięte.\n\nTwój raport nie został złożony. Sprawa trafia do prokuratury okręgowej bez konkluzji cyfrowej kryminalistyki.\n\nBez twojej analizy dane z sesji zdalnej pozostają niezbadane. Odcisk palca urządzenia S3NDER nigdy nie zostaje prześledzony. Jakub W. staje przed sądem.\n\nSąd skazuje na podstawie przyznanego mu wyznania.\n\nMiałeś dowody. Po prostu zabrakło ci czasu.");
+    }
+  };
+  upd();setInterval(upd,1000);
+}
+
+function toast(msg){
+  const t=document.createElement("div");
+  t.className="toast";t.textContent=msg;
+  document.getElementById("toasts").appendChild(t);
+  setTimeout(()=>{t.style.transition="opacity .3s";t.style.opacity="0";setTimeout(()=>t.remove(),300);},3400);
+}
+
+function makeWindow(id,title,html,opts){
+  opts=opts||{};
+  if(STATE.windows[id]){
+    const w=STATE.windows[id];
+    w.el.classList.remove("minimized");
+    focusWindow(id);
+    if(opts.replaceBody)w.body.innerHTML=html;
+    return w;
+  }
+  const el=document.createElement("div");
+  el.className="win";el.dataset.id=id;
+  
+  const isMobile = window.innerWidth <= 768;
+  const finalW = Math.min(opts.w||660, window.innerWidth - 10);
+  const finalH = Math.min(opts.h||450, window.innerHeight - 60);
+  const cx=Math.max(5,(window.innerWidth-finalW)/2+(isMobile?0:(Math.random()*40-20)));
+  const cy=Math.max(5,(window.innerHeight-finalH-46)/2+(isMobile?0:(Math.random()*40-20)));
+  
+  el.style.left=cx+"px";el.style.top=cy+"px";
+  el.style.width=finalW+"px";el.style.height=finalH+"px";
+  el.innerHTML=`
+    <div class="tb">
+      <div class="dot"></div>
+      <div class="title">${title}</div>
+      <div class="ctl">
+        <button onclick="window.minWin('${id}')" ontouchstart="event.stopPropagation()">_</button>
+        <button class="x" onclick="window.closeWin('${id}')" ontouchstart="event.stopPropagation()">×</button>
+      </div>
+    </div>
+    <div class="body">${html}</div>
+    <div class="grip"></div>
+  `;
+  document.getElementById("desktop").appendChild(el);
+  const body=el.querySelector(".body");
+  const obj={el,body,id,title};
+  STATE.windows[id]=obj;
+  bindDrag(el);bindResize(el);
+  
+  el.addEventListener("mousedown",()=>focusWindow(id));
+  el.addEventListener("touchstart",()=>focusWindow(id),{passive:true});
+  focusWindow(id);
+  renderTasks();
+  return obj;
+}
+
+function bindDrag(el){
+  const tb=el.querySelector(".tb");
+  let sx,sy,ox,oy,drag=false;
+  const start=(e)=>{
+    if(e.target.closest('button')) return;
+    drag=true;
+    const pt=e.touches?e.touches[0]:e;
+    sx=pt.clientX;sy=pt.clientY;ox=el.offsetLeft;oy=el.offsetTop;
+    focusWindow(el.dataset.id);
+  };
+  const move=(e)=>{
+    if(!drag)return;
+    const pt=e.touches?e.touches[0]:e;
+    const nx=Math.max(0,Math.min(window.innerWidth-60,ox+pt.clientX-sx));
+    const ny=Math.max(0,Math.min(window.innerHeight-80,oy+pt.clientY-sy));
+    el.style.left=nx+"px";el.style.top=ny+"px";
+  };
+  const end=()=>{drag=false;};
+
+  tb.addEventListener("mousedown",start);
+  tb.addEventListener("touchstart",start,{passive:true});
+  window.addEventListener("mousemove",move);
+  window.addEventListener("touchmove",move,{passive:true});
+  window.addEventListener("mouseup",end);
+  window.addEventListener("touchend",end);
+}
+
+function bindResize(el){
+  const g=el.querySelector(".grip");
+  if(!g)return;
+  let sx,sy,sw,sh,rs=false;
+  const start=(e)=>{
+    rs=true;
+    const pt=e.touches?e.touches[0]:e;
+    sx=pt.clientX;sy=pt.clientY;sw=el.offsetWidth;sh=el.offsetHeight;
+    e.stopPropagation();
+  };
+  const move=(e)=>{
+    if(!rs)return;
+    const pt=e.touches?e.touches[0]:e;
+    el.style.width=Math.max(280,sw+pt.clientX-sx)+"px";
+    el.style.height=Math.max(200,sh+pt.clientY-sy)+"px";
+  };
+  const end=()=>{rs=false;};
+
+  g.addEventListener("mousedown",start);
+  g.addEventListener("touchstart",start,{passive:true});
+  window.addEventListener("mousemove",move);
+  window.addEventListener("touchmove",move,{passive:true});
+  window.addEventListener("mouseup",end);
+  window.addEventListener("touchend",end);
+}
+
+function focusWindow(id){
+  Object.values(STATE.windows).forEach(w=>w.el.classList.remove("focus"));
+  const w=STATE.windows[id];if(!w)return;
+  w.el.classList.add("focus");
+  STATE.zTop++;w.el.style.zIndex=STATE.zTop;
+  renderTasks();
+}
+
+function renderTasks(){
+  const c=document.getElementById("tasks");c.innerHTML="";
+  Object.values(STATE.windows).forEach(w=>{
+    const b=document.createElement("button");b.className="task";
+    const active=!w.el.classList.contains("minimized")&&w.el.classList.contains("focus");
+    if(active)b.classList.add("active");
+    b.textContent="▣ "+w.title;
+    b.onclick=()=>{
+      if(w.el.classList.contains("minimized")){w.el.classList.remove("minimized");focusWindow(w.id);}
+      else if(active){window.minWin(w.id);}
+      else focusWindow(w.id);
+    };
+    c.appendChild(b);
+  });
+}
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function trackObj(id){
+  STATE.objectives.opened.add(id);
+  renderObjectives();
+}
+
+window.openVChat = function(){
+  trackObj("vchat");
+  if(STATE.activeChat === "unknown"){
+      STATE.vchatUnread = 0;
+      renderIcons();
+  }
+  const w=makeWindow("vchat","V-Chat — Komunikator","",{w:740,h:500});
+  renderVChat(w);
+};
+
+function renderVChat(w){
+  const rows=DATA.contacts.map(c=>`<div class="row${STATE.activeChat===c.id?" active":""}" onclick="window.selectChat('${c.id}')">
+    <div class="av">${c.name[0]}</div>
+    <div class="meta"><div class="n">${esc(c.name)}</div><div class="p">${esc(c.sub)}</div></div>
+    <div class="time">${c.time}</div>
+  </div>`).join("");
+  let right;
+  if(!STATE.activeChat){
+    right=`<div class="ph"><span style="color:var(--muted);letter-spacing:2px">V-CHAT // WYBIERZ ROZMOWĘ</span></div>
+      <div class="empty">${DATA.contacts.length} kontaktów. Wybierz jeden aby przeczytać.</div>`;
+  }else{
+    const c=DATA.contacts.find(x=>x.id===STATE.activeChat);
+    const bub=c.msgs.map(m=>`<div class="bub ${m.f}${m.flag?' flagged':''}">${esc(m.x)}<span class="ts">${m.t}</span></div>`).join("");
+    
+    let optionsHtml = "";
+    if(c.id === "unknown" && STATE.creepyWaiting && STATE.creepyStage < creepyConvo.length){
+        const opts = creepyConvo[STATE.creepyStage].opts;
+        optionsHtml = `
+          <div class="chat-opts" style="display:flex;gap:8px;padding:12px;background:#080d14;border-top:1px solid var(--line2);flex-shrink:0;">
+             <button onclick="window.replyCreepy(0)" style="flex:1;padding:12px;background:#1a050a;border:1px solid var(--red);color:var(--red);border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:1px;font-weight:bold;transition:all 0.2s;">${esc(opts[0])}</button>
+             <button onclick="window.replyCreepy(1)" style="flex:1;padding:12px;background:#1a050a;border:1px solid var(--red);color:var(--red);border-radius:4px;font-size:11px;cursor:pointer;letter-spacing:1px;font-weight:bold;transition:all 0.2s;">${esc(opts[1])}</button>
+          </div>
+        `;
+    }
+    
+    right=`<div class="ph">
+        <button class="back" onclick="window.backChat()">← Wstecz</button>
+        <span style="color:#e0eaf0">${esc(c.name)}</span>
+        <span style="color:var(--muted);margin-left:auto;font-size:10px">${c.msgs.length} wiadomości</span>
+      </div>
+      <div class="pc" style="flex:1;overflow-y:auto;min-height:0;">${bub}</div>
+      ${optionsHtml}`;
+  }
+  w.body.innerHTML=`<div class="app has-sidebar ${STATE.activeChat ? 'has-active' : ''}">
+    <div class="sidebar"><div class="head">KONTAKTY (${DATA.contacts.length})</div><div class="list">${rows}</div></div>
+    <div class="pane" style="display:flex;flex-direction:column;flex:1;">${right}</div>
+  </div>`;
+  if(STATE.activeChat){
+    const pc=w.body.querySelector(".pc");
+    if(pc)pc.scrollTop=pc.scrollHeight;
+  }
+}
+window.selectChat=id=>{
+  STATE.activeChat=id;
+  if(id === "unknown"){
+      STATE.vchatUnread = 0;
+      renderIcons();
+  }
+  renderVChat(STATE.windows.vchat);
+};
+window.backChat=()=>{STATE.activeChat=null;renderVChat(STATE.windows.vchat);};
+
+window.openEcho = function(){
+  trackObj("vchat");
+  const w=makeWindow("echo","EchoTrade — Rynek","",{w:720,h:480});
+  renderEcho(w);
+};
+function renderEcho(w){
+  let g=DATA.ads.map(m=>`<div class="ad-item" onclick="window.selectAd('${m.id}')">
+    <div class="pic">${m.glyph}</div>
+    <div class="info">
+      <div class="n">${esc(m.title)}</div>
+      <div class="p">${m.price}</div>
+      <div class="a">Sprzedający: ${esc(m.seller)}</div>
+      <div class="sold ${m.sold?"yes":""}">${m.sold?"● SPRZEDANE":"● AKTYWNE"}</div>
+    </div>
+  </div>`).join("");
+  let right;
+  if(!STATE.activeAd){
+    right=`<div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE // WYBIERZ OGŁOSZENIE</span></div>
+      <div class="empty">← Wybierz ogłoszenie.</div>`;
+  }else{
+    const m=DATA.ads.find(x=>x.id===STATE.activeAd);
+    const bub=m.msgs.map(x=>`<div class="bub ${x.f}">${esc(x.x)}<span class="ts">${x.t}</span></div>`).join("");
+    const notice=m.id==="anna"?`<div style="margin-top:14px;padding:10px;border:1px dashed #2a1a22;background:#0e080c;color:#884455;font-size:11px;letter-spacing:1px">⚠ To ogłoszenie i konto sprzedającego zostały trwale usunięte z platformy.</div>`:"";
+    right=`<div class="ph">
+        <button class="back" onclick="window.backAd()">← Wstecz</button>
+        <span style="color:#e0eaf0">${esc(m.title)}</span>
+        <span style="color:var(--muted);margin-left:auto;font-size:10px">${m.price} · ${esc(m.seller)}</span>
+      </div>
+      <div class="pc">${bub}${notice}</div>`;
+  }
+  w.body.innerHTML=`<div class="app has-sidebar echo-app ${STATE.activeAd ? 'has-active' : ''}">
+    <div class="sidebar echo-list"><div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE</span></div><div class="pc"><div class="match-grid">${g}</div></div></div>
+    <div class="pane echo-detail">${right}</div>
+  </div>`;
+  if(STATE.activeAd){
+    const pc=w.body.querySelector(".pane .pc");if(pc)pc.scrollTop=pc.scrollHeight;
+  }
+}
+window.selectAd=id=>{STATE.activeAd=id;STATE.adRead[id]=true;renderEcho(STATE.windows.echo);};
+window.backAd=()=>{STATE.activeAd=null;renderEcho(STATE.windows.echo);};
+
+window.openMail = function(){
+  trackObj("mail");
+  const w=makeWindow("mail",`Skrzynka — Odebrane (${DATA.mails.length})`,"",{w:780,h:500});
+  renderMail(w);
+};
+function renderMail(w){
+  const rows=DATA.mails.map(m=>`<div class="row${STATE.activeMail===m.id?" active":""}" onclick="window.selectMail('${m.id}')">
+    <div class="meta mail-row" style="padding:0">
+      <div class="from">${esc(m.from)}</div>
+      <div class="sub">${esc(m.sub)}</div>
+      <div class="pv">${esc(m.body.slice(0,55))}…</div>
+    </div>
+    <div class="time" style="white-space:nowrap;font-size:10px;padding-left:8px">${m.time}</div>
+  </div>`).join("");
+  let right;
+  if(!STATE.activeMail){
+    right=`<div class="ph"><span style="color:var(--muted);letter-spacing:2px">ODEBRANE // ${DATA.mails.length} WIADOMOŚCI</span></div>
+      <div class="empty">← Wybierz e-mail aby go przeczytać.</div>`;
+  }else{
+    const m=DATA.mails.find(x=>x.id===STATE.activeMail);
+    right=`<div class="ph">
+        <button class="back" onclick="window.backMail()">← Wstecz</button>
+        <span style="color:#e0eaf0">${esc(m.sub)}</span>
+      </div>
+      <div class="pc mail-view">
+        <h3>${esc(m.sub)}</h3>
+        <div class="meta">Od: <b>${esc(m.from)}</b><br>Do: jakub.w@mail.local<br>Data: ${m.time}</div>
+        <div class="body-txt">${esc(m.body).replace('8042', '<b>8042</b>')}</div>
+      </div>`;
+  }
+  w.body.innerHTML=`<div class="app has-sidebar ${STATE.activeMail ? 'has-active' : ''}">
+    <div class="sidebar mail-sidebar"><div class="head">ODEBRANE</div><div class="list">${rows}</div></div>
+    <div class="pane">${right}</div>
+  </div>`;
+}
+window.selectMail=id=>{STATE.activeMail=id;STATE.mailRead[id]=true;renderMail(STATE.windows.mail);};
+window.backMail=()=>{STATE.activeMail=null;renderMail(STATE.windows.mail);};
+
+window.openNotes = function(){
+  const w=makeWindow("notes","Notatki.txt","",{w:520,h:420});
+  w.body.innerHTML=`<textarea id="notesArea" spellcheck="false" placeholder="Twoje notatki śledcze..."></textarea>`;
+  const ta=w.body.querySelector("#notesArea");
+  ta.value=STATE.notes;
+  ta.addEventListener("input",()=>{STATE.notes=ta.value;});
+};
+
+window.openBrowser = function(){
+  trackObj("start");
+  const w=makeWindow("browser","Przeglądarka — Historia","",{w:660,h:460});
+  let html=`<div class="app brw"><div class="pane"><div class="url">📁 about:historia &nbsp; <b>jakub.w</b> &nbsp; — ostatnie 14 dni</div><div class="pc" style="padding:0">`;
+  DATA.history.forEach(g=>{
+    html+=`<div class="hist-cat">${g.cat}</div>`;
+    g.entries.forEach(h=>{
+      html+=`<div class="hist-row"><div class="t">${esc(h.t)}</div><div class="u">↳ ${esc(h.u)}</div><div class="ts">${h.ts}</div></div>`;
+    });
+  });
+  html+=`</div></div></div>`;
+  w.body.innerHTML=html;
+};
+
+window.openFiles = function(){
+  trackObj("files");
+  const w=makeWindow("files","Pliki — Główny katalog","",{w:560,h:420});
+  let html=`<div class="list">`;
+  DATA.files.forEach(folder=>{
+    html+=`<div class="file-folder">📁 ${folder.folder}</div>`;
+    folder.items.forEach(item=>{
+      html+=`<div class="file" onclick="window.openFile('${item.x}')"><div class="n">📄 ${esc(item.n)}</div><div class="d">${esc(item.d)}</div></div>`;
+    });
+  });
+  html+=`</div>`;
+  w.body.innerHTML=html;
+};
+window.openFile=(k)=>{
+  const fname=DATA.files.flatMap(f=>f.items).find(i=>i.x===k)?.n||k;
+  const id="file_"+k;
+  const w=makeWindow(id,"Plik: "+fname,"",{w:540,h:400});
+  
+  if(k==='img1'||k==='img2'||k==='img3'){
+      let src = k==='img1'?'1.png':k==='img2'?'2.png':'3.png';
+      w.body.innerHTML=`<div style="padding:20px;text-align:center;background:#050505;height:100%;display:flex;align-items:center;justify-content:center"><img src="${src}" style="max-width:100%;max-height:100%;box-shadow:0 0 20px rgba(0,0,0,0.8);border:1px solid var(--line2)"></div>`;
+      return;
+  }
+  const content=DATA.fileContents[k];
+  if(!content)return;
+  w.body.innerHTML=`<pre class="term">${esc(content)}</pre>`;
+};
+
+window.openLogs = function(){
+  if(!STATE.logsUnlocked){window.openMinigame();return;}
+  trackObj("logs");
+  const w=makeWindow("logs","Logi systemowe — ODBLOKOWANE","",{w:700,h:480});
+  w.body.innerHTML=`<pre class="term">${DATA.logs}</pre>`;
+};
+
+const MINIGAME_PUZZLES=[
+  {
+    desc:"Urządzenie połączyło się zdalnie o 02:10:44. Poniższy wpis dziennika jest częściowo uszkodzony. Zidentyfikuj który znacznik czasu najlepiej pasuje do luki w łańcuchu uwierzytelniania.",
+    log:`[NET] 02:10:44  przychodzący z wyjścia TOR — urządzenie: S3NDER_NODE
+[USR] token sesji użyty do uwierzytelnienia — pochodzenie tokenu: <span class="corrupt">████████</span>
+[USR] zdalny pulpit aktywny — brak lokalnego wejścia
+[APP] V-Chat.exe focus: <span class="corrupt">????????</span>
+[APP] wiadomość wysłana → bartek.k
+[USR] sesja zakończona: 02:14:09`,
+    question:"Jaki jest najprawdopodobniejszy znacznik czasu gdy V-Chat został przeniesiony na pierwszy plan?",
+    opts:["02:14:09","02:12:00","02:13:51","02:10:44"],
+    answer:2,
+    hint:"Sesja trwała tylko 3m 25s. Wiadomość wysłano o 02:14:02."
+  },
+  {
+    desc:"Zdarzenie blokady ekranu i zdalna sesja nakładają się. Przejrzyj sekwencję i zidentyfikuj niespójność, która dowodzi że sesja nie była lokalna.",
+    log:`[USR] blokada ekranu zainicjowana przez użytkownika: Czw 23:46:02
+[NET] urządzenie opuszcza zasięg wifi: Czw 23:47:10
+
+[NET] zdalna sesja rozpoczyna się: Pt 02:10:44
+[USR] uwierzytelnienie: odtworzenie tokenu (oryginalne: <span class="corrupt">████████</span>)
+[USR] lokalne wejście klawiatury podczas sesji: BRAK
+[USR] lokalne wejście myszy podczas sesji: BRAK
+[USR] czas trwania sesji: 3m 25s`,
+    question:"Co dowodzi że sesja o 02:10 nie została zainicjowana przez właściciela dysku?",
+    opts:["Ekran był zablokowany zanim urządzenie opuściło sieć","Brak lokalnego wejścia klawiatury lub myszy podczas sesji zdalnej","Sesja trwała tylko 3 minuty i 25 sekund","Token użyty do logowania został pierwotnie utworzony o 23:46:02"],
+    answer:1,
+    hint:"Urządzenie było fizycznie poza domem. Sesja otworzyła się bez fizycznego wejścia."
+  },
+  {
+    desc:"Konto sprzedającego 'Anna_Collects' zostało usunięte o 04:31. Zbadaj fragment metadanych i zidentyfikuj odcisk palca urządzenia powiązanego z utworzeniem konta.",
+    log:`{
+  "seller": "Anna_Collects",
+  "created_at": "2024-11-19T19:44:02Z",
+  "deleted_at": "2024-11-22T04:31:10Z",
+
+  "device_fingerprint": "<span class="corrupt">████████████</span>",
+  "registration_ip": "185.220.101.x (węzeł wyjściowy TOR)",
+
+  "account_age_days": 8,
+  "verified": false
+}`,
+    question:"Jakim odciskiem palca urządzenia użyto do utworzenia konta Anna_Collects?",
+    opts:["JAKUB_HOME_PC","TOR_EXIT_NODE","S3NDER_NODE","ANNA_DEVICE"],
+    answer:2,
+    hint:"To samo urządzenie które zainicjowało zdalną sesję stworzyło też fałszywe konto sprzedającego."
+  },
+  {
+    desc:"Przejrzyj oś czasu. Ogłoszenie EchoTrade zostało użyte do zwabienia właściciela dysku z miejsca zamieszkania. Zidentyfikuj okno czasowe w którym nastąpiła zdalna sesja gdy właściciel urządzenia był nieobecny.",
+    log:`Czw 23:46  — Użytkownik blokuje ekran
+Czw 23:47  — Urządzenie opuszcza zasięg wifi HOME_5G
+Czw 23:52  — Użytkownik przybywa do NOIR (potwierdzone: historia przeglądarki)
+
+Pt 01:08  — Użytkownik pisze do sprzedającego (brak odpowiedzi)
+Pt 01:38  — Użytkownik wciąż czeka (brak odpowiedzi)
+Pt 02:04  — Użytkownik opuszcza NOIR
+
+Pt ??:??  — Zdalna sesja na domowym PC
+Pt 02:14  — Wiadomość z wyznaniem wysłana przez V-Chat
+Pt 04:32  — Urządzenie wraca do HOME_5G
+Pt 04:33  — Użytkownik loguje się (odcisk palca — fizycznie)`,
+    question:"W jakim oknie czasowym nastąpiła zdalna sesja?",
+    opts:["02:14–04:32 (po wysłaniu wiadomości)","23:46–23:47 (przed opuszczeniem wifi przez urządzenie)","02:04–04:32 (po wyjściu właściciela z NOIR)","23:47–04:32 (właściciel urządzenia był poza domem)"],
+    answer:3,
+    hint:"Właściciel był pod NOIR czekając na sprzedającego który nie przyszedł. Domowy PC był bez nadzoru."
+  },
+  {
+    desc:"Końcowa rekonstrukcja. Dopasuj uszkodzony wpis dziennika do prawidłowego odzyskanego fragmentu, który dowodzi że zdalna sesja pochodzi od tego samego aktora co groźby w skrzynce.",
+    log:`[MAIL] S3NDER@proton.me → Czw 23:11: "nie będzie się jutro śmiać"
+[NET]  Pt 02:10:44 — przychodzący TOR, urządzenie: <span class="corrupt">████████████</span>
+[FILE] echotrade_cache_anna.json: device_fingerprint = <span class="corrupt">████████████</span>
+[NET]  Pt 02:14:10 — sesja wyczyszczona, logi nadpisane`,
+    question:"Nazwa urządzenia z sesji zdalnej, odcisk palca z cache EchoTrade i nadawca e-maili z groźbami wskazują na tego samego aktora. Jaka nazwa urządzenia pojawia się w obu logach?",
+    opts:["TOR_EXIT_X","S3NDER_NODE","JAKUB_W_REMOTE","ANNA_DEVICE_01"],
+    answer:1,
+    hint:"Sprawdź odzyskane pliki i log systemowy pod kątem pasującego identyfikatora urządzenia."
+  },
+];
+
+let mgPuzzleIdx=0;
+let mgCorrect=0;
+let mgWrong=0;
+let mgTimer=null;
+let mgTimeLeft=120;
+
+window.openMinigame = function(){
+  mgPuzzleIdx=0;mgCorrect=0;mgWrong=0;
+  const w=makeWindow("mg","🔒 DESZYFROWANIE LOGÓW — Rekonstrukcja Sądowa","",{w:560,h:560});
+  renderMgPuzzle(w);
+};
+
+function renderMgPuzzle(w){
+  if(!STATE.windows.mg)return;
+  clearInterval(mgTimer);
+  if(mgPuzzleIdx>=MINIGAME_PUZZLES.length){
+    if(mgCorrect>=3){
+      w.body.innerHTML=`<div class="mg" style="justify-content:center;align-items:center;text-align:center;gap:16px">
+        <div style="color:var(--green);font-size:14px;letter-spacing:3px;text-shadow:0 0 8px rgba(61,252,160,.6)">DESZYFROWANIE ZAKOŃCZONE</div>
+        <div style="color:var(--muted);font-size:11px">${mgCorrect}/${MINIGAME_PUZZLES.length} wpisów zrekonstruowanych poprawnie.</div>
+        <div style="color:#a0b0c0;font-size:12px">Logi systemowe są teraz dostępne.</div>
+      </div>`;
+      setTimeout(()=>{
+        STATE.logsUnlocked=true;
+        window.closeWin("mg");
+        renderIcons();
+        toast("🔓 Logi systemowe odszyfrowane. Dowody zabezpieczone.");
+        window.openLogs();
+        trackObj("logs");
+        renderObjectives();
+      },1400);
+    }else{
+      w.body.innerHTML=`<div class="mg" style="justify-content:center;align-items:center;text-align:center;gap:16px">
+        <div style="color:var(--red);font-size:14px;letter-spacing:3px">REKONSTRUKCJA NIEUDANA</div>
+        <div style="color:var(--muted);font-size:11px">Tylko ${mgCorrect}/${MINIGAME_PUZZLES.length} wpisów odzyskanych. Wymagane minimum 3.</div>
+        <button style="margin-top:12px;padding:12px 20px;background:transparent;color:var(--cyan);border:1px solid var(--cyan);font-size:11px;letter-spacing:2px;border-radius:3px;font-weight:bold" onclick="window.retryMg()">SPRÓBUJ PONOWNIE</button>
+      </div>`;
+    }
+    return;
+  }
+  mgTimeLeft=120;
+  const p=MINIGAME_PUZZLES[mgPuzzleIdx];
+  const pips=MINIGAME_PUZZLES.map((_,i)=>{
+    let cls="mg-pip";
+    if(i<mgPuzzleIdx)cls+=" done";
+    else if(i===mgPuzzleIdx)cls+=" cur";
+    return `<div class="${cls}"></div>`;
+  }).join("");
+  const opts=p.opts.map((o,i)=>`<button class="mg-opt" onclick="window.mgAnswer(${i})">${esc(o)}</button>`).join("");
+  w.body.innerHTML=`<div class="mg">
+    <div class="mg-head">REKONSTRUKCJA LOGÓW — Wpis ${mgPuzzleIdx+1} z ${MINIGAME_PUZZLES.length}</div>
+    <div class="mg-progress">${pips}</div>
+    <div class="mg-desc">${esc(p.desc)}</div>
+    <div class="mg-puzzle">${p.log}</div>
+    <div style="font-size:11px;color:var(--amber);letter-spacing:.5px">${esc(p.question)}</div>
+    <div class="mg-opts">${opts}</div>
+    <div class="mg-timer" id="mgT">⏱ ${mgTimeLeft}s</div>
+    <div class="mg-status" id="mgStatus"></div>
+  </div>`;
+  mgTimer=setInterval(()=>{
+    if(!STATE.windows.mg){clearInterval(mgTimer);return;}
+    mgTimeLeft--;
+    const t=document.getElementById("mgT");
+    if(t){t.textContent="⏱ "+mgTimeLeft+"s";if(mgTimeLeft<=10)t.classList.add("warn");}
+    if(mgTimeLeft<=0){
+      clearInterval(mgTimer);
+      mgWrong++;
+      const st=document.getElementById("mgStatus");
+      if(st){st.textContent="✗ CZAS UPŁYNĄŁ — Wpis utracony.";st.style.color="var(--red)";}
+      setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},900);
+    }
+  },1000);
+}
+
+window.mgAnswer=function(idx){
+  clearInterval(mgTimer);
+  const p=MINIGAME_PUZZLES[mgPuzzleIdx];
+  const opts=document.querySelectorAll(".mg-opt");
+  const st=document.getElementById("mgStatus");
+  if(idx===p.answer){
+    mgCorrect++;
+    if(opts[idx])opts[idx].classList.add("correct");
+    if(st){st.textContent="✓ POPRAWNIE — Wpis zrekonstruowany.";st.style.color="var(--green)";}
+    setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},900);
+  }else{
+    mgWrong++;
+    if(opts[idx])opts[idx].classList.add("wrong");
+    if(opts[p.answer])opts[p.answer].classList.add("correct");
+    if(st){st.textContent=`✗ BŁĘDNIE. Wskazówka: ${p.hint}`;st.style.color="var(--red)";}
+    setTimeout(()=>{mgPuzzleIdx++;renderMgPuzzle(STATE.windows.mg);},1200);
+  }
+};
+
+window.retryMg=function(){
+  mgPuzzleIdx=0;mgCorrect=0;mgWrong=0;
+  renderMgPuzzle(STATE.windows.mg);
+};
+
 window.openSnake = function(){
   const w=makeWindow("snake","Snake.exe","",{w:420,h:550});
   let snakeState="waiting";
