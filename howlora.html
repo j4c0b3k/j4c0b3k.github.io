@@ -27,27 +27,161 @@
         a{color:var(--cyan)}
         input,textarea,select{font-family:inherit;font-size:16px !important;}
 
-        #devicePopup { position: fixed; inset: 0; background: rgba(2, 5, 8, 0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
-        .pop-box { border: 1px solid rgba(46,224,255,0.3); background: #050a0f; border-radius: 8px; width: 100%; max-width: 520px; box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(46,224,255,0.1); max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
-        .pop-header { background: linear-gradient(90deg, rgba(46,224,255,0.1), transparent); color: var(--cyan); border-bottom: 1px solid rgba(46,224,255,0.2); font-weight: 900; letter-spacing: 3px; padding: 16px; font-size: 13px; text-align: center; text-transform: uppercase; }
-        .pop-content { padding: 20px 24px; overflow-y: auto; }
-        .pop-radar-wrap { display: flex; justify-content: center; align-items: center; padding: 30px 0; }
-        .pop-radar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(46,224,255,0.3); position: relative; }
-        .pop-radar::before { content: ""; position: absolute; inset: 2px; border-radius: 50%; border: 1px dashed var(--cyan); animation: spin 4s linear infinite; }
-        .pop-radar::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 70%, rgba(46,224,255,0.6) 100%); animation: spin 1.5s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .sys-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .sys-card { background: rgba(10, 18, 28, 0.6); border: 1px solid var(--line2); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 5px; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; border-left: 3px solid var(--line2); }
-        .sys-card.show { opacity: 1; transform: translateY(0); }
-        .sys-card.hl { border-left-color: var(--cyan); }
-        .sys-card.hl-warn { border-left-color: var(--amber); }
-        .sys-card .lbl { font-size: 9px; color: var(--muted); font-weight: bold; letter-spacing: 1px; }
-        .sys-card .val { font-size: 12px; color: #d8e2ea; font-weight: 600; word-break: break-word; }
-        .sys-card .val.cyan { color: var(--cyan); text-shadow: 0 0 8px rgba(46,224,255,0.4); }
-        .sys-card .val.warn { color: var(--amber); text-shadow: 0 0 8px rgba(245,200,66,0.4); }
-        .pop-disclaimer { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.5; padding: 10px; background: #080c10; border-radius: 4px; margin-bottom: 10px; border: 1px solid var(--line2); }
-        .pop-btn { background: var(--cyan); color: #000; border: none; padding: 14px; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; text-transform: uppercase; display: none; box-shadow: 0 0 15px rgba(46,224,255,0.3); }
-        .pop-btn:hover { background: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.6); }
+        /* ============ DEVICE / VERIFICATION POPUP (mobile-first) ============ */
+        #devicePopup {
+            position: fixed; inset: 0; z-index: 30000;
+            background: radial-gradient(1200px 800px at 50% 0%, rgba(46,224,255,0.10), transparent 60%),
+                        radial-gradient(900px 700px at 50% 100%, rgba(139,108,247,0.08), transparent 60%),
+                        rgba(0,0,0,0.96);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: flex-start; justify-content: center;
+            padding: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        }
+        .pop-box {
+            width: 100%; max-width: 460px; margin: auto;
+            background: linear-gradient(180deg,#060c14 0%,#03080d 100%);
+            border: 1px solid rgba(46,224,255,0.35);
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 0 60px rgba(46,224,255,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
+            display: flex; flex-direction: column;
+        }
+        .pop-header {
+            position: relative;
+            background: linear-gradient(135deg, rgba(46,224,255,0.18), rgba(139,108,247,0.18));
+            border-bottom: 1px solid rgba(46,224,255,0.3);
+            padding: 18px 16px 16px; text-align: center;
+        }
+        .pop-header .ph-logo {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(46,224,255,0.35), rgba(139,108,247,0.15));
+            border: 1px solid rgba(46,224,255,0.5);
+            margin-bottom: 10px; font-size: 20px;
+            box-shadow: 0 0 18px rgba(46,224,255,0.4);
+        }
+        .pop-header .ph-title {
+            font-size: 13px; font-weight: 900; letter-spacing: 4px; color: #e8f6ff;
+            text-transform: uppercase; text-shadow: 0 0 12px rgba(46,224,255,0.5);
+        }
+        .pop-header .ph-sub {
+            margin-top: 4px; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
+        }
+        .pop-header .ph-dot {
+            position: absolute; top: 14px; right: 14px;
+            display: flex; align-items: center; gap: 6px; font-size: 9px; letter-spacing: 2px; color: var(--green);
+        }
+        .pop-header .ph-dot::before {
+            content: ""; width: 7px; height: 7px; border-radius: 50%;
+            background: var(--green); box-shadow: 0 0 8px var(--green);
+            animation: pulse 1.4s infinite;
+        }
+        .pop-content { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+        .pop-progress { display: flex; flex-direction: column; gap: 8px; padding: 14px; background: #02060a; border: 1px solid var(--line2); border-radius: 8px; }
+        .pop-progress .ppl { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; display:flex; justify-content:space-between;}
+        .pop-progress .ppl b { color: var(--cyan); font-weight: 700; }
+        .pop-progress .ppbar { width: 100%; height: 4px; background: #0c1622; border-radius: 2px; overflow: hidden; }
+        .pop-progress .ppbar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--violet), var(--magenta)); border-radius: 2px; transition: width .3s ease; box-shadow: 0 0 8px rgba(46,224,255,0.6); }
+        .pop-progress .pp-step { font-size: 10px; color: var(--green); letter-spacing: 1px; font-family: "Consolas", monospace; min-height: 14px; }
+        .pop-progress .pp-step::before { content: "▸ "; color: var(--cyan); }
+
+        .pop-section { display: flex; flex-direction: column; gap: 8px; }
+        .pop-section-title {
+            font-size: 9px; letter-spacing: 3px; color: var(--violet);
+            text-transform: uppercase; padding-left: 4px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .pop-section-title::after {
+            content: ""; flex: 1; height: 1px;
+            background: linear-gradient(90deg, rgba(139,108,247,0.4), transparent);
+        }
+
+        .sys-info-box {
+            background: #02060a; border: 1px solid var(--line2);
+            padding: 12px; border-radius: 8px;
+            display: flex; flex-direction: column; gap: 2px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+        }
+        .sys-row {
+            display: flex; font-size: 11px; align-items: flex-start;
+            padding: 7px 4px; border-bottom: 1px dashed rgba(34,48,63,0.5); gap: 10px;
+        }
+        .sys-row:last-child { border-bottom: none; }
+        .sys-row .lbl { color: var(--muted); font-weight: 700; width: 90px; flex-shrink: 0; letter-spacing: 1.5px; font-size: 9.5px; text-transform: uppercase; }
+        .sys-row .val { color: var(--cyan); flex: 1; text-align: right; word-break: break-word; text-shadow: 0 0 6px rgba(46,224,255,0.25); font-weight: 600; line-height: 1.4; }
+        .sys-row .val.warn { color: var(--amber); text-shadow: 0 0 6px rgba(245,200,66,0.3); }
+        .sys-row .val.good { color: var(--green); text-shadow: 0 0 6px rgba(61,252,160,0.3); }
+        .sys-row .val.bad { color: var(--red); text-shadow: 0 0 6px rgba(255,43,74,0.4); }
+        .sys-row .val .tag { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px; font-size: 9px; letter-spacing: 1px; font-weight: 700; }
+        .sys-row .val .tag.ok { background: rgba(61,252,160,0.12); color: var(--green); border: 1px solid rgba(61,252,160,0.3); }
+        .sys-row .val .tag.warn { background: rgba(245,200,66,0.12); color: var(--amber); border: 1px solid rgba(245,200,66,0.3); }
+        .sys-row .val .tag.bad { background: rgba(255,43,74,0.12); color: var(--red); border: 1px solid rgba(255,43,74,0.3); }
+        .sys-row .val.skel { color: #2a3a4c; }
+        .sys-row .val.skel::after { content: "scanning…"; animation: blink 1s steps(2) infinite; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .stat-card {
+            background: linear-gradient(180deg,#070d15,#03070b);
+            border: 1px solid var(--line2); border-radius: 8px;
+            padding: 10px 12px; display: flex; flex-direction: column; gap: 2px;
+            position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ""; position: absolute; top:0; left:0; right:0; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), transparent);
+            opacity: .5;
+        }
+        .stat-card .sc-lbl { font-size: 8.5px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+        .stat-card .sc-val { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 1px; text-shadow: 0 0 8px rgba(46,224,255,0.3); margin-top: 2px; font-variant-numeric: tabular-nums; }
+        .stat-card .sc-val.green { color: var(--green); text-shadow: 0 0 8px rgba(61,252,160,0.35); }
+        .stat-card .sc-val.amber { color: var(--amber); text-shadow: 0 0 8px rgba(245,200,66,0.35); }
+        .stat-card .sc-val.violet { color: var(--violet); text-shadow: 0 0 8px rgba(139,108,247,0.35); }
+        .stat-card .sc-sub { font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+
+        .threat-card {
+            background: linear-gradient(135deg, rgba(255,43,74,0.08), rgba(245,200,66,0.05));
+            border: 1px solid rgba(245,200,66,0.4);
+            border-radius: 8px; padding: 12px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .threat-card .tc-meter {
+            width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+            background: conic-gradient(var(--amber) 0deg, var(--amber) 0deg, #1a2030 0deg);
+            display: grid; place-items: center; position: relative;
+            transition: background 0.6s ease;
+        }
+        .threat-card .tc-meter::before {
+            content: ""; position: absolute; inset: 5px; border-radius: 50%; background: #050a0f;
+        }
+        .threat-card .tc-meter .tc-num { position: relative; font-size: 15px; font-weight: 900; color: var(--amber); }
+        .threat-card .tc-info { flex: 1; }
+        .threat-card .tc-info .tc-t { font-size: 11px; font-weight: 900; color: var(--amber); letter-spacing: 1.5px; text-transform: uppercase; }
+        .threat-card .tc-info .tc-d { font-size: 10px; color: #b8c4ce; margin-top: 3px; line-height: 1.4; }
+
+        .pop-disclaimer { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.5; padding: 10px; background: rgba(8,12,16,0.6); border: 1px dashed var(--line); border-radius: 6px; }
+        .pop-disclaimer b { color: var(--cyan); letter-spacing: 1px; }
+        .pop-btn {
+            background: linear-gradient(135deg, var(--cyan), var(--violet));
+            color: #03070b; border: none;
+            padding: 16px; font-size: 12px; font-weight: 900; letter-spacing: 4px;
+            border-radius: 8px; cursor: pointer; width: 100%;
+            text-transform: uppercase; display: none;
+            box-shadow: 0 0 24px rgba(46,224,255,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+            transition: transform .15s, box-shadow .2s;
+        }
+        .pop-btn:hover, .pop-btn:active { transform: translateY(-1px); box-shadow: 0 6px 30px rgba(46,224,255,0.6); }
+
+        @media (max-width: 480px) {
+            #devicePopup { padding: 10px; }
+            .pop-box { border-radius: 10px; }
+            .pop-header { padding: 14px 12px 12px; }
+            .pop-header .ph-title { font-size: 12px; letter-spacing: 3px; }
+            .pop-content { padding: 12px; gap: 12px; }
+            .sys-row { font-size: 10.5px; padding: 6px 2px; gap: 8px; }
+            .sys-row .lbl { width: 78px; font-size: 9px; letter-spacing: 1px; }
+            .stat-card .sc-val { font-size: 14px; }
+            .pop-btn { padding: 14px; letter-spacing: 3px; }
+        }
 
         #bootOverlay{
           position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden; display:none;
@@ -464,26 +598,18 @@
         ::-webkit-scrollbar-thumb{background:#1c2838;border-radius:4px}
         ::-webkit-scrollbar-thumb:hover{background:#283a50}
 
-        @media (min-width: 769px) {
-            .echo-app.has-active .echo-list { display: none !important; }
-            .echo-app:not(.has-active) .echo-detail { display: none !important; }
-            .echo-app .echo-list { width: 100%; border-right: none; }
-        }
-
         @media (max-width: 768px) {
-            .app.has-sidebar { position: relative; overflow: hidden; display: block; height: 100%; }
-            .app.has-sidebar .sidebar { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1), opacity 0.3s ease; z-index: 1; display: flex !important; flex-direction: column; background: var(--panel); border-right: none; }
-            .app.has-sidebar .pane { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); z-index: 2; display: flex !important; flex-direction: column; background: var(--panel); }
-            .app.has-sidebar.has-active .sidebar { transform: translateX(-30%); opacity: 0; pointer-events: none; }
-            .app.has-sidebar.has-active .pane { transform: translateX(0); }
-
-            .back { padding: 8px 14px; font-size: 12px; margin-right: 10px; }
-            .pane .ph { padding: 12px 14px; }
-            
             .win .body { position: relative; padding: 0; }
+            .app { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; }
+            
+            .app.has-sidebar.has-active .sidebar { display: none !important; }
+            .app.has-sidebar:not(.has-active) .pane { display: none !important; }
+            
+            .sidebar, .pane { width: 100% !important; height: 100% !important; border: none !important; flex: none; display: flex; flex-direction: column; }
             
             .list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
             .pc { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
             .row { min-height: 60px; }
 
             .wall-big { font-size: 38px; right: 15px; top: 15px; letter-spacing: 4px; }
@@ -505,8 +631,19 @@
             .icon .glyph { width: 44px; height: 44px; font-size: 18px; }
             .icon .lbl { font-size: 9px; }
 
-            .win { max-width: 95vw !important; max-height: 85vh !important; }
+            /* Windows go fullscreen on phones — like a real app, not a floating box */
+            .win {
+                position: fixed !important;
+                left: 0 !important; top: 0 !important;
+                width: 100vw !important; height: calc(100vh - 46px) !important;
+                max-width: 100vw !important; max-height: calc(100vh - 46px) !important;
+                min-width: 0 !important; min-height: 0 !important;
+                border-radius: 0 !important; border-left: none !important; border-right: none !important;
+            }
+            .win .tb { height: 44px; padding: 0 8px; }
             .win .tb .title { font-size: 10px; }
+            .win .tb .ctl button { width: 32px; height: 32px; font-size: 14px; }
+            .win .grip { display: none !important; }
 
             .hack-title { font-size: 20px; letter-spacing: 2px; }
             .hack-timer { font-size: 24px; }
@@ -531,28 +668,87 @@
             .ttt-board { grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(3, 60px); }
             .ttt-cell { font-size: 20px; }
         }
-
-        @media (max-width: 480px) {
-            .sys-info-grid { grid-template-columns: 1fr; gap: 8px; }
-            .pop-box { max-height: 85vh; width: 92%; }
-            .pop-content { padding: 16px; overflow-y: auto; }
-            .sys-card { padding: 10px; }
-            .pop-radar-wrap { padding: 20px 0; }
-        }
     </style>
 </head>
 <body>
 
 <div id="devicePopup">
     <div class="pop-box">
-        <div class="pop-header">Skaner Środowiska // Analiza 0x8A</div>
+        <div class="pop-header">
+            <div class="ph-dot">LIVE</div>
+            <div class="ph-logo">◢◤</div>
+            <div class="ph-title">Skaner Środowiska</div>
+            <div class="ph-sub">HOWLORA.OS // identyfikacja sesji</div>
+        </div>
         <div class="pop-content">
-            <div id="popRadarWrap" class="pop-radar-wrap">
-                <div class="pop-radar"></div>
+            <div class="pop-progress">
+                <div class="ppl"><span>SKAN W TOKU</span><b id="popPct">0%</b></div>
+                <div class="ppbar"><div class="ppbar-fill" id="popBar"></div></div>
+                <div class="pp-step" id="popStep">inicjalizacja modułu...</div>
             </div>
-            <div id="sysInfoGrid" class="sys-info-grid" style="display:none;"></div>
-            <div class="pop-disclaimer">Wszystkie zebrane informacje są wykorzystywane wyłącznie w celach wizualnych. Twoje dane nie są rejestrowane ani przesyłane poza to urządzenie.</div>
-            <button id="popBtn" class="pop-btn" onclick="window.acceptDevicePopup()">WPROWADŹ DO SYSTEMU</button>
+
+            <div class="pop-section">
+                <div class="pop-section-title">Urządzenie</div>
+                <div class="sys-info-box">
+                    <div class="sys-row"><span class="lbl">Typ</span><span class="val skel" id="popType"></span></div>
+                    <div class="sys-row"><span class="lbl">System</span><span class="val skel" id="popOS"></span></div>
+                    <div class="sys-row"><span class="lbl">Model</span><span class="val skel" id="popHW"></span></div>
+                    <div class="sys-row"><span class="lbl">Przegląd.</span><span class="val skel" id="popBrowser"></span></div>
+                    <div class="sys-row"><span class="lbl">GPU</span><span class="val skel" id="popGpu"></span></div>
+                    <div class="sys-row"><span class="lbl">Ekran</span><span class="val skel" id="popRes"></span></div>
+                    <div class="sys-row"><span class="lbl">Język</span><span class="val skel" id="popLang"></span></div>
+                </div>
+            </div>
+
+            <div class="pop-section">
+                <div class="pop-section-title">Statystyki sesji</div>
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="sc-lbl">CPU</div><div class="sc-val" id="popCpu">—</div><div class="sc-sub">rdzeni logicznych</div></div>
+                    <div class="stat-card"><div class="sc-lbl">Pamięć</div><div class="sc-val violet" id="popMem">—</div><div class="sc-sub">device memory</div></div>
+                    <div class="stat-card"><div class="sc-lbl">Sieć</div><div class="sc-val green" id="popNet">—</div><div class="sc-sub" id="popNetSub">połączenie</div></div>
+                    <div class="stat-card"><div class="sc-lbl">Bateria</div><div class="sc-val amber" id="popBat">—</div><div class="sc-sub" id="popBatSub">stan urządzenia</div></div>
+                </div>
+            </div>
+
+            <div class="pop-section">
+                <div class="pop-section-title">Lokalizacja sieci</div>
+                <div class="sys-info-box">
+                    <div class="sys-row"><span class="lbl">IP</span><span class="val warn skel" id="popIp"></span></div>
+                    <div class="sys-row"><span class="lbl">Miasto</span><span class="val warn skel" id="popCity"></span></div>
+                    <div class="sys-row"><span class="lbl">Region</span><span class="val warn skel" id="popRegion"></span></div>
+                    <div class="sys-row"><span class="lbl">Kraj</span><span class="val warn skel" id="popCountry"></span></div>
+                    <div class="sys-row"><span class="lbl">ISP / ASN</span><span class="val warn skel" id="popIsp"></span></div>
+                    <div class="sys-row"><span class="lbl">Strefa</span><span class="val skel" id="popTz"></span></div>
+                    <div class="sys-row"><span class="lbl">Czas lok.</span><span class="val skel" id="popTime"></span></div>
+                </div>
+            </div>
+
+            <div class="pop-section">
+                <div class="pop-section-title">Fingerprint sesji</div>
+                <div class="sys-info-box">
+                    <div class="sys-row"><span class="lbl">Hash ID</span><span class="val skel" id="popFp"></span></div>
+                    <div class="sys-row"><span class="lbl">Sesja</span><span class="val skel" id="popSid"></span></div>
+                    <div class="sys-row"><span class="lbl">Touch</span><span class="val skel" id="popTouch"></span></div>
+                    <div class="sys-row"><span class="lbl">Cookies</span><span class="val skel" id="popCookies"></span></div>
+                    <div class="sys-row"><span class="lbl">DNT</span><span class="val skel" id="popDnt"></span></div>
+                    <div class="sys-row"><span class="lbl">VPN/Proxy</span><span class="val skel" id="popVpn"></span></div>
+                </div>
+            </div>
+
+            <div class="threat-card" id="popThreat" style="display:none;">
+                <div class="tc-meter" id="popThreatMeter"><div class="tc-num" id="popThreatNum">—</div></div>
+                <div class="tc-info">
+                    <div class="tc-t" id="popThreatTitle">OCENA RYZYKA</div>
+                    <div class="tc-d" id="popThreatDesc">analizowanie zachowania sesji…</div>
+                </div>
+            </div>
+
+            <div class="pop-disclaimer">
+                <b>To tylko efekt wizualny.</b><br>
+                Wszystkie dane są odczytywane lokalnie w przeglądarce.<br>
+                Nic nie jest zapisywane ani wysyłane na nasze serwery.
+            </div>
+            <button id="popBtn" class="pop-btn" onclick="window.acceptDevicePopup()">Wejdź do systemu →</button>
         </div>
     </div>
 </div>
@@ -573,79 +769,254 @@
         w.el.classList.add("minimized");renderTasks();
     };
 
-    async function checkDevice() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-        const type = isMobile ? "URZĄDZENIE MOBILNE" : "STACJA ROBOCZA (PC)";
-        let os = "Nieznany OS", browser = "Nieznana Przeglądarka";
-        const ua = navigator.userAgent;
-
-        if (ua.includes("Win")) os = "Windows";
-        else if (ua.includes("Mac")) os = "MacOS";
-        else if (ua.includes("Linux")) os = "Linux";
-        if (/Android/.test(ua)) os = "Android";
-        if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
-
-        if (ua.includes("Chrome")) browser = "Chrome";
-        else if (ua.includes("Safari")) browser = "Safari";
-        else if (ua.includes("Firefox")) browser = "Firefox";
-        else if (ua.includes("Edge")) browser = "Edge";
-
-        const resStr = `${window.screen.width}x${window.screen.height} (${window.screen.colorDepth}-bit)`;
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Nieznana";
-        const cores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} rdzeni` : "Brak danych";
-        const ram = navigator.deviceMemory ? `${navigator.deviceMemory} GB+` : "Brak danych";
-        const net = navigator.connection ? navigator.connection.effectiveType.toUpperCase() : "Brak danych";
-
-        const stats = [
-            { l: "TYP KLIENTA", v: type, cl: "hl" },
-            { l: "SYSTEM", v: os, cl: "" },
-            { l: "PRZEGLĄDARKA", v: browser, cl: "" },
-            { l: "EKRAN", v: resStr, cl: "" },
-            { l: "PROCESOR (LOGICZNY)", v: cores, cl: "" },
-            { l: "PAMIĘĆ RAM", v: ram, cl: "" },
-            { l: "SIEĆ", v: net, cl: "" },
-            { l: "STREFA CZASOWA", v: tz, cl: "" }
-        ];
-
-        const grid = document.getElementById('sysInfoGrid');
-        grid.innerHTML = "";
-        stats.forEach((s) => {
-            const card = document.createElement('div');
-            card.className = `sys-card ${s.cl}`;
-            card.innerHTML = `<div class="lbl">${s.l}</div><div class="val ${s.cl === 'hl' ? 'cyan' : ''}">${s.v}</div>`;
-            grid.appendChild(card);
-        });
-
-        const geoCard = document.createElement('div');
-        geoCard.className = 'sys-card hl-warn';
-        geoCard.style.gridColumn = "1 / -1";
-        geoCard.innerHTML = `<div class="lbl">LOKALIZACJA & IP</div><div class="val warn" id="popGeo">Trwa ustalanie trasy...</div>`;
-        grid.appendChild(geoCard);
-
-        setTimeout(() => {
-            document.getElementById('popRadarWrap').style.display = 'none';
-            document.getElementById('sysInfoGrid').style.display = 'grid';
-
-            const cards = document.querySelectorAll('.sys-card');
-            cards.forEach((c, i) => {
-                setTimeout(() => c.classList.add('show'), i * 120);
-            });
-
-            setTimeout(() => {
-                document.getElementById('popBtn').style.display = 'block';
-            }, cards.length * 120 + 300);
-        }, 1200);
-
-        try {
-            let resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
-            let data = await resp.json();
-            let geoString = `${data.ip || "Nieznane IP"} [${data.city || "Nieznane miasto"}, ${data.country || "Nieznany kraj"}]`;
-            document.getElementById("popGeo").innerText = geoString;
-        } catch(e) {
-            document.getElementById("popGeo").innerText = "Połączenie zabezpieczone / VPN aktywny";
-        }
+    // ------- Helpers ------------------------------------------------------
+    function setVal(id, value, cls){
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.classList.remove('skel');
+        if(cls){ el.classList.add(cls); }
+        el.innerHTML = value;
     }
-    
+    function hashStr(s){
+        let h = 0x811c9dc5;
+        for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
+        return h.toString(16).padStart(8,'0');
+    }
+    function detectBrowser(ua){
+        if(/Edg\//.test(ua)) return "Edge " + (ua.match(/Edg\/([\d.]+)/)||[])[1];
+        if(/OPR\//.test(ua)) return "Opera " + (ua.match(/OPR\/([\d.]+)/)||[])[1];
+        if(/Firefox\//.test(ua)) return "Firefox " + (ua.match(/Firefox\/([\d.]+)/)||[])[1];
+        if(/CriOS/.test(ua)) return "Chrome iOS " + (ua.match(/CriOS\/([\d.]+)/)||[])[1];
+        if(/FxiOS/.test(ua)) return "Firefox iOS " + (ua.match(/FxiOS\/([\d.]+)/)||[])[1];
+        if(/Chrome\//.test(ua)) return "Chrome " + (ua.match(/Chrome\/([\d.]+)/)||[])[1];
+        if(/Safari\//.test(ua)) return "Safari " + (ua.match(/Version\/([\d.]+)/)||[])[1];
+        return "Nieznana";
+    }
+    function getGpu(){
+        try{
+            const c = document.createElement('canvas');
+            const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+            if(!gl) return "—";
+            const ext = gl.getExtension('WEBGL_debug_renderer_info');
+            if(ext){ return gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || "GPU dostępne"; }
+            return gl.getParameter(gl.RENDERER) || "GPU dostępne";
+        }catch(e){ return "—"; }
+    }
+    function startProgress(){
+        const steps = [
+            [5,   "ładowanie sterowników skanera..."],
+            [15,  "odpytywanie navigator.userAgent..."],
+            [28,  "analiza GPU / WebGL fingerprint..."],
+            [42,  "pomiar ekranu i devicePixelRatio..."],
+            [55,  "wykrywanie strefy czasowej..."],
+            [70,  "zapytanie geolokalizacji IP (geojs.io)..."],
+            [82,  "kalkulacja hash sesji [FNV-1a]..."],
+            [92,  "ocena profilu ryzyka..."],
+            [100, "skan zakończony ✓"],
+        ];
+        let i = 0;
+        const bar = document.getElementById('popBar');
+        const pct = document.getElementById('popPct');
+        const step = document.getElementById('popStep');
+        const tick = ()=>{
+            if(i >= steps.length) return;
+            const [p,t] = steps[i++];
+            bar.style.width = p + '%';
+            pct.innerText = p + '%';
+            step.innerText = t;
+            if(i < steps.length){ setTimeout(tick, 220 + Math.random()*180); }
+            else {
+                document.getElementById('popBtn').style.display = 'block';
+                showThreat();
+            }
+        };
+        tick();
+    }
+
+    async function checkDevice() {
+        startProgress();
+
+        const ua = navigator.userAgent;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) || window.innerWidth <= 768;
+        const type = isMobile ? "📱 SMARTFON / TABLET" : "🖥 KOMPUTER (PC)";
+
+        let os = "Nieznany OS";
+        let hw = "Nieznane Urządzenie";
+
+        if (ua.indexOf("Win") !== -1) os = "Windows";
+        if (ua.indexOf("Mac") !== -1) os = "macOS";
+        if (ua.indexOf("X11") !== -1) os = "UNIX";
+        if (ua.indexOf("Linux") !== -1) os = "Linux";
+
+        if (/Android/.test(ua)) {
+            os = "Android";
+            let match = ua.match(/Android\s([0-9\.]+)/);
+            if(match) os = "Android " + match[1];
+            let hwMatch = ua.match(/Android\s[^\;]+\;\s([^\)]+)\)/);
+            if(hwMatch) hw = hwMatch[1].split(' Build')[0];
+            else hw = "Smartfon Android";
+        }
+        if (/iPhone|iPad|iPod/.test(ua)) {
+            os = "iOS";
+            if(/iPhone/.test(ua)) {
+                const w = window.screen.width;
+                const h = window.screen.height;
+                const pr = window.devicePixelRatio;
+                const res = Math.min(w,h) + "x" + Math.max(w,h) + "x" + pr;
+                const models = {
+                    "393x852x3": "iPhone 16 / 15 / 14 Pro",
+                    "430x932x3": "iPhone 16 Plus / 15 Plus / 14 Pro Max",
+                    "390x844x3": "iPhone 14 / 13 / 12",
+                    "428x926x3": "iPhone 14 Plus / 13 Pro Max",
+                    "375x812x3": "iPhone 13 mini / 11 Pro / X / XS",
+                    "414x896x3": "iPhone 11 Pro Max / XS Max",
+                    "414x896x2": "iPhone 11 / XR",
+                    "375x667x2": "iPhone SE / 8 / 7",
+                    "414x736x3": "iPhone 8 Plus / 7 Plus"
+                };
+                hw = models[res] || "Apple iPhone";
+            } else { hw = "Apple iPad"; }
+        } else if(/Windows/.test(ua)) {
+            hw = "Komputer PC";
+        } else if(/Macintosh/.test(ua)) {
+            hw = "Apple Mac";
+        }
+
+        // --- screen ---
+        const sw = window.screen.width, sh = window.screen.height;
+        const dpr = window.devicePixelRatio || 1;
+        const cd = window.screen.colorDepth || 24;
+        const resStr = `${sw}×${sh} <span style="color:var(--muted);font-weight:400">·</span> ${dpr}× <span style="color:var(--muted);font-weight:400">·</span> ${cd}-bit`;
+
+        // --- lang / locale ---
+        const lang = navigator.language || "—";
+        const langs = (navigator.languages||[]).slice(0,3).join(", ") || lang;
+
+        // --- gpu ---
+        const gpu = getGpu();
+
+        // --- browser ---
+        const brw = detectBrowser(ua);
+
+        setTimeout(()=> setVal('popType', type), 200);
+        setTimeout(()=> setVal('popOS', os), 350);
+        setTimeout(()=> setVal('popHW', hw), 500);
+        setTimeout(()=> setVal('popBrowser', brw), 650);
+        setTimeout(()=> setVal('popGpu', gpu.length > 38 ? gpu.slice(0,38)+"…" : gpu), 800);
+        setTimeout(()=> setVal('popRes', resStr), 950);
+        setTimeout(()=> setVal('popLang', `${lang} <span style="color:var(--muted);font-weight:400">(${langs})</span>`), 1100);
+
+        // --- stat cards ---
+        const cpu = navigator.hardwareConcurrency || "—";
+        const mem = navigator.deviceMemory ? navigator.deviceMemory + " GB" : "n/d";
+        setTimeout(()=>{
+            document.getElementById('popCpu').innerText = cpu;
+            document.getElementById('popMem').innerText = mem;
+        }, 700);
+
+        // --- network ---
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        setTimeout(()=>{
+            const net = document.getElementById('popNet');
+            const sub = document.getElementById('popNetSub');
+            if(conn){
+                net.innerText = (conn.effectiveType || "online").toUpperCase();
+                const parts = [];
+                if(conn.downlink) parts.push(conn.downlink + " Mb/s");
+                if(conn.rtt) parts.push(conn.rtt + " ms");
+                sub.innerText = parts.join(" · ") || (navigator.onLine ? "online" : "offline");
+            } else {
+                net.innerText = navigator.onLine ? "ONLINE" : "OFFLINE";
+                sub.innerText = "informacja podstawowa";
+            }
+        }, 900);
+
+        // --- battery ---
+        setTimeout(async ()=>{
+            const bat = document.getElementById('popBat');
+            const sub = document.getElementById('popBatSub');
+            try {
+                if(navigator.getBattery){
+                    const b = await navigator.getBattery();
+                    bat.innerText = Math.round(b.level*100) + "%";
+                    sub.innerText = b.charging ? "⚡ ładowanie" : "na baterii";
+                } else { bat.innerText = "n/d"; sub.innerText = "API niedostępne"; }
+            } catch(e){ bat.innerText = "n/d"; sub.innerText = "brak dostępu"; }
+        }, 1100);
+
+        // --- timezone / time ---
+        let tz = "—";
+        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){}
+        const offset = -new Date().getTimezoneOffset()/60;
+        const offStr = (offset >= 0 ? "+" : "") + offset;
+        setTimeout(()=> setVal('popTz', `${tz} <span style="color:var(--muted);font-weight:400">(UTC${offStr})</span>`), 1200);
+
+        const updateClock = ()=>{
+            const d = new Date();
+            const t = d.toLocaleTimeString('pl-PL') + " <span style='color:var(--muted);font-weight:400'>" + d.toLocaleDateString('pl-PL') + "</span>";
+            const el = document.getElementById('popTime');
+            if(el){ el.classList.remove('skel'); el.innerHTML = t; }
+        };
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // --- fingerprint / session ---
+        const fpSource = [ua, sw, sh, dpr, cd, tz, lang, cpu, mem, gpu, navigator.platform||""].join("|");
+        const fp = (hashStr(fpSource) + hashStr(fpSource.split("").reverse().join(""))).toUpperCase();
+        const sid = (Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,8)).toUpperCase();
+        setTimeout(()=> setVal('popFp', fp.match(/.{1,4}/g).slice(0,4).join("-")), 1300);
+        setTimeout(()=> setVal('popSid', sid), 1400);
+        setTimeout(()=> setVal('popTouch', (navigator.maxTouchPoints||0) + " punktów dotyku"), 1500);
+        setTimeout(()=> setVal('popCookies', navigator.cookieEnabled ? "włączone <span class='tag ok'>OK</span>" : "wyłączone <span class='tag warn'>WARN</span>"), 1600);
+        const dnt = navigator.doNotTrack || window.doNotTrack || "0";
+        setTimeout(()=> setVal('popDnt', dnt === "1" ? "aktywne <span class='tag ok'>ON</span>" : "nieaktywne <span class='tag warn'>OFF</span>"), 1700);
+
+        // --- geo / vpn detection ---
+        let isVpn = false;
+        try {
+            const resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
+            const data = await resp.json();
+            setVal('popIp', `${data.ip || "—"}`, 'warn');
+            setVal('popCity', data.city || "—", 'warn');
+            setVal('popRegion', data.region || "—", 'warn');
+            setVal('popCountry', `${data.country || "—"} <span style="color:var(--muted);font-weight:400">${data.country_code ? '['+data.country_code+']' : ''}</span>`, 'warn');
+            setVal('popIsp', data.organization || data.organization_name || "Operator nieznany", 'warn');
+            // detect mismatch tz <-> country
+            if(data.timezone && tz && data.timezone !== tz){ isVpn = true; }
+            setVal('popVpn', isVpn ? "wykryto rozbieżność stref <span class='tag bad'>RYZYKO</span>" : "nie wykryto <span class='tag ok'>OK</span>", isVpn ? 'bad' : 'good');
+        } catch(e) {
+            setVal('popIp', "ukryte / VPN", 'bad');
+            setVal('popCity', "nieznane", 'bad');
+            setVal('popRegion', "nieznane", 'bad');
+            setVal('popCountry', "nieznane", 'bad');
+            setVal('popIsp', "blokada CORS lub VPN", 'bad');
+            setVal('popVpn', "prawdopodobny VPN <span class='tag bad'>RYZYKO</span>", 'bad');
+            isVpn = true;
+        }
+
+        window.__threat = isVpn ? 78 : (isMobile ? 32 : 24);
+    }
+
+    function showThreat(){
+        const score = window.__threat ?? 30;
+        const card = document.getElementById('popThreat');
+        const meter = document.getElementById('popThreatMeter');
+        const num = document.getElementById('popThreatNum');
+        const t = document.getElementById('popThreatTitle');
+        const d = document.getElementById('popThreatDesc');
+        card.style.display = 'flex';
+        let color = 'var(--green)', label = 'NISKIE RYZYKO', desc = 'Sesja czysta, brak nietypowych sygnałów. Możesz wejść do systemu.';
+        if(score >= 60){ color = 'var(--red)'; label = 'WYSOKIE RYZYKO'; desc = 'Wykryto VPN/proxy lub rozbieżność stref czasowych. Sesja będzie monitorowana.'; }
+        else if(score >= 35){ color = 'var(--amber)'; label = 'ŚREDNIE RYZYKO'; desc = 'Profil urządzenia mobilnego. Kilka sygnałów wymaga uwagi.'; }
+        meter.style.background = `conic-gradient(${color} 0deg, ${color} ${score*3.6}deg, #1a2030 ${score*3.6}deg)`;
+        num.style.color = color;
+        num.innerText = score;
+        t.style.color = color;
+        t.innerText = label;
+        d.innerText = desc;
+        card.style.borderColor = color;
+    }
+
     window.acceptDevicePopup = function() {
         document.getElementById("devicePopup").style.display = "none";
         window.runBoot();
@@ -1361,10 +1732,10 @@ window.openTrash = function(){
   trackObj("start");
   const w=makeWindow("trash","Kosz","",{w:520,h:380});
   w.body.innerHTML=`
-      <div class="list">
-        <div class="file-folder">📁 USUNIĘTE ELEMENTY</div>
-        <div class="file" onclick="window.openTrashFile()"><div class="n">📄 dziennik_kopia_robocza.txt</div><div class="d">Usunięto: Wtorek 23:14</div></div>
-      </div>
+     <div class="list">
+       <div class="file-folder">📁 USUNIĘTE ELEMENTY</div>
+       <div class="file" onclick="window.openTrashFile()"><div class="n">📄 dziennik_kopia_robocza.txt</div><div class="d">Usunięto: Wtorek 23:14</div></div>
+     </div>
   `;
 };
 
@@ -2151,36 +2522,30 @@ window.openEcho = function(){
   renderEcho(w);
 };
 function renderEcho(w){
-  let g=DATA.ads.map(m=>`<div class="ad-item" onclick="window.selectAd('${m.id}')">
-    <div class="pic">${m.glyph}</div>
-    <div class="info">
-      <div class="n">${esc(m.title)}</div>
-      <div class="p">${m.price}</div>
-      <div class="a">Sprzedający: ${esc(m.seller)}</div>
-      <div class="sold ${m.sold?"yes":""}">${m.sold?"● SPRZEDANE":"● AKTYWNE"}</div>
-    </div>
-  </div>`).join("");
-  let right;
   if(!STATE.activeAd){
-    right=`<div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE // WYBIERZ OGŁOSZENIE</span></div>
-      <div class="empty">← Wybierz ogłoszenie.</div>`;
+    const g=DATA.ads.map(m=>`<div class="ad-item" onclick="window.selectAd('${m.id}')">
+      <div class="pic">${m.glyph}</div>
+      <div class="info">
+        <div class="n">${esc(m.title)}</div>
+        <div class="p">${m.price}</div>
+        <div class="a">Sprzedający: ${esc(m.seller)}</div>
+        <div class="sold ${m.sold?"yes":""}">${m.sold?"● SPRZEDANE":"● AKTYWNE"}</div>
+      </div>
+    </div>`).join("");
+    w.body.innerHTML=`<div class="app has-sidebar"><div class="sidebar" style="width:100%"><div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE // TWOJE WIADOMOŚCI</span></div><div class="pc"><div class="match-grid">${g}</div></div></div><div class="pane" style="display:none"></div></div>`;
   }else{
     const m=DATA.ads.find(x=>x.id===STATE.activeAd);
     const bub=m.msgs.map(x=>`<div class="bub ${x.f}">${esc(x.x)}<span class="ts">${x.t}</span></div>`).join("");
     const notice=m.id==="anna"?`<div style="margin-top:14px;padding:10px;border:1px dashed #2a1a22;background:#0e080c;color:#884455;font-size:11px;letter-spacing:1px">⚠ To ogłoszenie i konto sprzedającego zostały trwale usunięte z platformy.</div>`:"";
-    right=`<div class="ph">
+    w.body.innerHTML=`<div class="app has-sidebar has-active"><div class="sidebar" style="display:none"></div><div class="pane">
+      <div class="ph">
         <button class="back" onclick="window.backAd()">← Wstecz</button>
         <span style="color:#e0eaf0">${esc(m.title)}</span>
         <span style="color:var(--muted);margin-left:auto;font-size:10px">${m.price} · ${esc(m.seller)}</span>
       </div>
-      <div class="pc">${bub}${notice}</div>`;
-  }
-  w.body.innerHTML=`<div class="app has-sidebar echo-app ${STATE.activeAd ? 'has-active' : ''}">
-    <div class="sidebar echo-list"><div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE</span></div><div class="pc"><div class="match-grid">${g}</div></div></div>
-    <div class="pane echo-detail">${right}</div>
-  </div>`;
-  if(STATE.activeAd){
-    const pc=w.body.querySelector(".pane .pc");if(pc)pc.scrollTop=pc.scrollHeight;
+      <div class="pc">${bub}${notice}</div>
+    </div></div>`;
+    const pc=w.body.querySelector(".pc");if(pc)pc.scrollTop=pc.scrollHeight;
   }
 }
 window.selectAd=id=>{STATE.activeAd=id;STATE.adRead[id]=true;renderEcho(STATE.windows.echo);};
@@ -2285,9 +2650,9 @@ const MINIGAME_PUZZLES=[
   {
     desc:"Urządzenie połączyło się zdalnie o 02:10:44. Poniższy wpis dziennika jest częściowo uszkodzony. Zidentyfikuj który znacznik czasu najlepiej pasuje do luki w łańcuchu uwierzytelniania.",
     log:`[NET] 02:10:44  przychodzący z wyjścia TOR — urządzenie: S3NDER_NODE
-[USR] token sesji użyty do uwierzytelnienia — pochodzenie tokenu: <span class="corrupt">████████</span>
+[USR] token sesji użyty do uwierzytelnienia — pochodzenie tokenu: ████████
 [USR] zdalny pulpit aktywny — brak lokalnego wejścia
-[APP] V-Chat.exe focus: <span class="corrupt">????????</span>
+[APP] V-Chat.exe focus: ????????
 [APP] wiadomość wysłana → bartek.k
 [USR] sesja zakończona: 02:14:09`,
     question:"Jaki jest najprawdopodobniejszy znacznik czasu gdy V-Chat został przeniesiony na pierwszy plan?",
@@ -2301,7 +2666,7 @@ const MINIGAME_PUZZLES=[
 [NET] urządzenie opuszcza zasięg wifi: Czw 23:47:10
 
 [NET] zdalna sesja rozpoczyna się: Pt 02:10:44
-[USR] uwierzytelnienie: odtworzenie tokenu (oryginalne: <span class="corrupt">████████</span>)
+[USR] uwierzytelnienie: odtworzenie tokenu (oryginalne: ████████)
 [USR] lokalne wejście klawiatury podczas sesji: BRAK
 [USR] lokalne wejście myszy podczas sesji: BRAK
 [USR] czas trwania sesji: 3m 25s`,
@@ -2317,7 +2682,7 @@ const MINIGAME_PUZZLES=[
   "created_at": "2024-11-19T19:44:02Z",
   "deleted_at": "2024-11-22T04:31:10Z",
 
-  "device_fingerprint": "<span class="corrupt">████████████</span>",
+  "device_fingerprint": "████████████",
   "registration_ip": "185.220.101.x (węzeł wyjściowy TOR)",
 
   "account_age_days": 8,
@@ -2350,8 +2715,8 @@ Pt 04:33  — Użytkownik loguje się (odcisk palca — fizycznie)`,
   {
     desc:"Końcowa rekonstrukcja. Dopasuj uszkodzony wpis dziennika do prawidłowego odzyskanego fragmentu, który dowodzi że zdalna sesja pochodzi od tego samego aktora co groźby w skrzynce.",
     log:`[MAIL] S3NDER@proton.me → Czw 23:11: "nie będzie się jutro śmiać"
-[NET]  Pt 02:10:44 — przychodzący TOR, urządzenie: <span class="corrupt">████████████</span>
-[FILE] echotrade_cache_anna.json: device_fingerprint = <span class="corrupt">████████████</span>
+[NET]  Pt 02:10:44 — przychodzący TOR, urządzenie: ████████████
+[FILE] echotrade_cache_anna.json: device_fingerprint = ████████████
 [NET]  Pt 02:14:10 — sesja wyczyszczona, logi nadpisane`,
     question:"Nazwa urządzenia z sesji zdalnej, odcisk palca z cache EchoTrade i nadawca e-maili z groźbami wskazują na tego samego aktora. Jaka nazwa urządzenia pojawia się w obu logach?",
     opts:["TOR_EXIT_X","S3NDER_NODE","JAKUB_W_REMOTE","ANNA_DEVICE_01"],
@@ -2413,7 +2778,7 @@ function renderMgPuzzle(w){
     <div class="mg-head">REKONSTRUKCJA LOGÓW — Wpis ${mgPuzzleIdx+1} z ${MINIGAME_PUZZLES.length}</div>
     <div class="mg-progress">${pips}</div>
     <div class="mg-desc">${esc(p.desc)}</div>
-    <div class="mg-puzzle">${p.log}</div>
+    <div class="mg-puzzle">${p.log.replace(/████████████/g,'<span class="corrupt">████████████</span>').replace(/████████/g,'<span class="corrupt">████████</span>').replace(/\?\?\?\?\?\?\?\?/g,'<span class="corrupt">????????</span>')}</div>
     <div style="font-size:11px;color:var(--amber);letter-spacing:.5px">${esc(p.question)}</div>
     <div class="mg-opts">${opts}</div>
     <div class="mg-timer" id="mgT">⏱ ${mgTimeLeft}s</div>
@@ -2547,4 +2912,342 @@ window.openSnake = function(){
     const hit=trail.some((s,i)=>i<trail.length-1&&s.x===px&&s.y===py);
     if(hit){snakeState="over";if(!window._snakeBest||score>window._snakeBest)window._snakeBest=score;drawFrame();return;}
     trail.push({x:px,y:py});while(trail.length>tail)trail.shift();
-    if(ax===px&&ay===py){tail++;score+=10;const s=document.getElementById("snkScore");if(s)s.textContent=
+    if(ax===px&&ay===py){tail++;score+=10;const s=document.getElementById("snkScore");if(s)s.textContent=score;do{ax=Math.floor(Math.random()*TC);ay=Math.floor(Math.random()*TC);}while(trail.some(s=>s.x===ax&&s.y===ay));}
+    drawFrame();setTimeout(snkLoop,85);
+  };
+  render();setTimeout(drawFrame,50);
+};
+
+window.openTicTacToe = function(){
+  window.killTTT=false;
+  const w=makeWindow("ttt","Kółko i Krzyżyk","",{w:360,h:500});
+  let board=Array(9).fill(null);
+  let playerTurn=true;
+  let scores={W:0,L:0,D:0};
+  let difficulty="medium";
+  let gameOver=false;
+
+  function checkWinner(b){
+    const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,x,c] of lines){if(b[a]&&b[a]===b[x]&&b[a]===b[c])return{winner:b[a],line:[a,x,c]};}
+    if(b.every(Boolean))return{winner:"D"};
+    return null;
+  }
+
+  function minimax(b,isMax,depth){
+    const res=checkWinner(b);
+    if(res){if(res.winner==="O")return 10-depth;if(res.winner==="X")return depth-10;return 0;}
+    if(isMax){let best=-Infinity;for(let i=0;i<9;i++){if(!b[i]){b[i]="O";best=Math.max(best,minimax(b,false,depth+1));b[i]=null;}}return best;}
+    else{let best=Infinity;for(let i=0;i<9;i++){if(!b[i]){b[i]="X";best=Math.min(best,minimax(b,true,depth+1));b[i]=null;}}return best;}
+  }
+
+  function aiMove(){
+    if(gameOver||!playerTurn===false)return;
+    const empty=board.map((v,i)=>v?null:i).filter(v=>v!==null);
+    if(!empty.length)return;
+    let idx;
+    if(difficulty==="easy"){
+      idx=empty[Math.floor(Math.random()*empty.length)];
+    }else if(difficulty==="medium"){
+      if(Math.random()<0.4){idx=empty[Math.floor(Math.random()*empty.length)];}
+      else{let best=-Infinity,bestMove=empty[0];for(const i of empty){board[i]="O";const s=minimax(board,false,0);board[i]=null;if(s>best){best=s;bestMove=i;}}idx=bestMove;}
+    }else{
+      let best=-Infinity,bestMove=empty[0];
+      for(const i of empty){board[i]="O";const s=minimax(board,false,0);board[i]=null;if(s>best){best=s;bestMove=i;}}
+      idx=bestMove;
+    }
+    board[idx]="O";
+    playerTurn=true;
+    const res=checkWinner(board);
+    if(res){gameOver=true;if(res.winner==="O")scores.L++;else if(res.winner==="D")scores.D++;}
+    render();
+  }
+
+  function handleClick(i){
+    if(gameOver||!playerTurn||board[i])return;
+    board[i]="X";
+    playerTurn=false;
+    const res=checkWinner(board);
+    if(res){gameOver=true;if(res.winner==="X")scores.W++;else if(res.winner==="D")scores.D++;render();return;}
+    render();
+    setTimeout(()=>{if(!window.killTTT)aiMove();},350);
+  }
+
+  function resetGame(){board=Array(9).fill(null);playerTurn=true;gameOver=false;render();}
+
+  function render(){
+    if(window.killTTT)return;
+    const result=checkWinner(board);
+    const winLine=result?.line||[];
+    let status="Twój ruch (X)";
+    if(result){
+      if(result.winner==="X")status="✓ Wygrałeś!";
+      else if(result.winner==="O")status="✗ Komputer wygrał.";
+      else status="Remis.";
+    }else if(!playerTurn)status="Komputer myśli…";
+    const cells=board.map((v,i)=>{
+      const wl=winLine.includes(i)?" win-line":"";
+      return `<div class="ttt-cell${v?" "+v:""}${wl}" onclick="window.tttClick(${i})">${v||""}</div>`;
+    }).join("");
+    w.body.innerHTML=`<div class="ttt-wrap">
+      <div class="ttt-header">KÓŁKO I KRZYŻYK</div>
+      <div class="ttt-score"><span>Wygrane: <b>${scores.W}</b></span><span>Remisy: <b>${scores.D}</b></span><span>Przegrane: <b>${scores.L}</b></span></div>
+      <div class="ttt-diff">
+        <button class="ttt-btn${difficulty==="easy"?" active":""}" onclick="window.tttDiff('easy')">ŁATWY</button>
+        <button class="ttt-btn${difficulty==="medium"?" active":""}" onclick="window.tttDiff('medium')">ŚREDNI</button>
+        <button class="ttt-btn${difficulty==="hard"?" active":""}" onclick="window.tttDiff('hard')">TRUDNY</button>
+      </div>
+      <div class="ttt-board">${cells}</div>
+      <div class="ttt-status">${status}</div>
+      <button class="ttt-btn" onclick="window.tttReset()" style="padding:10px 24px; font-weight:bold;">NOWA GRA</button>
+    </div>`;
+  }
+
+  window.tttClick=i=>handleClick(i);
+  window.tttReset=()=>resetGame();
+  window.tttDiff=d=>{difficulty=d;resetGame();};
+  render();
+};
+
+window.openRPS = function(){
+  const w=makeWindow("rps","Kamień Nożyce Papier","",{w:400,h:520});
+  let scores={W:0,L:0,D:0};
+  let choosing=true;
+  const choices=["✊","✋","✌️"];
+
+  function play(pi){
+    if(!choosing)return;
+    choosing=false;
+    const ci=Math.floor(Math.random()*3);
+    let result,rclass;
+    if(pi===ci){result="REMIS";rclass="draw";scores.D++;}
+    else if((pi===0&&ci===2)||(pi===1&&ci===0)||(pi===2&&ci===1)){result="WYGRAŁEŚ!";rclass="win";scores.W++;}
+    else{result="PRZEGRAŁEŚ";rclass="lose";scores.L++;}
+    render(pi,ci,result,rclass);
+    setTimeout(()=>{choosing=true;render();},1800);
+  }
+
+  function render(pi,ci,result,rclass){
+    const ph=pi!==undefined?choices[pi]:"❓";
+    const ch=ci!==undefined?choices[ci]:"❓";
+    const res=result?`<div class="rps-result ${rclass||''}">${result}</div>`:`<div class="rps-result"></div>`;
+    const btns=choices.map((c,i)=>`<button class="rps-choice" onclick="window.rpsPlay(${i})" ${!choosing?"disabled":""}>${c}</button>`).join("");
+    w.body.innerHTML=`<div class="rps-wrap">
+      <div class="ttt-header">KAMIEŃ NOŻYCE PAPIER</div>
+      <div class="rps-score">
+        <span class="rs">Wygrane <b>${scores.W}</b></span>
+        <span class="ds">Remisy <b>${scores.D}</b></span>
+        <span class="ls">Przegrane <b>${scores.L}</b></span>
+      </div>
+      <div class="rps-arena">
+        <div class="rps-side">
+          <div class="rps-hand${!choosing?" shake":""}">${ph}</div>
+          <div class="rps-label">TY</div>
+        </div>
+        <div class="rps-vs">VS</div>
+        <div class="rps-side">
+          <div class="rps-hand${!choosing?" shake":""}">${ch}</div>
+          <div class="rps-label">KOMPUTER</div>
+        </div>
+      </div>
+      ${res}
+      <div class="rps-choices">${btns}</div>
+      <button class="rps-reset" onclick="window.rpsReset()" style="margin-top:10px; padding:10px 24px;">RESET WYNIKU</button>
+    </div>`;
+  }
+
+  window.rpsPlay=i=>play(i);
+  window.rpsReset=()=>{scores={W:0,L:0,D:0};choosing=true;render();};
+  render();
+};
+
+window.openReadme = function(){
+  trackObj("start");
+  const w=makeWindow("readme","INFORMACJA POUFNA — PRZECZYTAJ NAJPIERW","",{w:580,h:500});
+  w.body.innerHTML=`<div class="readme">
+<h2>HOWLORA DIGITAL FORENSICS</h2>
+<p>Wewnętrzny numer sprawy: <b>#4471</b><br>Klasyfikacja: Zastrzeżone — Tylko do użytku analityka<br>Dostęp: Lustrzana kopia z jedną sesją tylko do odczytu</p>
+
+<hr>
+
+<p>Zostałeś przydzielony do tej sprawy po wniosku z wydziału śledczego.<br>
+Ten obraz dysku został przechwycony na podstawie nakazu awaryjnego o 08:47 rano.<br>
+Łańcuch dowodowy jest udokumentowany. Nie modyfikuj, nie kopiuj ani nie przenoś żadnego pliku.</p>
+
+<h3>Na co patrzysz</h3>
+<p>To jest kryminalistyczne lustro komputera osobistego należącego do osoby będącej przedmiotem zainteresowania w związku ze śmiercią, która nastąpiła ubiegłej nocy. Osoba jest aktualnie zatrzymana. Nie postawiono żadnych zarzutów. Nie wydano żadnego wyroku.</p>
+
+<p>Nie prosi się cię o ustalenie winy. Prosi się cię o analizę dowodów cyfrowych i złożenie raportu. Twój raport zostanie wykorzystany przez śledczych. Jeśli twoje ustalenia będą niedokładne lub niekompletne, konsekwencje spadną na sprawę — i na ludzi w niej uwikłanych.</p>
+
+<h3>Co jest dostępne</h3>
+<p>Dysk zawiera aktywne i usunięte dane. Aplikacje do przesyłania wiadomości. E-maile. Historia przeglądarki. Zapisy z platformy sprzedażowej. Powiadomienia finansowe. Prywatny dziennik. Własne logi systemu operacyjnego zostały częściowo nadpisane i wymagają odszyfrowania przed uzyskaniem dostępu.</p>
+
+<p>Nie wszystkie dane są istotne. Nie wszystkie istotne dane zwrócą na siebie uwagę.</p>
+
+<h3>Co wiemy</h3>
+<p>Jedna osoba nie żyje. Osoba, do której należy ten komputer, miała relację ze zmarłą. W aplikacji do przesyłania wiadomości znaleziono pisemne oświadczenie, które niektórzy uważają za wyznanie. Inni mają pytania.</p>
+
+<p>Nie prosimy o pobieżny odczyt. Prosimy o prawdę.</p>
+
+<hr>
+
+<p>Twój raport wymaga trzech ustaleń: tożsamości, metody i motywu. Wszystkie trzy muszą być poparte dowodami. Złóż gdy będziesz pewny.</p>
+
+<div class="stamp">Uzyskanie dostępu do tego dysku oznacza zgodę na to, że ustalenia zostaną przedłożone wyznaczonemu śledczemu. Okno analizy: 12 minut od zamontowania obrazu. Howlora OS będzie rejestrować aktywność Twojej sesji.</div>
+
+<div class="case-id">SPRAWA #4471 // HOWLORA.OS v5.0 // ZASTRZEŻONE</div>
+</div>`;
+};
+
+window.openVerdict = function(){
+  STATE.verdictStage=1;
+  STATE.verdictWho=null;
+  STATE.verdictHow=null;
+  document.getElementById("vdStage1").classList.add("active");
+  document.getElementById("vdStage2").classList.remove("active");
+  document.getElementById("vdStage3").classList.remove("active");
+  document.getElementById("vdNextBtn").style.display="";
+  document.getElementById("vdSubmitBtn").style.display="none";
+  document.getElementById("vdBreadcrumb").textContent="Etap 1 z 3 — Tożsamość";
+  document.querySelectorAll('input[name="who"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="how"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="why"]').forEach(r=>r.checked=false);
+  document.getElementById("verdictModal").classList.add("on");
+};
+window.closeVerdict = function(){document.getElementById("verdictModal").classList.remove("on");};
+
+window.verdictNext=function(){
+  if(STATE.verdictStage===1){
+    const sel=document.querySelector('input[name="who"]:checked');
+    if(!sel)return;
+    STATE.verdictWho=sel.value;
+    STATE.verdictStage=2;
+    document.getElementById("vdStage1").classList.remove("active");
+    document.getElementById("vdStage2").classList.add("active");
+    document.getElementById("vdBreadcrumb").innerHTML=`Etap 2 z 3 — Metoda &nbsp;·&nbsp; <span class="sel">KTO: ${esc(sel.closest("label").querySelector("span").textContent)}</span>`;
+  }else if(STATE.verdictStage===2){
+    const sel=document.querySelector('input[name="how"]:checked');
+    if(!sel)return;
+    STATE.verdictHow=sel.value;
+    STATE.verdictStage=3;
+    document.getElementById("vdStage2").classList.remove("active");
+    document.getElementById("vdStage3").classList.add("active");
+    document.getElementById("vdNextBtn").style.display="none";
+    document.getElementById("vdSubmitBtn").style.display="";
+    document.getElementById("vdBreadcrumb").innerHTML=`Etap 3 z 3 — Motyw &nbsp;·&nbsp; <span class="sel">Poprzednie wybory zablokowane</span>`;
+  }
+};
+
+window.submitVerdict=function(){
+  if(STATE.endGameDone)return;
+  const whyNode=document.querySelector('input[name="why"]:checked');
+  if(!whyNode)return;
+  const why=whyNode.value;
+  const who=STATE.verdictWho;
+  const how=STATE.verdictHow;
+  STATE.endGameDone=true;
+  window.closeVerdict();
+
+  const WIN=who==="sender"&&how==="remote"&&why==="obsession";
+  const WRONG_WHO_JAKUB=who==="jakub";
+  const WRONG_WHO_BARTEK=who==="bartek";
+
+  let stamp,txt,cls;
+
+  if(WIN){
+    stamp="SPRAWA ROZWIĄZANA";cls="win";
+    txt=`Znalazłeś to.
+
+Ogłoszenie EchoTrade było konstrukcją. 'Anna_Collects' zostało założone osiem dni temu z węzła wyjściowego TOR na urządzeniu zarejestrowanym jako S3NDER_NODE — to samo urządzenie, które groziło Marii w trzech osobnych e-mailach w poprzednich tygodniach. To samo urządzenie, które połączyło się z komputerem Jakuba o 02:10 gdy stał w zaułku za nocnym klubem, czekając na sprzedającego który nigdy nie miał się pojawić.
+
+Ogłoszenie wyciągnęło go z domu. Token sesji odtworzony z blokady ekranu z 23:46 dał dostęp bez hasła. V-Chat się otworzył. Wiadomość napisała osoba, która nie była Jakubem Wierzbickim.
+
+Stał na mrozie, dzwoniąc pod numer który nigdzie nie prowadził, gdy ktoś kogo nigdy nie spotkał, zasadził wyznanie w jego imieniu.
+
+S3NDER obserwował Marię od miesięcy. E-maile to jasno pokazują — zaborczy, precyzyjny, eskalujący. Wiedziała że jest śledzona. Tak powiedziała. Powiedziała Oli. Powiedziała Jakubowi.
+
+Nikt nie ruszył wystarczająco szybko.
+
+Odcisk palca urządzenia doprowadził do zarejestrowanego adresu. Zatrzymanie nastąpiło o 06:20 następnego ranka.
+
+Jakub W. poszedł do domu.
+Maria dostaje sprawiedliwość.`;
+  }else if(WRONG_WHO_JAKUB){
+    stamp="RAPORT ODRZUCONY";cls="lose";
+    txt=`Jakub W. zostaje oskarżony na podstawie twojego raportu.
+
+Wyznanie — napisane o 02:14 z jego konta, na jego urządzeniu — zostaje przedstawione jako główny dowód. Obrona podnosi logi sesji zdalnej. Twój raport nie odnosi się do nich.
+
+Sąd skazuje na podstawie wyznania.
+
+Trzynaście miesięcy później kobieta na Mokotowie otrzymuje list podpisany literą S. Jeszcze nie wie co to oznacza. Wkrótce się dowie.
+
+Miałeś log sesji. Miałeś odcisk palca urządzenia. Miałeś konto sprzedającego założone z tego samego węzła który wysyłał groźby.
+
+Przeczytałeś wiadomość i przestałeś czytać.`;
+  }else if(WRONG_WHO_BARTEK){
+    stamp="RAPORT ODRZUCONY";cls="lose";
+    txt=`Bartek K. zostaje wezwany na przesłuchanie na podstawie twojego raportu.
+
+Ma alibi. Był w domu. Potwierdzają to dwaj sąsiedzi. Potwierdzają to jego zapisy telefoniczne. Jedyną rzeczą łączącą go z nocą zdarzenia jest wiadomość którą otrzymał — wiadomość o której natychmiast zadzwonił, zaniepokojony.
+
+Zostaje zwolniony po 48 godzinach.
+
+Twój raport zostaje zdyskredytowany. Prokuratura flaguje twoją analizę jako niewiarygodną. Prawdziwa sprawa upada zanim może zostać odbudowana.
+
+Rozmowa między Bartkiem i Jakubem nie była dowodem winy. Była dowodem przyjaźni i bardzo złego poranka.`;
+  }else if(who==="unknown"){
+    stamp="RAPORT NIEKOMPLETNY";cls="lose";
+    txt=`Złożyłeś raport bez konkluzji.
+
+Sprawa zostaje przydzielona drugiemu analitykowi. Mija sześć tygodni. Ślad stygnie. Urządzenie, które połączyło się zdalnie w noc zdarzenia, przestaje pojawiać się w jakiejkolwiek sieci.
+
+Raport bez konkluzji jest czasem uczciwym raportem. W tym przypadku dowody były. Log sesji. Plik cache. Odcisk palca urządzenia który pojawił się w groźbach, w fałszywym ogłoszeniu i w dzienniku zdarzeń systemowych tej samej nocy.
+
+Miałeś to czego potrzebowałeś.
+
+Zdecydowałeś że nie masz.`;
+  }else{
+    stamp="RAPORT NIESPÓJNY";cls="lose";
+    txt=`Twoje trzy ustalenia nie tworzą spójnej sprawy.
+
+Prokurator przegląda twój raport i zwraca go. Wybrane przez ciebie dowody nie zgadzają się z opisanym mechanizmem ani przypisanym motywem.
+
+Raport kryminalistyczny musi być wewnętrznie spójny. Tożsamość, metoda i motyw muszą się łączyć — każde musi być poparte tym samym zbiorem dowodów, wskazującym w tym samym kierunku.
+
+Miałeś właściwe elementy. Złożyłeś je nieprawidłowo.
+
+Sprawa zostaje przydzielona ponownie.`;
+  }
+  window.showEnding(who+how+why,stamp,cls==="win"?"win":"lose",txt);
+};
+
+window.showEnding=function(key,stamp,winLose,txt){
+  const e=document.getElementById("ending");
+  const s=document.getElementById("endStamp");
+  const t=document.getElementById("endTxt");
+  const b=document.getElementById("endBtns");
+  s.textContent=stamp;
+  s.className="stamp "+(winLose==="win"?"win":"lose");
+  t.innerHTML='<span class="crt"></span>';
+  
+  if(winLose==="win"){
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">⟲ RESTART SYSTEMU</button>
+                 <button class="end-btn end-btn-next" onclick="location.href='howlora2.html'">→ PRZEJDŹ DO SPRAWY #2</button>`;
+  } else {
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">⟲ RESTART SYSTEMU</button>`;
+  }
+  
+  e.classList.add("on");
+  let i=0;
+  const tick=()=>{
+    if(i>=txt.length)return;
+    i++;
+    t.innerHTML=txt.slice(0,i).replace(/\n/g,"<br>")+'<span class="crt"></span>';
+    setTimeout(tick,txt[i-1]==="\n"?200:15);
+  };
+  setTimeout(tick,800);
+}
+</script>
+</body>
+</html>
