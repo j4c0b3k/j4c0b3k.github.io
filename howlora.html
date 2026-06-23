@@ -27,26 +27,161 @@
         a{color:var(--cyan)}
         input,textarea,select{font-family:inherit;font-size:16px !important;}
 
+        /* ============ DEVICE / VERIFICATION POPUP (mobile-first) ============ */
         #devicePopup {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+            position: fixed; inset: 0; z-index: 30000;
+            background: radial-gradient(1200px 800px at 50% 0%, rgba(46,224,255,0.10), transparent 60%),
+                        radial-gradient(900px 700px at 50% 100%, rgba(139,108,247,0.08), transparent 60%),
+                        rgba(0,0,0,0.96);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: flex-start; justify-content: center;
+            padding: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch;
         }
         .pop-box {
-            border: 1px solid var(--cyan); background: #050a0f; border-radius: 4px; width: 100%; max-width: 420px; box-shadow: 0 0 30px rgba(46,224,255,0.15); display: flex; flex-direction: column; overflow: hidden;
+            width: 100%; max-width: 460px; margin: auto;
+            background: linear-gradient(180deg,#060c14 0%,#03080d 100%);
+            border: 1px solid rgba(46,224,255,0.35);
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 0 60px rgba(46,224,255,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
+            display: flex; flex-direction: column;
         }
         .pop-header {
-            background: var(--cyan); color: #000; font-weight: 900; letter-spacing: 3px; padding: 12px; font-size: 13px; text-align: center; text-transform: uppercase;
+            position: relative;
+            background: linear-gradient(135deg, rgba(46,224,255,0.18), rgba(139,108,247,0.18));
+            border-bottom: 1px solid rgba(46,224,255,0.3);
+            padding: 18px 16px 16px; text-align: center;
         }
-        .pop-content { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .pop-header .ph-logo {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(46,224,255,0.35), rgba(139,108,247,0.15));
+            border: 1px solid rgba(46,224,255,0.5);
+            margin-bottom: 10px; font-size: 20px;
+            box-shadow: 0 0 18px rgba(46,224,255,0.4);
+        }
+        .pop-header .ph-title {
+            font-size: 13px; font-weight: 900; letter-spacing: 4px; color: #e8f6ff;
+            text-transform: uppercase; text-shadow: 0 0 12px rgba(46,224,255,0.5);
+        }
+        .pop-header .ph-sub {
+            margin-top: 4px; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
+        }
+        .pop-header .ph-dot {
+            position: absolute; top: 14px; right: 14px;
+            display: flex; align-items: center; gap: 6px; font-size: 9px; letter-spacing: 2px; color: var(--green);
+        }
+        .pop-header .ph-dot::before {
+            content: ""; width: 7px; height: 7px; border-radius: 50%;
+            background: var(--green); box-shadow: 0 0 8px var(--green);
+            animation: pulse 1.4s infinite;
+        }
+        .pop-content { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+        .pop-progress { display: flex; flex-direction: column; gap: 8px; padding: 14px; background: #02060a; border: 1px solid var(--line2); border-radius: 8px; }
+        .pop-progress .ppl { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; display:flex; justify-content:space-between;}
+        .pop-progress .ppl b { color: var(--cyan); font-weight: 700; }
+        .pop-progress .ppbar { width: 100%; height: 4px; background: #0c1622; border-radius: 2px; overflow: hidden; }
+        .pop-progress .ppbar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--violet), var(--magenta)); border-radius: 2px; transition: width .3s ease; box-shadow: 0 0 8px rgba(46,224,255,0.6); }
+        .pop-progress .pp-step { font-size: 10px; color: var(--green); letter-spacing: 1px; font-family: "Consolas", monospace; min-height: 14px; }
+        .pop-progress .pp-step::before { content: "▸ "; color: var(--cyan); }
+
+        .pop-section { display: flex; flex-direction: column; gap: 8px; }
+        .pop-section-title {
+            font-size: 9px; letter-spacing: 3px; color: var(--violet);
+            text-transform: uppercase; padding-left: 4px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .pop-section-title::after {
+            content: ""; flex: 1; height: 1px;
+            background: linear-gradient(90deg, rgba(139,108,247,0.4), transparent);
+        }
+
         .sys-info-box {
-            background: #020406; border: 1px dashed var(--line2); padding: 15px; border-radius: 4px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+            background: #02060a; border: 1px solid var(--line2);
+            padding: 12px; border-radius: 8px;
+            display: flex; flex-direction: column; gap: 2px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
         }
-        .sys-row { display: flex; font-size: 11px; align-items: flex-start; }
-        .sys-row .lbl { color: var(--muted); font-weight: bold; width: 85px; flex-shrink: 0; letter-spacing: 1px;}
-        .sys-row .val { color: var(--cyan); flex: 1; text-align: left; word-break: break-word; text-shadow: 0 0 5px rgba(46,224,255,0.3); }
-        .sys-row .val.warn { color: var(--amber); text-shadow: 0 0 5px rgba(245,200,66,0.3); }
-        .pop-disclaimer { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.5; padding: 10px; background: #080c10; border-radius: 4px; }
-        .pop-btn { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); padding: 14px; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 5px; text-transform: uppercase; display: none; }
-        .pop-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(46,224,255,0.4); }
+        .sys-row {
+            display: flex; font-size: 11px; align-items: flex-start;
+            padding: 7px 4px; border-bottom: 1px dashed rgba(34,48,63,0.5); gap: 10px;
+        }
+        .sys-row:last-child { border-bottom: none; }
+        .sys-row .lbl { color: var(--muted); font-weight: 700; width: 90px; flex-shrink: 0; letter-spacing: 1.5px; font-size: 9.5px; text-transform: uppercase; }
+        .sys-row .val { color: var(--cyan); flex: 1; text-align: right; word-break: break-word; text-shadow: 0 0 6px rgba(46,224,255,0.25); font-weight: 600; line-height: 1.4; }
+        .sys-row .val.warn { color: var(--amber); text-shadow: 0 0 6px rgba(245,200,66,0.3); }
+        .sys-row .val.good { color: var(--green); text-shadow: 0 0 6px rgba(61,252,160,0.3); }
+        .sys-row .val.bad { color: var(--red); text-shadow: 0 0 6px rgba(255,43,74,0.4); }
+        .sys-row .val .tag { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px; font-size: 9px; letter-spacing: 1px; font-weight: 700; }
+        .sys-row .val .tag.ok { background: rgba(61,252,160,0.12); color: var(--green); border: 1px solid rgba(61,252,160,0.3); }
+        .sys-row .val .tag.warn { background: rgba(245,200,66,0.12); color: var(--amber); border: 1px solid rgba(245,200,66,0.3); }
+        .sys-row .val .tag.bad { background: rgba(255,43,74,0.12); color: var(--red); border: 1px solid rgba(255,43,74,0.3); }
+        .sys-row .val.skel { color: #2a3a4c; }
+        .sys-row .val.skel::after { content: "scanning…"; animation: blink 1s steps(2) infinite; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .stat-card {
+            background: linear-gradient(180deg,#070d15,#03070b);
+            border: 1px solid var(--line2); border-radius: 8px;
+            padding: 10px 12px; display: flex; flex-direction: column; gap: 2px;
+            position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ""; position: absolute; top:0; left:0; right:0; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), transparent);
+            opacity: .5;
+        }
+        .stat-card .sc-lbl { font-size: 8.5px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+        .stat-card .sc-val { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 1px; text-shadow: 0 0 8px rgba(46,224,255,0.3); margin-top: 2px; font-variant-numeric: tabular-nums; }
+        .stat-card .sc-val.green { color: var(--green); text-shadow: 0 0 8px rgba(61,252,160,0.35); }
+        .stat-card .sc-val.amber { color: var(--amber); text-shadow: 0 0 8px rgba(245,200,66,0.35); }
+        .stat-card .sc-val.violet { color: var(--violet); text-shadow: 0 0 8px rgba(139,108,247,0.35); }
+        .stat-card .sc-sub { font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+
+        .threat-card {
+            background: linear-gradient(135deg, rgba(255,43,74,0.08), rgba(245,200,66,0.05));
+            border: 1px solid rgba(245,200,66,0.4);
+            border-radius: 8px; padding: 12px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .threat-card .tc-meter {
+            width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+            background: conic-gradient(var(--amber) 0deg, var(--amber) 0deg, #1a2030 0deg);
+            display: grid; place-items: center; position: relative;
+            transition: background 0.6s ease;
+        }
+        .threat-card .tc-meter::before {
+            content: ""; position: absolute; inset: 5px; border-radius: 50%; background: #050a0f;
+        }
+        .threat-card .tc-meter .tc-num { position: relative; font-size: 15px; font-weight: 900; color: var(--amber); }
+        .threat-card .tc-info { flex: 1; }
+        .threat-card .tc-info .tc-t { font-size: 11px; font-weight: 900; color: var(--amber); letter-spacing: 1.5px; text-transform: uppercase; }
+        .threat-card .tc-info .tc-d { font-size: 10px; color: #b8c4ce; margin-top: 3px; line-height: 1.4; }
+
+        .pop-disclaimer { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.5; padding: 10px; background: rgba(8,12,16,0.6); border: 1px dashed var(--line); border-radius: 6px; }
+        .pop-disclaimer b { color: var(--cyan); letter-spacing: 1px; }
+        .pop-btn {
+            background: linear-gradient(135deg, var(--cyan), var(--violet));
+            color: #03070b; border: none;
+            padding: 16px; font-size: 12px; font-weight: 900; letter-spacing: 4px;
+            border-radius: 8px; cursor: pointer; width: 100%;
+            text-transform: uppercase; display: none;
+            box-shadow: 0 0 24px rgba(46,224,255,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+            transition: transform .15s, box-shadow .2s;
+        }
+        .pop-btn:hover, .pop-btn:active { transform: translateY(-1px); box-shadow: 0 6px 30px rgba(46,224,255,0.6); }
+
+        @media (max-width: 480px) {
+            #devicePopup { padding: 10px; }
+            .pop-box { border-radius: 10px; }
+            .pop-header { padding: 14px 12px 12px; }
+            .pop-header .ph-title { font-size: 12px; letter-spacing: 3px; }
+            .pop-content { padding: 12px; gap: 12px; }
+            .sys-row { font-size: 10.5px; padding: 6px 2px; gap: 8px; }
+            .sys-row .lbl { width: 78px; font-size: 9px; letter-spacing: 1px; }
+            .stat-card .sc-val { font-size: 14px; }
+            .pop-btn { padding: 14px; letter-spacing: 3px; }
+        }
 
         #bootOverlay{
           position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden; display:none;
@@ -496,8 +631,19 @@
             .icon .glyph { width: 44px; height: 44px; font-size: 18px; }
             .icon .lbl { font-size: 9px; }
 
-            .win { max-width: 95vw !important; max-height: 85vh !important; }
+            /* Windows go fullscreen on phones — like a real app, not a floating box */
+            .win {
+                position: fixed !important;
+                left: 0 !important; top: 0 !important;
+                width: 100vw !important; height: calc(100vh - 46px) !important;
+                max-width: 100vw !important; max-height: calc(100vh - 46px) !important;
+                min-width: 0 !important; min-height: 0 !important;
+                border-radius: 0 !important; border-left: none !important; border-right: none !important;
+            }
+            .win .tb { height: 44px; padding: 0 8px; }
             .win .tb .title { font-size: 10px; }
+            .win .tb .ctl button { width: 32px; height: 32px; font-size: 14px; }
+            .win .grip { display: none !important; }
 
             .hack-title { font-size: 20px; letter-spacing: 2px; }
             .hack-timer { font-size: 24px; }
@@ -528,18 +674,81 @@
 
 <div id="devicePopup">
     <div class="pop-box">
-        <div class="pop-header">Skaner Środowiska</div>
+        <div class="pop-header">
+            <div class="ph-dot">LIVE</div>
+            <div class="ph-logo">◢◤</div>
+            <div class="ph-title">Skaner Środowiska</div>
+            <div class="ph-sub">HOWLORA.OS // identyfikacja sesji</div>
+        </div>
         <div class="pop-content">
-            <div id="popLoader" class="pop-loader">TRWA IDENTYFIKACJA...</div>
-            <div id="sysInfoBox" class="sys-info-box" style="display:none;">
-                <div class="sys-row"><span class="lbl">TYP:</span><span class="val" id="popType">...</span></div>
-                <div class="sys-row"><span class="lbl">SYSTEM:</span><span class="val" id="popOS">...</span></div>
-                <div class="sys-row"><span class="lbl">MODEL:</span><span class="val" id="popHW">...</span></div>
-                <div class="sys-row"><span class="lbl">EKRAN:</span><span class="val" id="popRes">...</span></div>
-                <div class="sys-row"><span class="lbl">LOKALIZACJA:</span><span class="val warn" id="popGeo">Szukanie tras...</span></div>
+            <div class="pop-progress">
+                <div class="ppl"><span>SKAN W TOKU</span><b id="popPct">0%</b></div>
+                <div class="ppbar"><div class="ppbar-fill" id="popBar"></div></div>
+                <div class="pp-step" id="popStep">inicjalizacja modułu...</div>
             </div>
-            <div class="pop-disclaimer">Spokojnie. To tylko efekt wizualny.<br>Twoje dane nigdzie nie są zapisywane ani wysyłane.</div>
-            <button id="popBtn" class="pop-btn" onclick="window.acceptDevicePopup()">Wejdź do systemu</button>
+
+            <div class="pop-section">
+                <div class="pop-section-title">Urządzenie</div>
+                <div class="sys-info-box">
+                    <div class="sys-row"><span class="lbl">Typ</span><span class="val skel" id="popType"></span></div>
+                    <div class="sys-row"><span class="lbl">System</span><span class="val skel" id="popOS"></span></div>
+                    <div class="sys-row"><span class="lbl">Model</span><span class="val skel" id="popHW"></span></div>
+                    <div class="sys-row"><span class="lbl">Przegląd.</span><span class="val skel" id="popBrowser"></span></div>
+                    <div class="sys-row"><span class="lbl">GPU</span><span class="val skel" id="popGpu"></span></div>
+                    <div class="sys-row"><span class="lbl">Ekran</span><span class="val skel" id="popRes"></span></div>
+                    <div class="sys-row"><span class="lbl">Język</span><span class="val skel" id="popLang"></span></div>
+                </div>
+            </div>
+
+            <div class="pop-section">
+                <div class="pop-section-title">Statystyki sesji</div>
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="sc-lbl">CPU</div><div class="sc-val" id="popCpu">—</div><div class="sc-sub">rdzeni logicznych</div></div>
+                    <div class="stat-card"><div class="sc-lbl">Pamięć</div><div class="sc-val violet" id="popMem">—</div><div class="sc-sub">device memory</div></div>
+                    <div class="stat-card"><div class="sc-lbl">Sieć</div><div class="sc-val green" id="popNet">—</div><div class="sc-sub" id="popNetSub">połączenie</div></div>
+                    <div class="stat-card"><div class="sc-lbl">Bateria</div><div class="sc-val amber" id="popBat">—</div><div class="sc-sub" id="popBatSub">stan urządzenia</div></div>
+                </div>
+            </div>
+
+            <div class="pop-section">
+                <div class="pop-section-title">Lokalizacja sieci</div>
+                <div class="sys-info-box">
+                    <div class="sys-row"><span class="lbl">IP</span><span class="val warn skel" id="popIp"></span></div>
+                    <div class="sys-row"><span class="lbl">Miasto</span><span class="val warn skel" id="popCity"></span></div>
+                    <div class="sys-row"><span class="lbl">Region</span><span class="val warn skel" id="popRegion"></span></div>
+                    <div class="sys-row"><span class="lbl">Kraj</span><span class="val warn skel" id="popCountry"></span></div>
+                    <div class="sys-row"><span class="lbl">ISP / ASN</span><span class="val warn skel" id="popIsp"></span></div>
+                    <div class="sys-row"><span class="lbl">Strefa</span><span class="val skel" id="popTz"></span></div>
+                    <div class="sys-row"><span class="lbl">Czas lok.</span><span class="val skel" id="popTime"></span></div>
+                </div>
+            </div>
+
+            <div class="pop-section">
+                <div class="pop-section-title">Fingerprint sesji</div>
+                <div class="sys-info-box">
+                    <div class="sys-row"><span class="lbl">Hash ID</span><span class="val skel" id="popFp"></span></div>
+                    <div class="sys-row"><span class="lbl">Sesja</span><span class="val skel" id="popSid"></span></div>
+                    <div class="sys-row"><span class="lbl">Touch</span><span class="val skel" id="popTouch"></span></div>
+                    <div class="sys-row"><span class="lbl">Cookies</span><span class="val skel" id="popCookies"></span></div>
+                    <div class="sys-row"><span class="lbl">DNT</span><span class="val skel" id="popDnt"></span></div>
+                    <div class="sys-row"><span class="lbl">VPN/Proxy</span><span class="val skel" id="popVpn"></span></div>
+                </div>
+            </div>
+
+            <div class="threat-card" id="popThreat" style="display:none;">
+                <div class="tc-meter" id="popThreatMeter"><div class="tc-num" id="popThreatNum">—</div></div>
+                <div class="tc-info">
+                    <div class="tc-t" id="popThreatTitle">OCENA RYZYKA</div>
+                    <div class="tc-d" id="popThreatDesc">analizowanie zachowania sesji…</div>
+                </div>
+            </div>
+
+            <div class="pop-disclaimer">
+                <b>To tylko efekt wizualny.</b><br>
+                Wszystkie dane są odczytywane lokalnie w przeglądarce.<br>
+                Nic nie jest zapisywane ani wysyłane na nasze serwery.
+            </div>
+            <button id="popBtn" class="pop-btn" onclick="window.acceptDevicePopup()">Wejdź do systemu →</button>
         </div>
     </div>
 </div>
@@ -560,18 +769,85 @@
         w.el.classList.add("minimized");renderTasks();
     };
 
+    // ------- Helpers ------------------------------------------------------
+    function setVal(id, value, cls){
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.classList.remove('skel');
+        if(cls){ el.classList.add(cls); }
+        el.innerHTML = value;
+    }
+    function hashStr(s){
+        let h = 0x811c9dc5;
+        for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
+        return h.toString(16).padStart(8,'0');
+    }
+    function detectBrowser(ua){
+        if(/Edg\//.test(ua)) return "Edge " + (ua.match(/Edg\/([\d.]+)/)||[])[1];
+        if(/OPR\//.test(ua)) return "Opera " + (ua.match(/OPR\/([\d.]+)/)||[])[1];
+        if(/Firefox\//.test(ua)) return "Firefox " + (ua.match(/Firefox\/([\d.]+)/)||[])[1];
+        if(/CriOS/.test(ua)) return "Chrome iOS " + (ua.match(/CriOS\/([\d.]+)/)||[])[1];
+        if(/FxiOS/.test(ua)) return "Firefox iOS " + (ua.match(/FxiOS\/([\d.]+)/)||[])[1];
+        if(/Chrome\//.test(ua)) return "Chrome " + (ua.match(/Chrome\/([\d.]+)/)||[])[1];
+        if(/Safari\//.test(ua)) return "Safari " + (ua.match(/Version\/([\d.]+)/)||[])[1];
+        return "Nieznana";
+    }
+    function getGpu(){
+        try{
+            const c = document.createElement('canvas');
+            const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+            if(!gl) return "—";
+            const ext = gl.getExtension('WEBGL_debug_renderer_info');
+            if(ext){ return gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || "GPU dostępne"; }
+            return gl.getParameter(gl.RENDERER) || "GPU dostępne";
+        }catch(e){ return "—"; }
+    }
+    function startProgress(){
+        const steps = [
+            [5,   "ładowanie sterowników skanera..."],
+            [15,  "odpytywanie navigator.userAgent..."],
+            [28,  "analiza GPU / WebGL fingerprint..."],
+            [42,  "pomiar ekranu i devicePixelRatio..."],
+            [55,  "wykrywanie strefy czasowej..."],
+            [70,  "zapytanie geolokalizacji IP (geojs.io)..."],
+            [82,  "kalkulacja hash sesji [FNV-1a]..."],
+            [92,  "ocena profilu ryzyka..."],
+            [100, "skan zakończony ✓"],
+        ];
+        let i = 0;
+        const bar = document.getElementById('popBar');
+        const pct = document.getElementById('popPct');
+        const step = document.getElementById('popStep');
+        const tick = ()=>{
+            if(i >= steps.length) return;
+            const [p,t] = steps[i++];
+            bar.style.width = p + '%';
+            pct.innerText = p + '%';
+            step.innerText = t;
+            if(i < steps.length){ setTimeout(tick, 220 + Math.random()*180); }
+            else {
+                document.getElementById('popBtn').style.display = 'block';
+                showThreat();
+            }
+        };
+        tick();
+    }
+
     async function checkDevice() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-        const type = isMobile ? "SMARTFON/TABLET" : "KOMPUTER (PC)";
-        let ua = navigator.userAgent;
+        startProgress();
+
+        const ua = navigator.userAgent;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) || window.innerWidth <= 768;
+        const type = isMobile ? "📱 SMARTFON / TABLET" : "🖥 KOMPUTER (PC)";
+
         let os = "Nieznany OS";
         let hw = "Nieznane Urządzenie";
-        
+
         if (ua.indexOf("Win") !== -1) os = "Windows";
-        if (ua.indexOf("Mac") !== -1) os = "MacOS";
+        if (ua.indexOf("Mac") !== -1) os = "macOS";
         if (ua.indexOf("X11") !== -1) os = "UNIX";
         if (ua.indexOf("Linux") !== -1) os = "Linux";
-        
+
         if (/Android/.test(ua)) {
             os = "Android";
             let match = ua.match(/Android\s([0-9\.]+)/);
@@ -599,42 +875,148 @@
                     "414x736x3": "iPhone 8 Plus / 7 Plus"
                 };
                 hw = models[res] || "Apple iPhone";
-            } else {
-                hw = "Apple iPad";
-            }
+            } else { hw = "Apple iPad"; }
         } else if(/Windows/.test(ua)) {
             hw = "Komputer PC";
         } else if(/Macintosh/.test(ua)) {
             hw = "Apple Mac";
         }
 
-        let resStr = window.screen.width + "x" + window.screen.height;
+        // --- screen ---
+        const sw = window.screen.width, sh = window.screen.height;
+        const dpr = window.devicePixelRatio || 1;
+        const cd = window.screen.colorDepth || 24;
+        const resStr = `${sw}×${sh} <span style="color:var(--muted);font-weight:400">·</span> ${dpr}× <span style="color:var(--muted);font-weight:400">·</span> ${cd}-bit`;
 
-        document.getElementById('popType').innerText = type;
-        document.getElementById('popOS').innerText = os;
-        document.getElementById('popHW').innerText = hw;
-        document.getElementById('popRes').innerText = resStr;
+        // --- lang / locale ---
+        const lang = navigator.language || "—";
+        const langs = (navigator.languages||[]).slice(0,3).join(", ") || lang;
 
-        setTimeout(() => {
-            document.getElementById('popLoader').style.display = 'none';
-            document.getElementById('sysInfoBox').style.display = 'flex';
-            document.getElementById('popBtn').style.display = 'block';
-        }, 1200);
+        // --- gpu ---
+        const gpu = getGpu();
 
+        // --- browser ---
+        const brw = detectBrowser(ua);
+
+        setTimeout(()=> setVal('popType', type), 200);
+        setTimeout(()=> setVal('popOS', os), 350);
+        setTimeout(()=> setVal('popHW', hw), 500);
+        setTimeout(()=> setVal('popBrowser', brw), 650);
+        setTimeout(()=> setVal('popGpu', gpu.length > 38 ? gpu.slice(0,38)+"…" : gpu), 800);
+        setTimeout(()=> setVal('popRes', resStr), 950);
+        setTimeout(()=> setVal('popLang', `${lang} <span style="color:var(--muted);font-weight:400">(${langs})</span>`), 1100);
+
+        // --- stat cards ---
+        const cpu = navigator.hardwareConcurrency || "—";
+        const mem = navigator.deviceMemory ? navigator.deviceMemory + " GB" : "n/d";
+        setTimeout(()=>{
+            document.getElementById('popCpu').innerText = cpu;
+            document.getElementById('popMem').innerText = mem;
+        }, 700);
+
+        // --- network ---
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        setTimeout(()=>{
+            const net = document.getElementById('popNet');
+            const sub = document.getElementById('popNetSub');
+            if(conn){
+                net.innerText = (conn.effectiveType || "online").toUpperCase();
+                const parts = [];
+                if(conn.downlink) parts.push(conn.downlink + " Mb/s");
+                if(conn.rtt) parts.push(conn.rtt + " ms");
+                sub.innerText = parts.join(" · ") || (navigator.onLine ? "online" : "offline");
+            } else {
+                net.innerText = navigator.onLine ? "ONLINE" : "OFFLINE";
+                sub.innerText = "informacja podstawowa";
+            }
+        }, 900);
+
+        // --- battery ---
+        setTimeout(async ()=>{
+            const bat = document.getElementById('popBat');
+            const sub = document.getElementById('popBatSub');
+            try {
+                if(navigator.getBattery){
+                    const b = await navigator.getBattery();
+                    bat.innerText = Math.round(b.level*100) + "%";
+                    sub.innerText = b.charging ? "⚡ ładowanie" : "na baterii";
+                } else { bat.innerText = "n/d"; sub.innerText = "API niedostępne"; }
+            } catch(e){ bat.innerText = "n/d"; sub.innerText = "brak dostępu"; }
+        }, 1100);
+
+        // --- timezone / time ---
+        let tz = "—";
+        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){}
+        const offset = -new Date().getTimezoneOffset()/60;
+        const offStr = (offset >= 0 ? "+" : "") + offset;
+        setTimeout(()=> setVal('popTz', `${tz} <span style="color:var(--muted);font-weight:400">(UTC${offStr})</span>`), 1200);
+
+        const updateClock = ()=>{
+            const d = new Date();
+            const t = d.toLocaleTimeString('pl-PL') + " <span style='color:var(--muted);font-weight:400'>" + d.toLocaleDateString('pl-PL') + "</span>";
+            const el = document.getElementById('popTime');
+            if(el){ el.classList.remove('skel'); el.innerHTML = t; }
+        };
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // --- fingerprint / session ---
+        const fpSource = [ua, sw, sh, dpr, cd, tz, lang, cpu, mem, gpu, navigator.platform||""].join("|");
+        const fp = (hashStr(fpSource) + hashStr(fpSource.split("").reverse().join(""))).toUpperCase();
+        const sid = (Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,8)).toUpperCase();
+        setTimeout(()=> setVal('popFp', fp.match(/.{1,4}/g).slice(0,4).join("-")), 1300);
+        setTimeout(()=> setVal('popSid', sid), 1400);
+        setTimeout(()=> setVal('popTouch', (navigator.maxTouchPoints||0) + " punktów dotyku"), 1500);
+        setTimeout(()=> setVal('popCookies', navigator.cookieEnabled ? "włączone <span class='tag ok'>OK</span>" : "wyłączone <span class='tag warn'>WARN</span>"), 1600);
+        const dnt = navigator.doNotTrack || window.doNotTrack || "0";
+        setTimeout(()=> setVal('popDnt', dnt === "1" ? "aktywne <span class='tag ok'>ON</span>" : "nieaktywne <span class='tag warn'>OFF</span>"), 1700);
+
+        // --- geo / vpn detection ---
+        let isVpn = false;
         try {
-            let resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
-            let data = await resp.json();
-            let geoString = "";
-            if(data.city) geoString += data.city;
-            if(data.region && data.region !== data.city) geoString += ", " + data.region;
-            if(data.country) geoString += "<br>" + data.country;
-            if(data.ip) geoString += "<br>[" + data.ip + "]";
-            document.getElementById("popGeo").innerHTML = geoString || "Lokalizacja ukryta";
+            const resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
+            const data = await resp.json();
+            setVal('popIp', `${data.ip || "—"}`, 'warn');
+            setVal('popCity', data.city || "—", 'warn');
+            setVal('popRegion', data.region || "—", 'warn');
+            setVal('popCountry', `${data.country || "—"} <span style="color:var(--muted);font-weight:400">${data.country_code ? '['+data.country_code+']' : ''}</span>`, 'warn');
+            setVal('popIsp', data.organization || data.organization_name || "Operator nieznany", 'warn');
+            // detect mismatch tz <-> country
+            if(data.timezone && tz && data.timezone !== tz){ isVpn = true; }
+            setVal('popVpn', isVpn ? "wykryto rozbieżność stref <span class='tag bad'>RYZYKO</span>" : "nie wykryto <span class='tag ok'>OK</span>", isVpn ? 'bad' : 'good');
         } catch(e) {
-            document.getElementById("popGeo").innerHTML = "Błąd / Ukryte przez VPN";
+            setVal('popIp', "ukryte / VPN", 'bad');
+            setVal('popCity', "nieznane", 'bad');
+            setVal('popRegion', "nieznane", 'bad');
+            setVal('popCountry', "nieznane", 'bad');
+            setVal('popIsp', "blokada CORS lub VPN", 'bad');
+            setVal('popVpn', "prawdopodobny VPN <span class='tag bad'>RYZYKO</span>", 'bad');
+            isVpn = true;
         }
+
+        window.__threat = isVpn ? 78 : (isMobile ? 32 : 24);
     }
-    
+
+    function showThreat(){
+        const score = window.__threat ?? 30;
+        const card = document.getElementById('popThreat');
+        const meter = document.getElementById('popThreatMeter');
+        const num = document.getElementById('popThreatNum');
+        const t = document.getElementById('popThreatTitle');
+        const d = document.getElementById('popThreatDesc');
+        card.style.display = 'flex';
+        let color = 'var(--green)', label = 'NISKIE RYZYKO', desc = 'Sesja czysta, brak nietypowych sygnałów. Możesz wejść do systemu.';
+        if(score >= 60){ color = 'var(--red)'; label = 'WYSOKIE RYZYKO'; desc = 'Wykryto VPN/proxy lub rozbieżność stref czasowych. Sesja będzie monitorowana.'; }
+        else if(score >= 35){ color = 'var(--amber)'; label = 'ŚREDNIE RYZYKO'; desc = 'Profil urządzenia mobilnego. Kilka sygnałów wymaga uwagi.'; }
+        meter.style.background = `conic-gradient(${color} 0deg, ${color} ${score*3.6}deg, #1a2030 ${score*3.6}deg)`;
+        num.style.color = color;
+        num.innerText = score;
+        t.style.color = color;
+        t.innerText = label;
+        d.innerText = desc;
+        card.style.borderColor = color;
+    }
+
     window.acceptDevicePopup = function() {
         document.getElementById("devicePopup").style.display = "none";
         window.runBoot();
