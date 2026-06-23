@@ -3,16 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HOWLORA</title>
+    <title>HOWLORA — PROTOKÓŁ DLA TATY</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+        :root {
+            --primary-color: #c5cdd8;
+            --accent-color: #ff3b30; /* Oryginalny czerwony */
+            --celebrate-color: #ffcc00; /* Złoty na Dzień Ojca */
+            --bg-color: #050608;
+            --panel-bg: rgba(11, 13, 18, 0.85);
+        }
+
         body {
-            background-color: #050608;
-            color: #c5cdd8;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
             font-family: 'Courier New', Courier, monospace;
             overflow-x: hidden;
             min-height: 100vh;
@@ -20,6 +28,8 @@
             user-select: none;
             animation: crt-flicker 0.15s infinite;
         }
+
+        /* CRT Effects */
         .crt-overlay {
             position: fixed;
             top: 0;
@@ -38,7 +48,7 @@
             left: 0;
             width: 100%;
             height: 6px;
-            background: rgba(255, 51, 51, 0.04);
+            background: rgba(255, 204, 0, 0.04); /* Złota skanlinia */
             z-index: 10000;
             pointer-events: none;
             animation: scanmove 8s linear infinite;
@@ -54,9 +64,15 @@
             pointer-events: none;
         }
         .phosphor-glow {
-            text-shadow: 0 0 2px rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 2px rgba(200, 200, 200, 0.4);
         }
-        #boot-screen, #login-screen {
+        .celebrate-glow {
+            color: var(--celebrate-color) !important;
+            text-shadow: 0 0 5px rgba(255, 204, 0, 0.6);
+        }
+
+        /* Screens Management */
+        #boot-screen, #login-screen, #wish-popup-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -66,19 +82,16 @@
             z-index: 10005;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            padding: 40px;
+            padding: 20px;
             box-sizing: border-box;
             transition: opacity 0.5s ease-out;
         }
-        #login-screen {
-            display: none;
-            opacity: 0;
-            justify-content: center;
-            align-items: center;
-            z-index: 10004;
-            padding: 20px;
+
+        /* Boot Screen */
+        #boot-screen {
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 40px;
         }
         .boot-terminal {
             width: 100%;
@@ -96,60 +109,75 @@
             opacity: 1;
         }
         .boot-success { color: #00ff66; font-weight: bold; }
-        .boot-accent { color: #ff3b30; }
+        .boot-accent { color: var(--celebrate-color); }
+
+        /* Login Screen */
+        #login-screen {
+            display: none;
+            opacity: 0;
+            justify-content: center;
+            align-items: center;
+            z-index: 10004;
+        }
         .login-box {
             font-size: 16px;
             letter-spacing: 2px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 15px;
             text-align: center;
+            border: 1px solid var(--celebrate-color);
+            padding: 30px;
+            background: rgba(10, 10, 10, 0.9);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
         }
         .login-input-wrapper {
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 51, 51, 0.4);
+            border-bottom: 1px solid rgba(255, 204, 0, 0.5);
             padding-bottom: 5px;
         }
         .login-input {
             background: transparent;
             border: none;
-            color: #ff3b30;
+            color: var(--celebrate-color);
             font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             outline: none;
-            width: 180px;
-            letter-spacing: 2px;
+            width: 200px;
+            letter-spacing: 3px;
             text-transform: uppercase;
             text-align: center;
         }
         .login-btn {
-            display: none;
             background: transparent;
-            border: 1px solid #ff3b30;
-            color: #ff3b30;
-            padding: 8px 16px;
+            border: 1px solid var(--celebrate-color);
+            color: var(--celebrate-color);
+            padding: 10px 20px;
             font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
             cursor: pointer;
             margin-top: 15px;
             letter-spacing: 2px;
             transition: all 0.2s;
+            width: 100%;
         }
         .login-btn:active {
-            background: #ff3b30;
+            background: var(--celebrate-color);
             color: #050608;
         }
         .login-cursor {
             animation: blink 1s step-end infinite;
-            color: #ff3b30;
+            color: var(--celebrate-color);
+            font-size: 18px;
         }
+
+        /* Main Interface */
         #main-interface {
             opacity: 0;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 1s ease-in-out;
             display: none;
             flex-direction: column;
             min-height: 100vh;
@@ -159,80 +187,68 @@
             display: flex;
             opacity: 1;
         }
+
         header {
             min-height: 50px;
-            border-bottom: 1px solid rgba(255, 51, 51, 0.2);
+            border-bottom: 1px solid rgba(255, 204, 0, 0.2);
             background: rgba(13, 15, 20, 0.9);
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
             letter-spacing: 2px;
-            font-size: 12px;
+            font-size: 11px;
             color: #627285;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 5px;
         }
-        header .sys-title { color: #a0b0c0; font-weight: bold; }
-        header .sys-time { color: #ff3b30; }
+        header .sys-title { color: var(--celebrate-color); font-weight: bold; text-transform: uppercase;}
+        header .sys-time { color: var(--accent-color); }
+
+        /* Workspace Grid */
         .workspace {
             flex: 1;
             display: grid;
-            grid-template-columns: 300px 1fr 340px;
+            grid-template-columns: 280px 1fr 300px;
             gap: 20px;
             padding: 20px;
             box-sizing: border-box;
             overflow: hidden;
         }
+
+        /* Sidebars */
         .sidebar-left, .sidebar-right {
-            background: rgba(11, 13, 18, 0.85);
+            background: var(--panel-bg);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
         }
-        .sidebar-left { border-left: 3px solid #627285; gap: 25px; }
-        .sidebar-right { border-right: 3px solid #ff3b30; gap: 20px; }
+        .sidebar-left { border-left: 3px solid var(--celebrate-color); gap: 20px; }
+        .sidebar-right { border-right: 3px solid var(--accent-color); gap: 15px; }
+
         .panel-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: #a0b0c0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             margin-bottom: 5px;
         }
-        .status-group { display: flex; flex-direction: column; gap: 15px; }
-        .status-item { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
-        .status-label { color: #627285; font-size: 11px; text-transform: uppercase; }
+
+        /* Status Items */
+        .status-group { display: flex; flex-direction: column; gap: 12px; }
+        .status-item { display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
+        .status-label { color: #627285; font-size: 10px; text-transform: uppercase; }
         .status-value { font-weight: bold; letter-spacing: 1px; }
-        .status-online { color: #00ff66; }
-        .status-active { color: #00ccff; }
-        .status-pending { color: #ffcc00; }
-        .status-critical { color: #ff3b30; animation: pulse-alert 1.5s infinite; }
-        .data-stream-container {
-            flex: 1;
-            background: rgba(5, 6, 8, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 10px;
-            font-size: 11px;
-            color: #4a5768;
-            overflow: hidden;
-            position: relative;
-            min-height: 150px;
-        }
-        .data-stream {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .log-warn { color: #ffcc00; }
-        .log-crit { color: #ff3b30; }
+        
+        .status-ok { color: #00ff66; }
+        .status-special { color: var(--celebrate-color); animation: pulse-glow 2s infinite; }
+        .status-warn { color: var(--accent-color); }
+
+        /* Main Menu Content */
         .main-menu {
             background: rgba(9, 11, 15, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.03);
@@ -240,157 +256,164 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 30px;
             text-align: center;
             position: relative;
         }
         .main-menu::before {
             content: '';
             position: absolute;
-            top: 15px; left: 15px; right: 15px; bottom: 15px;
-            border: 1px dashed rgba(255, 255, 255, 0.02);
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px dashed rgba(255, 204, 0, 0.1);
             pointer-events: none;
         }
-        .logo-container { margin-bottom: 35px; }
+
+        .logo-container { margin-bottom: 30px; }
         .logo {
-            font-size: 64px;
+            font-size: 50px;
             font-weight: 900;
-            letter-spacing: 14px;
+            letter-spacing: 10px;
             color: #ffffff;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1), 0 0 30px rgba(255, 51, 51, 0.15);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1), 0 0 30px rgba(255, 204, 0, 0.2);
             display: inline-block;
-            margin-right: -14px;
-            word-break: break-all;
+            margin-right: -10px;
         }
         .logo-tag {
-            font-size: 11px;
-            color: #ff3b30;
-            letter-spacing: 5px;
+            font-size: 10px;
+            color: var(--celebrate-color);
+            letter-spacing: 4px;
             text-transform: uppercase;
             margin-top: 5px;
             display: block;
-            opacity: 0.8;
+            opacity: 0.9;
         }
+
         .description {
-            max-width: 580px;
+            max-width: 500px;
             font-size: 14px;
-            line-height: 1.7;
+            line-height: 1.6;
             color: #92a1b3;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             letter-spacing: 1px;
-            padding: 0 10px;
         }
-        .btn-investigate {
+
+        /* Big Celebrate Button */
+        .btn-celebrate {
             background: transparent;
-            border: 1px solid #ff3b30;
+            border: 2px solid var(--celebrate-color);
             color: #ffffff;
-            padding: 18px 40px;
+            padding: 16px 30px;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             cursor: pointer;
             position: relative;
             transition: all 0.3s ease;
-            box-shadow: inset 0 0 10px rgba(255, 51, 51, 0.1), 0 0 10px rgba(255, 51, 51, 0.1);
-            width: 80%;
-            max-width: 350px;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+            width: 90%;
+            max-width: 320px;
+            text-transform: uppercase;
         }
-        .btn-investigate:hover, .btn-investigate:active {
-            background: #ff3b30;
+        .btn-celebrate:hover, .btn-celebrate:active {
+            background: var(--celebrate-color);
             color: #050608;
-            box-shadow: 0 0 25px rgba(255, 51, 51, 0.6);
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.5);
             animation: btn-glitch 0.2s infinite;
         }
-        .btn-investigate::before, .btn-investigate::after {
-            content: '>';
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 16px;
-            opacity: 0;
-            color: #ff3b30;
-        }
-        .btn-investigate::before { left: 15px; }
-        .btn-investigate::after { content: '<'; right: 15px; }
-        .btn-investigate:hover::before, .btn-investigate:active::before { left: 22px; opacity: 1; color: #000; }
-        .btn-investigate:hover::after, .btn-investigate:active::after { right: 22px; opacity: 1; color: #000; }
-        .dossier-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            flex: 1;
-        }
+
+        /* Dossier List (Spersonalizowane osiągnięcia) */
+        .dossier-list { display: flex; flex-direction: column; gap: 10px; }
         .dossier-card {
             background: rgba(5, 6, 8, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 16px;
-            position: relative;
-            cursor: crosshair;
-            transition: border-color 0.2s;
-        }
-        .dossier-card:hover, .dossier-card:active {
-            border-color: rgba(255, 51, 51, 0.4);
-            background: rgba(15, 10, 10, 0.8);
+            padding: 12px;
+            font-size: 11px;
         }
         .dossier-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-            background-color: #3a4454;
-            transition: background-color 0.2s;
+            top: 0; left: 0; width: 3px; height: 100%;
+            background-color: var(--celebrate-color);
         }
-        .dossier-card:hover::before, .dossier-card:active::before { background-color: #ff3b30; }
         .dossier-header {
-            font-size: 13px;
             font-weight: bold;
-            color: #d1d7e0;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .dossier-meta { font-size: 11px; color: #526072; line-height: 1.5; }
-        .status-badge {
-            font-size: 10px;
+            color: var(--celebrate-color);
+            margin-bottom: 5px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 2px 6px;
-            background: rgba(255, 51, 51, 0.1);
-            border: 1px solid rgba(255, 51, 51, 0.3);
-            color: #ff3b30;
-            font-weight: bold;
+            display: flex; justify-content: space-between;
         }
-        .redacted {
-            background-color: #222731;
-            color: #222731;
-            display: inline-block;
-            padding: 0 3px;
-            line-height: 1;
-            font-family: monospace;
+        .status-badge {
+            font-size: 9px;
+            padding: 1px 4px;
+            background: rgba(0, 255, 102, 0.1);
+            border: 1px solid rgba(0, 255, 102, 0.3);
+            color: #00ff66;
         }
-        .sys-warning {
-            margin-top: auto;
-            font-size: 10px;
-            color: #ffcc00;
-            text-align: center;
-            border: 1px dashed #ffcc00;
-            padding: 8px;
-            background: rgba(255, 204, 0, 0.05);
-            animation: pulse-alert 2s infinite;
-        }
+
         footer {
-            min-height: 35px;
+            min-height: 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.03);
             background: rgba(7, 8, 12, 0.9);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 11px;
+            font-size: 10px;
             color: #434d59;
             letter-spacing: 1px;
+            padding: 5px;
             text-align: center;
-            padding: 5px 10px;
         }
+
+        /* Wish Popup (Dla Mobile) */
+        #wish-popup-overlay {
+            display: none;
+            opacity: 0;
+            justify-content: center;
+            align-items: center;
+            z-index: 10010;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(3px);
+        }
+        .wish-popup {
+            background: #0a0b0d;
+            border: 2px solid var(--celebrate-color);
+            width: 85%;
+            max-width: 400px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.3);
+            position: relative;
+            animation: popup-data-in 0.4s ease-out;
+        }
+        .wish-popup-title {
+            color: var(--celebrate-color);
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .wish-popup-text {
+            color: var(--primary-color);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            min-height: 60px; /* Zapobiega skakaniu */
+        }
+        .wish-popup-btn {
+            background: var(--celebrate-color);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            letter-spacing: 1px;
+        }
+
+        /* Animations */
         @keyframes crt-flicker {
             0% { opacity: 0.995; }
             50% { opacity: 1; }
@@ -400,57 +423,50 @@
             0% { top: -5%; }
             100% { top: 105%; }
         }
-        @keyframes pulse-alert {
-            0% { opacity: 0.4; }
-            50% { opacity: 1; }
-            100% { opacity: 0.4; }
-        }
         @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
         }
+        @keyframes pulse-glow {
+            0% { text-shadow: 0 0 2px rgba(255, 204, 0, 0.4); }
+            50% { text-shadow: 0 0 8px rgba(255, 204, 0, 0.8); }
+            100% { text-shadow: 0 0 2px rgba(255, 204, 0, 0.4); }
+        }
         @keyframes btn-glitch {
             0% { transform: translate(0); text-shadow: none; }
-            20% { transform: translate(-2px, 1px); text-shadow: -1px 0 red, 1px 0 blue; }
-            40% { transform: translate(-1px, -1px); text-shadow: 1px 0 red, -1px 0 blue; }
-            60% { transform: translate(2px, 1px); text-shadow: -1px 0 red, 1px 0 blue; }
-            80% { transform: translate(1px, -1px); text-shadow: 1px 0 red, -1px 0 blue; }
+            20% { transform: translate(-2px, 1px); text-shadow: -1px 0 var(--accent-color), 1px 0 #00fff2; }
+            40% { transform: translate(-1px, -1px); text-shadow: 1px 0 var(--accent-color), -1px 0 #00fff2; }
+            60% { transform: translate(2px, 1px); text-shadow: -1px 0 var(--accent-color), 1px 0 #00fff2; }
             100% { transform: translate(0); text-shadow: none; }
         }
+        @keyframes popup-data-in {
+            0% { transform: scale(0.9); opacity: 0; background: var(--celebrate-color); }
+            100% { transform: scale(1); opacity: 1; background: #0a0b0d; }
+        }
 
+        /* Mobile Optimization */
         @media (max-width: 1024px) {
-            body { 
-                overflow-y: auto; 
-                height: auto;
-            }
+            body { overflow-y: auto; height: auto; }
             .workspace { 
                 grid-template-columns: 1fr; 
                 height: auto; 
-                gap: 20px; 
                 overflow: visible; 
+                padding: 10px;
+                gap: 15px;
             }
-            .main-menu { 
-                padding: 40px 15px; 
-                order: -1; 
-            }
-            .logo {
-                font-size: 42px;
-                letter-spacing: 8px;
-                margin-right: -8px;
-            }
-            .data-stream-container { 
-                height: 150px; 
-            }
-            .data-stream { 
-                position: relative; 
-                bottom: 0; left: 0; right: 0; 
-            }
-            .login-box {
-                flex-direction: column;
-            }
-            .login-btn {
-                display: block;
-            }
+            /* Wymuszenie kolejności na mobile: Logo/Przycisk -> Statusy -> Osiągnięcia */
+            .main-menu { order: -1; padding: 25px 15px; }
+            .sidebar-left { order: 0; }
+            .sidebar-right { order: 1; }
+
+            .logo { font-size: 36px; letter-spacing: 6px; margin-right: -6px; }
+            .description { font-size: 13px; margin-bottom: 30px; }
+            
+            header { padding: 10px; font-size: 10px; justify-content: center; text-align: center;}
+            header .sys-title { width: 100%; margin-bottom: 3px;}
+
+            .login-box { width: 90%; padding: 20px; }
+            .login-input { width: 100%; max-width: 160px; font-size: 16px;}
         }
     </style>
 </head>
@@ -465,187 +481,133 @@
 
     <div id="login-screen">
         <div class="login-box">
-            <span>PODAJ IDENTYFIKATOR KRYMINOLOGA:</span>
+            <span class="celebrate-glow">SYSTEM OPERACYJNY 'TATA v1.0'</span>
+            <span>PODAJ KOD DOSTĘPU SUPER OJCA:</span>
             <div class="login-input-wrapper">
-                <input type="text" id="login-input" class="login-input" autocomplete="off" spellcheck="false" maxlength="12">
+                <input type="text" id="login-input" class="login-input" autocomplete="off" spellcheck="false" maxlength="12" placeholder="Wpisz cokolwiek">
                 <span class="login-cursor">█</span>
             </div>
-            <button id="login-btn" class="login-btn">ZALOGUJ</button>
+            <button id="login-btn" class="login-btn">ZALOGUJ DO SYSTEMU</button>
         </div>
     </div>
 
     <div id="main-interface">
         <header>
-            <div class="sys-title">DEPARTAMENT POLICJI // FORENSIC ANALYSIS TERMINAL v4.82</div>
+            <div class="sys-title">CENTRALNY TERMINAL RODZINNY // Protokół: DZIEŃ OJCA</div>
             <div class="sys-time" id="live-clock">00:00:00</div>
         </header>
 
         <main class="workspace">
             <section class="sidebar-left">
-                <div class="panel-title">Status Systemu</div>
+                <div class="panel-title">Status Diagnostyczny</div>
                 <div class="status-group">
                     <div class="status-item">
-                        <span class="status-label">Kryminolog</span>
-                        <span class="status-value status-online">ONLINE</span>
+                        <span class="status-label">Obiekt monitorowany</span>
+                        <span class="status-value status-special">NAJLEPSZY TATA NA ŚWIECIE</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Dostęp do bazy</span>
-                        <span class="status-value status-active">AKTYWNY</span>
+                        <span class="status-label">Poziom Miłości</span>
+                        <span class="status-value status-special">NIEOGRANICZONY (∞)</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Status śledztwa</span>
-                        <span class="status-value status-pending">OCZEKUJE</span>
+                        <span class="status-label">Cierpliwość</span>
+                        <span class="status-value status-ok">NOMINALNA (Wysoka)</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Poziom zagrożenia</span>
-                        <span class="status-value status-critical">WYSOKI</span>
+                        <span class="status-label">Zapotrzebowanie na kawę</span>
+                        <span class="status-value status-warn">KRYTYCZNE</span>
                     </div>
-                </div>
-                <div class="panel-title" style="margin-top: 15px;">Aktywność sieciowa</div>
-                <div class="data-stream-container">
-                    <div class="data-stream" id="live-data-stream"></div>
                 </div>
             </section>
 
             <section class="main-menu">
                 <div class="logo-container">
-                    <h1 class="logo">HOWLORA</h1>
-                    <span class="logo-tag">Digital Forensics Archive</span>
+                    <h1 class="logo">TATA</h1>
+                    <span class="logo-tag">Special Recognition Protocol</span>
                 </div>
                 <p class="description">
-                    Trzy sprawy. Trzy ofiary. Jeden sprawca lub trzech różnych morderców. Przeanalizuj cyfrowe ślady, odkryj motywy i znajdź prawdę ukrytą w komputerach podejrzanych.
+                    Wykryto specjalną okazję. System HOWLORA wstrzymuje analizę cyfrową, aby uruchomić dedykowany moduł życzeń dla najważniejszej osoby w zespole.
                 </p>
-                <button class="btn-investigate" id="start-btn">ROZPOCZNIJ ŚLEDZTWO</button>
+                <button class="btn-celebrate" id="celebrate-btn">INICJUJ ŻYCZENIA</button>
             </section>
 
             <section class="sidebar-right">
-                <div class="panel-title">Akta spraw</div>
+                <div class="panel-title">Zarchiwizowane Osiągnięcia</div>
                 <div class="dossier-list">
                     <div class="dossier-card">
-                        <div class="dossier-header">
-                            <span>SPRAWA 01</span>
-                            <span class="status-badge">UTAJNIONA</span>
-                        </div>
-                        <div class="dossier-meta">
-                            KOD: H-7731<br>
-                            OFIARA: <span class="redacted" data-len="13">██████ ██████</span><br>
-                            LOKACJA: Sektor Centralny<br>
-                            DOWÓD: Obraz dysku HDD [Podejrzany_01]
-                        </div>
+                        <div class="dossier-header">🏆 Budowanie Domu<span class="status-badge">ZALICZONE</span></div>
+                        Analiza strukturalna potwierdza stabilność i ciepło.
                     </div>
                     <div class="dossier-card">
-                        <div class="dossier-header">
-                            <span>SPRAWA 02</span>
-                            <span class="status-badge">UTAJNIONA</span>
-                        </div>
-                        <div class="dossier-meta">
-                            KOD: H-9012<br>
-                            OFIARA: <span class="redacted" data-len="9">█████████</span><br>
-                            LOKACJA: Dzielnica Przemysłowa<br>
-                            DOWÓD: Kopia pamięci flash [Podejrzany_02]
-                        </div>
+                        <div class="dossier-header">🚗 Naprawa Wszystkiego<span class="status-badge">AKTYWNE</span></div>
+                        Niezliczone interwencje techniczne (od zabawek po auto).
                     </div>
                     <div class="dossier-card">
-                        <div class="dossier-header">
-                            <span>SPRAWA 03</span>
-                            <span class="status-badge">UTAJNIONA</span>
-                        </div>
-                        <div class="dossier-meta">
-                            KOD: H-0442<br>
-                            OFIARA: <span class="redacted" data-len="13">████ ████████</span><br>
-                            LOKACJA: Przedmieścia<br>
-                            DOWÓD: Szyfrowany wolumen SSD [Podejrzany_03]
-                        </div>
+                        <div class="dossier-header">👨‍🏫 Życiowy Mentor<span class="status-badge">LEGENDARNE</span></div>
+                        Baza danych pełna mądrych rad i wsparcia.
                     </div>
-                </div>
-                <div class="sys-warning">
-                    UWAGA: Wykryto nieautoryzowaną próbę deszyfracji z zewnątrz. Logi IP przekazane do Wydziału Wewnętrznego.
                 </div>
             </section>
         </main>
 
         <footer>
-            POUFNE — DO UŻYTKU WEWNĘTRZNEGO DEPARTAMENTU KRYMINALNEGO — SYSTEM HOWLORA v4.82
+            DOKUMENT POUFNY — TYLKO DO UŻYTKU WEWNĘTRZNEGO RODZINY — PROTOKÓŁ 'DZIEŃ OJCA' v1.0
         </footer>
     </div>
 
+    <div id="wish-popup-overlay">
+        <div class="wish-popup phosphor-glow">
+            <div class="wish-popup-title" id="wish-title">Dekodowanie wiadomości...</div>
+            <div class="wish-popup-text" id="wish-text">Uruchamianie skryptu życzeń. Proszę czekać...</div>
+            <button class="wish-popup-btn" id="wish-next-btn">DALEJ ></button>
+        </div>
+    </div>
+
     <script>
+        // --- AUDIO SYSTEM (Z oryginału) ---
         let audioCtx;
-        
         function initAudio() {
             if(!audioCtx) {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
+                if(AudioContext) audioCtx = new AudioContext();
+            }
+        }
+        function playSound(type) {
+            if(!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            if(type === 'beep') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if(type === 'click') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            } else if(type === 'confirm') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
             }
         }
 
-        function playBeep() {
-            if(!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function playClick() {
-            if(!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.05);
-        }
-
-        function playHeavyClick() {
-            if(!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function startAmbient() {
-            if(!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const filter = audioCtx.createBiquadFilter();
-            const gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.value = 50;
-            filter.type = 'lowpass';
-            filter.frequency.value = 150;
-            gain.gain.value = 0.015;
-            osc.connect(filter);
-            filter.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-        }
-
+        // --- SEKWENCJA BOOTOWANIA (Spersonalizowana) ---
         const bootLines = [
-            { text: "CRIMINOLOGY LOGISTICS OS v4.82.0-BETA", delay: 100 },
-            { text: "CORE(0): Initializing secured subsystem components...", delay: 300 },
-            { text: "NET: Establishing encrypted tunnel proxy to Central Node...", delay: 600 },
-            { text: "Łączenie z bazą danych...", delay: 1000, highlight: true },
-            { text: "Weryfikacja dostępności wektora pamięci...", delay: 1400 },
-            { text: "Zabezpieczenia lokalne aktywne.", delay: 1900, success: true },
-            { text: "Przejście w tryb autoryzacji manualnej.", delay: 2400 }
+            { text: "DAD_OS v1.0 Standard Boot Procedure", delay: 100 },
+            { text: "CORE: Sprawdzanie poziomu epickości...", delay: 400 },
+            { text: "EPIC LEVEL: Maximum.", delay: 600, success: true },
+            { text: "MEM: Ładowanie bazy 'Suchary i Żarty Dziadka'...", delay: 1000 },
+            { text: "Baza załadowana (Pojemność krytyczna).", delay: 1300, highlight: true },
+            { text: "NET: Nawiązywanie bezpiecznego połączenia z sercem...", delay: 1800 },
+            { text: "Zabezpieczenia aktywne. Miłość wykryta.", delay: 2200, success: true },
+            { text: "Wymagana autoryzacja Ojca.", delay: 2600 }
         ];
 
         const bootTerminal = document.getElementById('boot-terminal');
@@ -655,62 +617,47 @@
         const loginBtn = document.getElementById('login-btn');
         const mainInterface = document.getElementById('main-interface');
 
+        // Uruchomienie bootowania
         bootLines.forEach(line => {
             setTimeout(() => {
                 const p = document.createElement('p');
                 p.className = 'boot-line visible';
                 if (line.success) p.innerHTML = `[ <span class="boot-success">OK</span> ] ${line.text}`;
                 else if (line.highlight) p.innerHTML = `[ <span class="boot-accent">>></span> ] ${line.text}`;
-                else p.innerHTML = `[ TRM ] ${line.text}`;
+                else p.innerHTML = `[ SYS ] ${line.text}`;
                 bootTerminal.appendChild(p);
             }, line.delay);
         });
 
+        // Przejście do logowania
         setTimeout(() => {
             bootScreen.style.opacity = '0';
             setTimeout(() => {
                 bootScreen.style.display = 'none';
                 loginScreen.style.display = 'flex';
-                setTimeout(() => {
-                    loginScreen.style.opacity = '1';
-                    if (window.innerWidth > 1024) {
-                        loginInput.focus();
-                    }
-                }, 50);
+                setTimeout(() => { loginScreen.style.opacity = '1'; }, 50);
             }, 500);
-        }, 3000);
+        }, 3200);
 
-        document.addEventListener('click', (e) => {
-            if(loginScreen.style.display === 'flex' && e.target !== loginBtn && window.innerWidth > 1024) {
-                loginInput.focus();
-            }
-        });
-
+        // --- LOGOWANIE ---
         function executeLogin() {
-            if(loginInput.value.trim() !== '') {
-                initAudio();
-                playBeep();
-                startAmbient();
-                loginInput.disabled = true;
-                loginBtn.disabled = true;
-                loginScreen.style.opacity = '0';
-                
-                setTimeout(() => {
-                    loginScreen.style.display = 'none';
-                    mainInterface.style.display = 'flex';
-                    setTimeout(() => {
-                        mainInterface.classList.add('ready');
-                    }, 50);
-                }, 500);
-            }
+            // Działa z każdym hasłem, żeby Tata się nie stresował, ale klimat jest
+            initAudio();
+            playSound('confirm');
+            loginInput.disabled = true;
+            loginBtn.disabled = true;
+            loginScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                loginScreen.style.display = 'none';
+                mainInterface.style.display = 'flex';
+                setTimeout(() => { mainInterface.classList.add('ready'); }, 50);
+            }, 500);
         }
-
-        loginInput.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter') executeLogin();
-        });
-
+        loginInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') executeLogin(); });
         loginBtn.addEventListener('click', executeLogin);
 
+        // --- ZEGAR ---
         function updateClock() {
             const now = new Date();
             const hrs = String(now.getHours()).padStart(2, '0');
@@ -718,106 +665,65 @@
             const secs = String(now.getSeconds()).padStart(2, '0');
             document.getElementById('live-clock').textContent = `${hrs}:${mins}:${secs}`;
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateClock, 1000); updateClock();
 
-        const streamContainer = document.getElementById('live-data-stream');
-        const logTemplates = [
-            { t: "SECURE_CONN: Aktywny port bezpieczny 443", c: "" },
-            { t: "SYS: Skanowanie biometryczne pominięte", c: "" },
-            { t: "112_LOG: Zgłoszenie - Sektor 4, porzucony pojazd ofiary 02", c: "log-warn" },
-            { t: "WARN: Zablokowano próbę podsłuchu pakietów", c: "log-warn" },
-            { t: "NET: Skierowano ruch do zapasowego węzła kryptograficznego", c: "" },
-            { t: "CRIT: Wykryto usunięte logi w terminalu podejrzanego", c: "log-crit" },
-            { t: "MEM_STAT: Alokacja bufora analizatora: OK", c: "" },
-            { t: "FORENSIC: Deszyfrowanie ukrytej partycji w toku...", c: "log-warn" },
-            { t: "AUDIO_ANLYSIS: Wykryto szum tła w nagraniu z monitoringu", c: "" },
-            { t: "DB_QUERY: Dopasowywanie wzorców - Brak wyników", c: "" }
+        // --- SYSTEM ŻYCZEŃ (Popupy na Mobile) ---
+        const celebrateBtn = document.getElementById('celebrate-btn');
+        const wishOverlay = document.getElementById('wish-popup-overlay');
+        const wishTitle = document.getElementById('wish-title');
+        const wishText = document.getElementById('wish-text');
+        const wishNextBtn = document.getElementById('wish-next-btn');
+
+        // Treść życzeń w sekwencji
+        const wishes = [
+            { title: "ZASZYFROWANA WIADOMOŚĆ", text: "Cześć Tato! W dniu Twojego święta, system Howlora ma dla Ciebie coś specjalnego." },
+            { title: "ANALIZA: TATA", text: "Z naszej analizy wynika, że jesteś absolutnie najlepszym Ojcem we wszystkich znanych sektorach cyfrowych." },
+            { title: "DZIĘKUJĘ", text: "Dziękuję Ci za Twoją cierpliwość, za każdą naprawioną rzecz i za to, że zawsze mogę na Ciebie liczyć." },
+            { title: "ŻYCZENIA", text: "Życzę Ci mnóstwo zdrowia, czasu na relaks (i kawę!), oraz samych sukcesów (w grach i w życiu!)." },
+            { title: "KONIEC PROTOKOŁU", text: "Jesteś naszym Super Bohaterem. Kocham Cię! <br><br> (Kliknij, aby uruchomić grę)" }
         ];
 
-        function addLogLine() {
-            const logData = logTemplates[Math.floor(Math.random() * logTemplates.length)];
-            const p = document.createElement('p');
-            const now = new Date();
-            const timestamp = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            p.textContent = `[${timestamp}] ${logData.t}`;
-            if(logData.c) p.className = logData.c;
-            p.style.opacity = '0';
-            p.style.transition = 'opacity 0.3s ease';
-            streamContainer.appendChild(p);
-            setTimeout(() => { p.style.opacity = '1'; }, 50);
-            while (streamContainer.children.length > 8) {
-                streamContainer.removeChild(streamContainer.firstChild);
-            }
-        }
+        let currentWishIndex = 0;
 
-        setInterval(addLogLine, 2500);
-        for (let i = 0; i < 5; i++) {
-            setTimeout(addLogLine, i * 300);
-        }
-
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!<>{}';
-        document.querySelectorAll('.dossier-card').forEach(card => {
-            const badge = card.querySelector('.status-badge');
-            const redacted = card.querySelector('.redacted');
-            const originalBadge = badge.innerText;
-            const targetLen = parseInt(redacted.getAttribute('data-len'));
-            let interval;
-
-            function startDecode() {
-                playClick();
-                badge.innerText = 'DEKODOWANIE...';
-                badge.style.color = '#ffcc00';
-                badge.style.borderColor = '#ffcc00';
-                badge.style.background = 'rgba(255, 204, 0, 0.1)';
-                
-                clearInterval(interval);
-                interval = setInterval(() => {
-                    let randStr = '';
-                    for(let i=0; i<targetLen; i++) {
-                        if(i===6 && targetLen===13) randStr += ' ';
-                        else if(i===4 && targetLen===13) randStr += ' ';
-                        else randStr += chars.charAt(Math.floor(Math.random() * chars.length));
-                    }
-                    redacted.innerText = randStr;
-                    redacted.style.backgroundColor = 'transparent';
-                    redacted.style.color = '#ff3b30';
-                }, 40);
-            }
-
-            function stopDecode() {
-                clearInterval(interval);
-                badge.innerText = originalBadge;
-                badge.style.color = '';
-                badge.style.borderColor = '';
-                badge.style.background = '';
-                let blockStr = '';
-                for(let i=0; i<targetLen; i++) {
-                    if((i===6 && targetLen===13) || (i===4 && targetLen===13 && originalBadge.includes("03"))) blockStr += ' ';
-                    else blockStr += '█';
-                }
-                redacted.innerText = blockStr;
-                redacted.style.backgroundColor = '';
-                redacted.style.color = '';
-            }
-
-            card.addEventListener('mouseenter', startDecode);
-            card.addEventListener('mouseleave', stopDecode);
-            card.addEventListener('touchstart', startDecode);
-            card.addEventListener('touchend', stopDecode);
+        celebrateBtn.addEventListener('click', () => {
+            initAudio();
+            playSound('confirm');
+            wishOverlay.style.display = 'flex';
+            setTimeout(() => { wishOverlay.style.opacity = '1'; }, 10);
+            showWish(0);
         });
 
-        const startBtn = document.getElementById('start-btn');
-        
-        startBtn.addEventListener('mouseenter', () => {
-            playClick();
-        });
-        
-        startBtn.addEventListener('click', () => {
-            playHeavyClick();
+        function showWish(index) {
+            currentWishIndex = index;
+            wishTitle.classList.remove('celebrate-glow');
+            wishText.style.opacity = 0;
+            
+            // Efekt maszynopisu (uproszczony dla wydajności)
             setTimeout(() => {
-                location.href = 'howlora.html';
-            }, 300);
+                wishTitle.textContent = wishes[index].title;
+                wishText.innerHTML = wishes[index].text;
+                wishText.style.opacity = 1;
+                playSound('beep');
+                if(index === wishes.length - 1) {
+                    wishTitle.classList.add('celebrate-glow');
+                    wishNextBtn.textContent = "URUCHOM GRE >";
+                }
+            }, 200);
+        }
+
+        wishNextBtn.addEventListener('click', () => {
+            playSound('click');
+            if(currentWishIndex < wishes.length - 1) {
+                showWish(currentWishIndex + 1);
+            } else {
+                // Koniec życzeń -> Przejście do gry
+                wishOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    wishOverlay.style.display = 'none';
+                    // Przekierowanie do właściwej gry (z Twojego oryginału)
+                    location.href = 'howlora.html'; 
+                }, 500);
+            }
         });
     </script>
 </body>
