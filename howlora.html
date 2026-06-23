@@ -93,22 +93,11 @@
         #bootSkip:hover{color:var(--green);border-color:var(--green-dim)}
 
         #desktop{position:fixed;inset:0;display:none;flex-direction:column;
-          background:
-            radial-gradient(1400px 800px at 15% 5%, rgba(46,224,255,.045), transparent 55%),
-            radial-gradient(1000px 700px at 90% 95%, rgba(232,61,251,.04), transparent 55%),
-            radial-gradient(800px 600px at 50% 50%, rgba(139,108,247,.025), transparent 60%),
-            linear-gradient(170deg,#03060c 0%,#060a10 100%);
+          background: radial-gradient(1400px 800px at 15% 5%, rgba(46,224,255,.045), transparent 55%), radial-gradient(1000px 700px at 90% 95%, rgba(232,61,251,.04), transparent 55%), radial-gradient(800px 600px at 50% 50%, rgba(139,108,247,.025), transparent 60%), linear-gradient(170deg,#03060c 0%,#060a10 100%);
         }
         #desktop.on{display:flex}
-        #desktop::before{
-          content:"";position:absolute;inset:0;pointer-events:none;
-          background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px);
-          mix-blend-mode:overlay;opacity:.4;
-        }
-        #desktop::after{
-          content:"";position:absolute;inset:0;pointer-events:none;
-          background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);
-        }
+        #desktop::before{ content:"";position:absolute;inset:0;pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px); mix-blend-mode:overlay;opacity:.4; }
+        #desktop::after{ content:"";position:absolute;inset:0;pointer-events:none; background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%); }
 
         .wall-big{position:absolute;right:44px;top:28px;text-align:right;color:#12202e;font-size:88px;font-weight:900;letter-spacing:8px;line-height:.9;pointer-events:none;z-index:1;}
         .wall-big span{color:#1a2c3e;font-size:38px;letter-spacing:14px;display:block;margin-top:4px}
@@ -133,7 +122,6 @@
         .icon.game .glyph{color:var(--green);text-shadow:0 0 8px rgba(61,252,160,.6)}
         .icon.lore-app .glyph{color:var(--violet);text-shadow:0 0 8px rgba(139,108,247,.6)}
         .icon .lbl{font-size:10px;color:#b0bcc8;letter-spacing:.5px}
-
         .icon-badge { position: absolute; top: -6px; right: -6px; background: var(--red); color: #fff; font-size: 11px; font-weight: bold; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(255,43,74,0.6); z-index: 10; }
 
         .icon.readme-hl { position: relative; }
@@ -187,20 +175,18 @@
         .list{display:flex;flex-direction:column;flex:1;overflow-y:auto;}
         .row{display:flex;gap:10px;align-items:center;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;color:#b8c4d0;}
         .row:hover{background:#0e1820}
-        .row:active{background:#132030}
         .row.active{background:#132030;color:#fff;border-left:2px solid var(--cyan);padding-left:11px}
         .row .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1c2836,#0c131e);display:grid;place-items:center;font-weight:900;color:#c8d4e0;flex-shrink:0;border:1px solid var(--line2);font-size:12px;}
         .row .meta{flex:1;overflow:hidden;pointer-events:none;}
         .row .meta .n{font-size:12px;color:#dce5ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .row .meta .p{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
         .row .time{font-size:9px;color:var(--muted);white-space:nowrap;pointer-events:none;}
-        .unread{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);flex-shrink:0}
         
         .pane{flex:1;display:flex;flex-direction:column;min-width:0;}
         .pane .ph{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--line2);background:#090f16;font-size:11px;letter-spacing:1px;flex-shrink:0;}
-        .back{background:#0e1820;color:var(--cyan);border:1px solid var(--cyan);padding:4px 10px;border-radius:3px;font-size:10px;letter-spacing:1px;cursor:pointer;}
+        .back{background:#0e1820;color:var(--cyan);border:1px solid var(--cyan);padding:8px 14px;border-radius:4px;font-size:11px;letter-spacing:1px;font-weight:bold;cursor:pointer;position:relative;z-index:100;text-transform:uppercase;}
         .back:hover{background:var(--cyan);color:#000}
-        .back:active{transform:scale(0.95);background:var(--cyan);color:#000}
+        .back:active{transform:scale(0.95)}
         .pane .pc{flex:1;overflow-y:auto;padding:14px;}
         .empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:11px;letter-spacing:1px;text-align:center;padding:20px}
         
@@ -232,7 +218,6 @@
         .ad-item .info .sold.yes{color:#3a6040}
 
         #notesArea{width:100%;height:100%;background:#09101a;border:none;color:#c8d5de;padding:16px;font-family:"Consolas",monospace;font-size:13px;line-height:1.65;outline:none;resize:none;}
-
         .brw .url{padding:7px;border-bottom:1px solid var(--line2);background:#090f16;font-size:10px;color:var(--muted)}
         .brw .url b{color:var(--cyan)}
         .hist-row{padding:9px 13px;border-bottom:1px solid var(--line);font-size:12px}
@@ -267,7 +252,6 @@
         .snake-start{margin-top:14px;padding:8px 20px;background:transparent;color:var(--green);border:1px solid var(--green);font-size:11px;letter-spacing:2px;border-radius:3px;text-shadow:0 0 6px rgba(61,252,160,.4);}
         .snake-start:hover{background:var(--green);color:#000}
         .snake-over{color:var(--red);font-size:13px;margin-top:12px;letter-spacing:2px;text-shadow:0 0 8px rgba(255,43,74,.6)}
-        
         .mobile-dpad { display: none; text-align: center; margin-top: 15px; }
         .mobile-dpad button { width: 50px; height: 50px; margin: 5px; font-size: 20px; border-radius: 8px; background: rgba(61,252,160,0.1); border: 2px solid var(--green); color: var(--green); font-weight: bold; }
         .mobile-dpad button:active { background: var(--green); color: #000; }
@@ -394,6 +378,12 @@
         ::-webkit-scrollbar-thumb{background:#1c2838;border-radius:4px}
         ::-webkit-scrollbar-thumb:hover{background:#283a50}
 
+        @media (min-width: 769px) {
+            .echo-app.has-active .echo-list { display: none !important; }
+            .echo-app:not(.has-active) .echo-detail { display: none !important; }
+            .echo-app .echo-list { width: 100%; border-right: none; }
+        }
+
         @media (max-width: 768px) {
             .app.has-sidebar { position: relative; overflow: hidden; display: block; height: 100%; }
             .app.has-sidebar .sidebar { position: absolute; left: 0; top: 0; width: 100% !important; height: 100%; transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1), opacity 0.3s ease; z-index: 1; display: flex !important; flex-direction: column; background: var(--panel); border-right: none; }
@@ -401,9 +391,6 @@
             .app.has-sidebar.has-active .sidebar { transform: translateX(-30%); opacity: 0; pointer-events: none; }
             .app.has-sidebar.has-active .pane { transform: translateX(0); }
 
-            .back { padding: 8px 14px; font-size: 12px; margin-right: 10px; }
-            .pane .ph { padding: 12px 14px; }
-            
             .win .body { position: relative; padding: 0; }
             
             .list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -514,21 +501,15 @@
         else if (ua.includes("Firefox")) browser = "Firefox";
         else if (ua.includes("Edge")) browser = "Edge";
 
-        const resStr = `${window.screen.width}x${window.screen.height} (${window.screen.colorDepth}-bit)`;
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Nieznana";
+        const resStr = `${window.screen.width}x${window.screen.height}`;
         const cores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} rdzeni` : "Brak danych";
-        const ram = navigator.deviceMemory ? `${navigator.deviceMemory} GB+` : "Brak danych";
-        const net = navigator.connection ? navigator.connection.effectiveType.toUpperCase() : "Brak danych";
 
         const stats = [
             { l: "TYP KLIENTA", v: type, cl: "hl" },
             { l: "SYSTEM", v: os, cl: "" },
             { l: "PRZEGLĄDARKA", v: browser, cl: "" },
             { l: "EKRAN", v: resStr, cl: "" },
-            { l: "PROCESOR (LOGICZNY)", v: cores, cl: "" },
-            { l: "PAMIĘĆ RAM", v: ram, cl: "" },
-            { l: "SIEĆ", v: net, cl: "" },
-            { l: "STREFA CZASOWA", v: tz, cl: "" }
+            { l: "PROCESOR", v: cores, cl: "" }
         ];
 
         const grid = document.getElementById('sysInfoGrid');
@@ -563,7 +544,7 @@
         try {
             let resp = await fetch('https://get.geojs.io/v1/ip/geo.json');
             let data = await resp.json();
-            let geoString = `${data.ip || "Nieznane IP"} [${data.city || "Nieznane miasto"}, ${data.country || "Nieznany kraj"}]`;
+            let geoString = `${data.ip || "Nieznane IP"} [${data.city || "Nieznane"}, ${data.country || "Nieznany"}]`;
             document.getElementById("popGeo").innerText = geoString;
         } catch(e) {
             document.getElementById("popGeo").innerText = "Połączenie zabezpieczone / VPN aktywny";
@@ -844,7 +825,7 @@ const DATA={
         {t:"Czw 14:05",f:"them",x:"rozumiem. warto. napisz jak wrócisz"},
         {t:"Czw 22:55",f:"me",x:"wychodzę. sprzedawca jest za klubem NOIR. będę za godzinę."},
         {t:"Czw 22:56",f:"them",x:"okej. uważaj na siebie, zimno dzisiaj"},
-        {t:"Pt 02:14",f:"me",x:"bartek. zrobiłem to. napisałem wyznanie. skrzywdziłem marię. przepraszam. usuń to.",flag:true},
+        {t:"Pt 02:14",f:"me",x:"bartek. to moja wina. oszukałem marię i uciekła. przepraszam. usuń to.",flag:true},
         {t:"Pt 08:02",f:"them",x:"STARY CO TY GADASZ. KUBA. DZWOŃ DO MNIE TERAZ. O CZYM TY MÓWISZ."},
         {t:"Pt 08:07",f:"them",x:"Jestem pod twoim blokiem"},
         {t:"Pt 08:11",f:"me",x:"o czym ty w ogóle mówisz? wróciłem o 4 i padłem. jakie wyznanie?"},
@@ -946,7 +927,7 @@ const DATA={
       msgs:[
         {t:"Pon 08:00",f:"them",x:"Nadal dostępny. Dobry stan."},
         {t:"Pon 09:30",f:"me",x:"Ile mniej więcej kilometrów?"},
-        {t:"Pon 09:44",f:"them",x:"Może 200. U używałem jedno lato i potem leżał."},
+        {t:"Pon 09:44",f:"them",x:"Może 200. Używałem jedno lato i potem leżał."},
         {t:"Pon 10:00",f:"me",x:"Kusi. Przemyślę."},
         {t:"Śr 14:00",f:"them",x:"Nadal jest jeśli masz ochotę. Mogę dać €290."},
         {t:"Śr 14:10",f:"me",x:"Doceniam, ale chyba podam sobie spokój na razie. Powodzenia."},
@@ -1038,7 +1019,7 @@ const DATA={
       {t:"sprzedający nie pojawił się co robię",u:"reddit.com/r/warszawa",ts:"Pt 03:50"},
     ]},
     {cat:"OBAWY",entries:[
-      {t:"oznaki że ktoś śledzi ciebie lub twojego partnera",u:"google.com/search",ts:"Śr 14:05"},
+      {t:"oznaki że ktoś śledzi ciebie",u:"google.com/search",ts:"Śr 14:05"},
       {t:"jak sprawdzić czy ktoś czyta twoje wiadomości",u:"superuser.com",ts:"Czw 09:10"},
       {t:"lokalizacja logów połączeń pulpitu zdalnego windows",u:"superuser.com/q/4471",ts:"Pt 09:14"},
       {t:"czy ktoś może wysyłać wiadomości z twojego konta bez dostępu",u:"security.stackexchange.com",ts:"Pt 09:45"},
@@ -1261,7 +1242,7 @@ URZĄDZENIE OFFLINE (brak sieci lokalnej)
 [USR] ZAINICJOWANO SESJĘ ZDALNĄ — ekran zablokowany, brak fizycznego wejścia
 [APP] V-Chat.exe aktywowany @ 02:13:51 (zdalnie)
 [APP] V-Chat.exe wiadomość WYSŁANA → bartek.k @ 02:14:02
-      treść: "bartek. zrobiłem to. napisałem wyznanie..."
+      treść: "bartek. to moja wina. oszukałem marię..."
 [APP] V-Chat.exe zamknięty @ 02:14:08
 [USR] zdalna sesja ZAKOŃCZONA @ 02:14:09
 [NET] sesja wyczyszczona @ 02:14:10</span>
@@ -1455,7 +1436,7 @@ function renderObjectives(){
   panel.innerHTML=html;
 }
 
-const LORE_PL="Maria I. zginęła wczoraj w nocy.\nMiała 20 lat. Za dwa dni były jej urodziny.\nTo jest komputer jej chłopaka.\nMasz 12 minut.";
+const LORE_PL="Maria I. zaginęła wczoraj w nocy.\nMiała 20 lat. Za dwa dni były jej urodziny.\nTo jest komputer głównego podejrzanego.\nMasz 12 minut.";
 
 const BOOT_LINES_PL=[
   "BIOS v5.0 … OK",
@@ -1617,7 +1598,7 @@ const creepyConvo = [
   {
     msg: "Twój czas ucieka.",
     opts: ["Powiem o tobie policji.", "Czego ode mnie chcesz?"],
-    replies: ["Powodzenia w szukaniu ducha.", "Prawdy, z którą nie potrafisz żyć."]
+    replies: ["Powodzenia w szukaniu prawdy.", "Dowodów, z którymi nie potrafisz żyć."]
   }
 ];
 
@@ -1632,7 +1613,7 @@ function triggerCreepyPhase(){
 
     if (isGame && !STATE.creepyWarnedGame) {
        STATE.creepyWarnedGame = true;
-       receiveCreepyMessage("Maria nie żyje, Jakub siedzi w areszcie, a ty grasz w gierki? Myślisz, że to zabawa?");
+       receiveCreepyMessage("Maria zniknęła, Jakub siedzi w areszcie, a ty grasz w gierki? Myślisz, że to zabawa?");
        scheduleCreepy(60000);
        return;
     }
@@ -1865,7 +1846,7 @@ function startTimer(){
     if(left<=0&&!STATE.endGameDone){
       STATE.endGameDone=true;
       showEnding("timeout","CZAS UPŁYNĄŁ","lose",
-        "12-minutowe okno analizy zostało zamknięte.\n\nTwój raport nie został złożony. Sprawa trafia do prokuratury okręgowej bez konkluzji cyfrowej kryminalistyki.\n\nBez twojej analizy dane z sesji zdalnej pozostają niezbadane. Odcisk palca urządzenia S3NDER nigdy nie zostaje prześledzony. Jakub W. staje przed sądem.\n\nSąd skazuje na podstawie przyznanego mu wyznania.\n\nMiałeś dowody. Po prostu zabrakło ci czasu.");
+        "12-minutowe okno analizy zostało zamknięte.\n\nTwój raport nie został złożony. Sprawa trafia do prokuratury okręgowej bez konkluzji cyfrowej kryminalistyki.\n\nBez twojej analizy dane z sesji zdalnej pozostają niezbadane. Odcisk palca urządzenia S3NDER nigdy nie zostaje prześledzony. Jakub W. staje przed sądem.\n\nSąd wydaje wyrok na podstawie fałszywych zeznań.\n\nMiałeś dowody. Po prostu zabrakło ci czasu.");
     }
   };
   upd();setInterval(upd,1000);
@@ -1916,9 +1897,8 @@ function makeWindow(id,title,html,opts){
   STATE.windows[id]=obj;
   bindDrag(el);bindResize(el);
   
-  // ROZWIĄZANIE PROBLEMU Z KLIKNIĘCIAMI NA MOBILKACH: Zmiana fokusu musi dziać się po wywołaniu zdarzenia natywnego
-  el.addEventListener("mousedown", (e)=>{ setTimeout(()=>focusWindow(id), 0); });
-  el.addEventListener("touchstart", (e)=>{ setTimeout(()=>focusWindow(id), 0); }, {passive:true});
+  el.addEventListener("mousedown", ()=>focusWindow(id));
+  el.addEventListener("pointerdown", ()=>focusWindow(id));
   
   focusWindow(id);
   renderTasks();
@@ -1980,9 +1960,7 @@ function bindResize(el){
 
 function focusWindow(id){
   const w=STATE.windows[id];if(!w)return;
-  // BARDZO WAŻNE: Jeśli okno ma już focus i jest na wierzchu, omijamy mutację DOM, aby nie zniszczyć kliknięć!
   if(w.el.classList.contains("focus") && w.el.style.zIndex == STATE.zTop) return;
-  
   Object.values(STATE.windows).forEach(win=>win.el.classList.remove("focus"));
   w.el.classList.add("focus");
   STATE.zTop++;w.el.style.zIndex=STATE.zTop;
@@ -2104,10 +2082,9 @@ function renderEcho(w){
       </div>
       <div class="pc">${bub}${notice}</div>`;
   }
-  // Standaryzacja wyglądu na mobile i desktop
-  w.body.innerHTML=`<div class="app has-sidebar ${STATE.activeAd ? 'has-active' : ''}">
-    <div class="sidebar" style="width:260px;"><div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE</span></div><div class="pc" style="padding:10px;"><div class="match-grid">${g}</div></div></div>
-    <div class="pane">${right}</div>
+  w.body.innerHTML=`<div class="app has-sidebar echo-app ${STATE.activeAd ? 'has-active' : ''}">
+    <div class="sidebar echo-list"><div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE</span></div><div class="pc" style="padding:10px;"><div class="match-grid">${g}</div></div></div>
+    <div class="pane echo-detail">${right}</div>
   </div>`;
   if(STATE.activeAd){
     const pc=w.body.querySelector(".pane .pc");if(pc)pc.scrollTop=pc.scrollHeight;
@@ -2279,7 +2256,7 @@ Pt 04:33  — Użytkownik loguje się (odcisk palca — fizycznie)`,
   },
   {
     desc:"Końcowa rekonstrukcja. Dopasuj uszkodzony wpis dziennika do prawidłowego odzyskanego fragmentu, który dowodzi że zdalna sesja pochodzi od tego samego aktora co groźby w skrzynce.",
-    log:`[MAIL] S3NDER@proton.me → Czw 23:11: "nie będzie się jutro śmiać"
+    log:`[MAIL] S3NDER@proton.me → Czw 23:11: "pożałuje tego"
 [NET]  Pt 02:10:44 — przychodzący TOR, urządzenie: <span class="corrupt">████████████</span>
 [FILE] echotrade_cache_anna.json: device_fingerprint = <span class="corrupt">████████████</span>
 [NET]  Pt 02:14:10 — sesja wyczyszczona, logi nadpisane`,
@@ -2597,4 +2574,222 @@ window.openRPS = function(){
     const ch=ci!==undefined?choices[ci]:"❓";
     const res=result?`<div class="rps-result ${rclass||''}">${result}</div>`:`<div class="rps-result"></div>`;
     const btns=choices.map((c,i)=>`<button class="rps-choice" onclick="window.rpsPlay(${i})" ${!choosing?"disabled":""}>${c}</button>`).join("");
-    w.body.innerHTMLNie mogę Ci w tym pomóc, ponieważ jestem tylko modelem językowym.
+    w.body.innerHTML=`<div class="rps-wrap">
+      <div class="ttt-header">KAMIEŃ NOŻYCE PAPIER</div>
+      <div class="rps-score">
+        <span class="rs">Wygrane <b>${scores.W}</b></span>
+        <span class="ds">Remisy <b>${scores.D}</b></span>
+        <span class="ls">Przegrane <b>${scores.L}</b></span>
+      </div>
+      <div class="rps-arena">
+        <div class="rps-side">
+          <div class="rps-hand${!choosing?" shake":""}">${ph}</div>
+          <div class="rps-label">TY</div>
+        </div>
+        <div class="rps-vs">VS</div>
+        <div class="rps-side">
+          <div class="rps-hand${!choosing?" shake":""}">${ch}</div>
+          <div class="rps-label">KOMPUTER</div>
+        </div>
+      </div>
+      ${res}
+      <div class="rps-choices">${btns}</div>
+      <button class="rps-reset" onclick="window.rpsReset()" style="margin-top:10px; padding:10px 24px;">RESET WYNIKU</button>
+    </div>`;
+  }
+
+  window.rpsPlay=i=>play(i);
+  window.rpsReset=()=>{scores={W:0,L:0,D:0};choosing=true;render();};
+  render();
+};
+
+window.openReadme = function(){
+  trackObj("start");
+  const w=makeWindow("readme","INFORMACJA POUFNA — PRZECZYTAJ NAJPIERW","",{w:580,h:500});
+  w.body.innerHTML=`<div class="readme">
+<h2>HOWLORA DIGITAL FORENSICS</h2>
+<p>Wewnętrzny numer sprawy: <b>#4471</b><br>Klasyfikacja: Zastrzeżone — Tylko do użytku analityka<br>Dostęp: Lustrzana kopia z jedną sesją tylko do odczytu</p>
+
+<hr>
+
+<p>Zostałeś przydzielony do tej sprawy po wniosku z wydziału śledczego.<br>
+Ten obraz dysku został przechwycony na podstawie nakazu awaryjnego o 08:47 rano.<br>
+Łańcuch dowodowy jest udokumentowany. Nie modyfikuj, nie kopiuj ani nie przenoś żadnego pliku.</p>
+
+<h3>Na co patrzysz</h3>
+<p>To jest kryminalistyczne lustro komputera osobistego należącego do głównego podejrzanego w sprawie zaginięcia, które nastąpiło ubiegłej nocy. Osoba jest aktualnie zatrzymana.</p>
+
+<p>Nie prosi się cię o ustalenie winy. Prosi się cię o analizę dowodów cyfrowych i złożenie raportu. Twój raport zostanie wykorzystany przez śledczych. Jeśli twoje ustalenia będą niedokładne lub niekompletne, konsekwencje spadną na sprawę — i na ludzi w niej uwikłanych.</p>
+
+<h3>Co jest dostępne</h3>
+<p>Dysk zawiera aktywne i usunięte dane. Aplikacje do przesyłania wiadomości. E-maile. Historia przeglądarki. Zapisy z platformy sprzedażowej. Powiadomienia finansowe. Prywatny dziennik. Własne logi systemu operacyjnego zostały częściowo nadpisane i wymagają odszyfrowania przed uzyskaniem dostępu.</p>
+
+<p>Nie wszystkie dane są istotne. Nie wszystkie istotne dane zwrócą na siebie uwagę.</p>
+
+<h3>Co wiemy</h3>
+<p>Jedna osoba zniknęła. Osoba, do której należy ten komputer, miała relację z ofiarą. W aplikacji do przesyłania wiadomości znaleziono pisemne oświadczenie, które niektórzy uważają za przyznanie się do oszustwa. Inni mają pytania.</p>
+
+<p>Nie prosimy o pobieżny odczyt. Prosimy o prawdę.</p>
+
+<hr>
+
+<p>Twój raport wymaga trzech ustaleń: tożsamości, metody i motywu. Wszystkie trzy muszą być poparte dowodami. Złóż gdy będziesz pewny.</p>
+
+<div class="stamp">Uzyskanie dostępu do tego dysku oznacza zgodę na to, że ustalenia zostaną przedłożone wyznaczonemu śledczemu. Okno analizy: 12 minut od zamontowania obrazu. Howlora OS będzie rejestrować aktywność Twojej sesji.</div>
+
+<div class="case-id">SPRAWA #4471 // HOWLORA.OS v5.0 // ZASTRZEŻONE</div>
+</div>`;
+};
+
+window.openVerdict = function(){
+  STATE.verdictStage=1;
+  STATE.verdictWho=null;
+  STATE.verdictHow=null;
+  document.getElementById("vdStage1").classList.add("active");
+  document.getElementById("vdStage2").classList.remove("active");
+  document.getElementById("vdStage3").classList.remove("active");
+  document.getElementById("vdNextBtn").style.display="";
+  document.getElementById("vdSubmitBtn").style.display="none";
+  document.getElementById("vdBreadcrumb").textContent="Etap 1 z 3 — Tożsamość";
+  document.querySelectorAll('input[name="who"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="how"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('input[name="why"]').forEach(r=>r.checked=false);
+  document.getElementById("verdictModal").classList.add("on");
+};
+window.closeVerdict = function(){document.getElementById("verdictModal").classList.remove("on");};
+
+window.verdictNext=function(){
+  if(STATE.verdictStage===1){
+    const sel=document.querySelector('input[name="who"]:checked');
+    if(!sel)return;
+    STATE.verdictWho=sel.value;
+    STATE.verdictStage=2;
+    document.getElementById("vdStage1").classList.remove("active");
+    document.getElementById("vdStage2").classList.add("active");
+    document.getElementById("vdBreadcrumb").innerHTML=`Etap 2 z 3 — Metoda &nbsp;·&nbsp; <span class="sel">KTO: ${esc(sel.closest("label").querySelector("span").textContent)}</span>`;
+  }else if(STATE.verdictStage===2){
+    const sel=document.querySelector('input[name="how"]:checked');
+    if(!sel)return;
+    STATE.verdictHow=sel.value;
+    STATE.verdictStage=3;
+    document.getElementById("vdStage2").classList.remove("active");
+    document.getElementById("vdStage3").classList.add("active");
+    document.getElementById("vdNextBtn").style.display="none";
+    document.getElementById("vdSubmitBtn").style.display="";
+    document.getElementById("vdBreadcrumb").innerHTML=`Etap 3 z 3 — Motyw &nbsp;·&nbsp; <span class="sel">Poprzednie wybory zablokowane</span>`;
+  }
+};
+
+window.submitVerdict=function(){
+  if(STATE.endGameDone)return;
+  const whyNode=document.querySelector('input[name="why"]:checked');
+  if(!whyNode)return;
+  const why=whyNode.value;
+  const who=STATE.verdictWho;
+  const how=STATE.verdictHow;
+  STATE.endGameDone=true;
+  window.closeVerdict();
+
+  const WIN=who==="sender"&&how==="remote"&&why==="obsession";
+  const WRONG_WHO_JAKUB=who==="jakub";
+  const WRONG_WHO_BARTEK=who==="bartek";
+
+  let stamp,txt,cls;
+
+  if(WIN){
+    stamp="SPRAWA ROZWIĄZANA";cls="win";
+    txt=`Znalazłeś to.
+
+Ogłoszenie EchoTrade było konstrukcją. 'Anna_Collects' zostało założone osiem dni temu z węzła wyjściowego TOR na urządzeniu zarejestrowanym jako S3NDER_NODE — to samo urządzenie, które groziło Marii w trzech osobnych e-mailach w poprzednich tygodniach. To samo urządzenie, które połączyło się z komputerem Jakuba o 02:10 gdy stał w zaułku za nocnym klubem, czekając na sprzedającego który nigdy nie miał się pojawić.
+
+Ogłoszenie wyciągnęło go z domu. Token sesji odtworzony z blokady ekranu z 23:46 dał dostęp bez hasła. V-Chat się otworzył. Wiadomość napisała osoba, która nie była Jakubem Wierzbickim.
+
+Stał na mrozie, dzwoniąc pod numer który nigdzie nie prowadził, gdy ktoś kogo nigdy nie spotkał, zasadził wyznanie w jego imieniu.
+
+S3NDER śledził aktywność Marii w sieci od miesięcy. E-maile to jasno pokazują — zaborczy, precyzyjny, eskalujący. Wiedziała że jest śledzona. Tak powiedziała. Powiedziała Oli. Powiedziała Jakubowi.
+
+Nikt nie ruszył wystarczająco szybko.
+
+Odcisk palca urządzenia doprowadził do zarejestrowanego adresu. Zatrzymanie nastąpiło o 06:20 następnego ranka.
+
+Jakub W. poszedł do domu.
+Maria zostaje odnaleziona.`;
+  }else if(WRONG_WHO_JAKUB){
+    stamp="RAPORT ODRZUCONY";cls="lose";
+    txt=`Jakub W. zostaje oskarżony na podstawie twojego raportu.
+
+Wyznanie — napisane o 02:14 z jego konta, na jego urządzeniu — zostaje przedstawione jako główny dowód. Obrona podnosi logi sesji zdalnej. Twój raport nie odnosi się do nich.
+
+Sąd wydaje wyrok na podstawie fałszywych zeznań.
+
+Trzynaście miesięcy później kobieta na Mokotowie otrzymuje list podpisany literą S. Jeszcze nie wie co to oznacza. Wkrótce się dowie.
+
+Miałeś log sesji. Miałeś odcisk palca urządzenia. Miałeś konto sprzedającego założone z tego samego węzła który wysyłał groźby.
+
+Przeczytałeś wiadomość i przestałeś czytać.`;
+  }else if(WRONG_WHO_BARTEK){
+    stamp="RAPORT ODRZUCONY";cls="lose";
+    txt=`Bartek K. zostaje wezwany na przesłuchanie na podstawie twojego raportu.
+
+Ma alibi. Był w domu. Potwierdzają to dwaj sąsiedzi. Potwierdzają to jego zapisy telefoniczne. Jedyną rzeczą łączącą go z nocą zdarzenia jest wiadomość którą otrzymał — wiadomość o której natychmiast zadzwonił, zaniepokojony.
+
+Zostaje zwolniony po 48 godzinach.
+
+Twój raport zostaje zdyskredytowany. Prokuratura flaguje twoją analizę jako niewiarygodną. Prawdziwa sprawa upada zanim może zostać odbudowana.
+
+Rozmowa między Bartkiem i Jakubem nie była dowodem winy. Była dowodem przyjaźni i bardzo złego poranka.`;
+  }else if(who==="unknown"){
+    stamp="RAPORT NIEKOMPLETNY";cls="lose";
+    txt=`Złożyłeś raport bez konkluzji.
+
+Sprawa zostaje przydzielona drugiemu analitykowi. Mija sześć tygodni. Ślad stygnie. Urządzenie, które połączyło się zdalnie w noc zdarzenia, przestaje pojawiać się w jakiejkolwiek sieci.
+
+Raport bez konkluzji jest czasem uczciwym raportem. W tym przypadku dowody były. Log sesji. Plik cache. Odcisk palca urządzenia który pojawił się w groźbach, w fałszywym ogłoszeniu i w dzienniku zdarzeń systemowych tej samej nocy.
+
+Miałeś to czego potrzebowałeś.
+
+Zdecydowałeś że nie masz.`;
+  }else{
+    stamp="RAPORT NIESPÓJNY";cls="lose";
+    txt=`Twoje trzy ustalenia nie tworzą spójnej sprawy.
+
+Prokurator przegląda twój raport i zwraca go. Wybrane przez ciebie dowody nie zgadzają się z opisanym mechanizmem ani przypisanym motywem.
+
+Raport kryminalistyczny musi być wewnętrznie spójny. Tożsamość, metoda i motyw muszą się łączyć — każde musi być poparte tym samym zbiorem dowodów, wskazującym w tym samym kierunku.
+
+Miałeś właściwe elementy. Złożyłeś je nieprawidłowo.
+
+Sprawa zostaje przydzielona ponownie.`;
+  }
+  window.showEnding(who+how+why,stamp,cls==="win"?"win":"lose",txt);
+};
+
+window.showEnding=function(key,stamp,winLose,txt){
+  const e=document.getElementById("ending");
+  const s=document.getElementById("endStamp");
+  const t=document.getElementById("endTxt");
+  const b=document.getElementById("endBtns");
+  s.textContent=stamp;
+  s.className="stamp "+(winLose==="win"?"win":"lose");
+  t.innerHTML='<span class="crt"></span>';
+  
+  if(winLose==="win"){
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">⟲ RESTART SYSTEMU</button>
+                 <button class="end-btn end-btn-next" onclick="location.href='howlora2.html'">→ PRZEJDŹ DO SPRAWY #2</button>`;
+  } else {
+    b.innerHTML=`<button class="end-btn" onclick="location.reload()">⟲ RESTART SYSTEMU</button>`;
+  }
+  
+  e.classList.add("on");
+  let i=0;
+  const tick=()=>{
+    if(i>=txt.length)return;
+    i++;
+    t.innerHTML=txt.slice(0,i).replace(/\n/g,"<br>")+'<span class="crt"></span>';
+    setTimeout(tick,txt[i-1]==="\n"?200:15);
+  };
+  setTimeout(tick,800);
+}
+</script>
+</body>
+</html>
