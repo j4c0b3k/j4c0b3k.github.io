@@ -28,30 +28,28 @@
         input,textarea,select{font-family:inherit;font-size:16px !important;}
 
         #devicePopup {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 30000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
         }
         .pop-box {
-            border: 1px solid var(--green); background: #020406; border-radius: 4px; width: 100%; max-width: 400px; box-shadow: 0 0 30px rgba(61,252,160,0.1); display: flex; flex-direction: column; overflow: hidden;
+            border: 1px solid var(--cyan); background: #050a0f; border-radius: 4px; width: 100%; max-width: 420px; box-shadow: 0 0 30px rgba(46,224,255,0.15); display: flex; flex-direction: column; overflow: hidden;
         }
         .pop-header {
-            background: var(--green-dim); color: #000; font-weight: 900; letter-spacing: 3px; padding: 12px; font-size: 12px; text-align: center; text-transform: uppercase;
+            background: var(--cyan); color: #000; font-weight: 900; letter-spacing: 3px; padding: 12px; font-size: 13px; text-align: center; text-transform: uppercase;
         }
         .pop-content { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .pop-loader { color: var(--green); font-size: 13px; text-align: center; animation: blink 1s infinite; font-weight: bold; letter-spacing: 2px; margin: 10px 0;}
         .sys-info-box {
-            background: #050a08; border: 1px solid #0f2215; padding: 15px; border-radius: 4px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 0 10px rgba(61,252,160,0.05);
+            background: #020406; border: 1px dashed var(--line2); padding: 15px; border-radius: 4px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
         }
-        .sys-row { display: flex; justify-content: space-between; font-size: 11px; align-items: flex-start; border-bottom: 1px dashed #111a22; padding-bottom: 6px; }
-        .sys-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .sys-row .lbl { color: #3a8a5a; font-weight: bold; width: 90px; flex-shrink: 0; letter-spacing: 1px;}
-        .sys-row .val { color: var(--green); text-align: right; word-break: break-word; text-shadow: 0 0 5px rgba(61,252,160,0.2); line-height: 1.4; }
+        .sys-row { display: flex; font-size: 11px; align-items: flex-start; }
+        .sys-row .lbl { color: var(--muted); font-weight: bold; width: 85px; flex-shrink: 0; letter-spacing: 1px;}
+        .sys-row .val { color: var(--cyan); flex: 1; text-align: left; word-break: break-word; text-shadow: 0 0 5px rgba(46,224,255,0.3); }
         .sys-row .val.warn { color: var(--amber); text-shadow: 0 0 5px rgba(245,200,66,0.3); }
-        .pop-disclaimer { font-size: 9px; color: var(--muted); text-align: center; line-height: 1.5; padding: 8px; border: 1px solid #111; background: #080c10; border-radius: 4px; text-transform: uppercase; }
-        .pop-btn { background: transparent; color: var(--green); border: 1px solid var(--green); padding: 14px; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; text-transform: uppercase; }
-        .pop-btn:hover { background: var(--green); color: #000; box-shadow: 0 0 15px rgba(61,252,160,0.4); }
+        .pop-disclaimer { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.5; padding: 10px; background: #080c10; border-radius: 4px; }
+        .pop-btn { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); padding: 14px; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 5px; text-transform: uppercase; display: none; }
+        .pop-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(46,224,255,0.4); }
 
         #bootOverlay{
-          position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden;
+          position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden; display:none;
         }
         #stagePower{
           position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -153,8 +151,6 @@
         #objPanel .obj-item.done{color:#3a5240;border-color:#2a4a34;text-decoration:line-through;opacity:.5}
         #objPanel .obj-item.active{color:#b0c4d0;border-color:var(--violet)}
         #objPanel .obj-caret{display:inline-block;width:6px;height:11px;background:var(--violet);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(2) infinite}
-        #objPanel .obj-item.updated{animation:objFlash .6s ease-out}
-        @keyframes objFlash{0%{background:rgba(139,108,247,.3);padding-left:12px}100%{background:transparent;padding-left:8px}}
 
         #icons{position:absolute;inset:0;pointer-events:none;z-index:2;}
         .icon{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:5px;width:100px;padding:9px 6px;border:1px solid transparent;border-radius:6px;cursor:pointer;text-align:center;transition:background .15s, border-color .15s, transform .15s;}
@@ -218,7 +214,7 @@
         .win .tb .ctl button{width:24px;height:22px;border:1px solid var(--line2);background:#0e161e;color:#8a9aaa;border-radius:3px;font-size:12px;line-height:1;cursor:pointer; display:flex; align-items:center; justify-content:center; padding-bottom: 2px;}
         .win .tb .ctl button:hover{background:#182230;color:#fff}
         .win .tb .ctl .x:hover{background:var(--red);color:#fff;border-color:var(--red)}
-        .win .body{flex:1;overflow:auto;background:var(--panel);color:var(--text);font-size:13px;display:flex;flex-direction:column; -webkit-overflow-scrolling: touch; position: relative;}
+        .win .body{flex:1;overflow:auto;background:var(--panel);color:var(--text);font-size:13px;display:flex;flex-direction:column;}
         .win.focus{box-shadow:0 30px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(46,224,255,.28)}
         .win.focus .tb{background:linear-gradient(180deg,#182534,#101e2c)}
         .win .grip{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,#2a3a4c 50%,#2a3a4c 62%,transparent 62%,transparent 76%,#2a3a4c 76%,#2a3a4c 88%,transparent 88%);}
@@ -247,25 +243,27 @@
         #timerDisplay .t-bar{width:60px;height:3px;background:#1a2030;border-radius:2px;overflow:hidden}
         #timerDisplay .t-bar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--amber));border-radius:2px;transition:width .9s linear}
 
-        .app{display:flex;height:100%;color:#d5dce5;flex:1;position:absolute;inset:0;width:100%;}
-        .sidebar{width:210px;background:#090f16;border-right:1px solid var(--line2);display:flex;flex-direction:column;flex-shrink:0}
-        .sidebar .head{padding:10px 14px;font-size:9px;letter-spacing:2.5px;color:var(--muted);border-bottom:1px solid var(--line);text-transform:uppercase;flex-shrink:0}
-        .list{display:flex;flex-direction:column;flex:1;overflow-y:auto;min-height:0;}
+        .app{display:flex;height:100%;color:#d5dce5;flex:1;}
+        .sidebar{width:210px;background:#090f16;border-right:1px solid var(--line2);display:flex;flex-direction:column;flex-shrink:0;}
+        .sidebar .head{padding:10px 14px;font-size:9px;letter-spacing:2.5px;color:var(--muted);border-bottom:1px solid var(--line);text-transform:uppercase;flex-shrink:0;}
+        .list{display:flex;flex-direction:column;flex:1;overflow-y:auto;}
         .row{display:flex;gap:10px;align-items:center;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;color:#b8c4d0;}
         .row:hover{background:#0e1820}
         .row.active{background:#132030;color:#fff;border-left:2px solid var(--cyan);padding-left:11px}
         .row .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1c2836,#0c131e);display:grid;place-items:center;font-weight:900;color:#c8d4e0;flex-shrink:0;border:1px solid var(--line2);font-size:12px;}
-        .row .meta{flex:1;overflow:hidden;}
+        .row .meta{flex:1;overflow:hidden;pointer-events:none;}
         .row .meta .n{font-size:12px;color:#dce5ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .row .meta .p{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-        .row .time{font-size:9px;color:var(--muted);white-space:nowrap;}
+        .row .time{font-size:9px;color:var(--muted);white-space:nowrap;pointer-events:none;}
         .unread{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);flex-shrink:0}
-        .pane{flex:1;display:flex;flex-direction:column;min-width:0;height:100%;}
+        
+        .pane{flex:1;display:flex;flex-direction:column;min-width:0;}
         .pane .ph{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--line2);background:#090f16;font-size:11px;letter-spacing:1px;flex-shrink:0;}
         .back{background:#0e1820;color:var(--cyan);border:1px solid var(--cyan);padding:4px 10px;border-radius:3px;font-size:10px;letter-spacing:1px;}
         .back:hover{background:var(--cyan);color:#000}
-        .pane .pc{flex:1;overflow-y:auto;padding:14px;min-height:0;}
+        .pane .pc{flex:1;overflow-y:auto;padding:14px;}
         .empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:11px;letter-spacing:1px;text-align:center;padding:20px}
+        
         .bub{max-width:78%;padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.55;margin-bottom:8px;word-wrap:break-word}
         .bub.them{background:#142030;color:#d5dde6;border-bottom-left-radius:2px}
         .bub.me{background:linear-gradient(135deg,#0d5570,#083645);color:#e4f4f8;margin-left:auto;border-bottom-right-radius:2px}
@@ -466,12 +464,18 @@
         ::-webkit-scrollbar-thumb:hover{background:#283a50}
 
         @media (max-width: 768px) {
-            .app.has-sidebar { flex-direction: column; }
+            .win .body { position: relative; padding: 0; }
+            .app { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; }
+            
             .app.has-sidebar.has-active .sidebar { display: none !important; }
             .app.has-sidebar:not(.has-active) .pane { display: none !important; }
             
-            .sidebar { width: 100% !important; border-right: none; border-bottom: none; flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-            .pane { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .sidebar, .pane { width: 100% !important; height: 100% !important; border: none !important; flex: none; display: flex; flex-direction: column; }
+            
+            .list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .pc { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+            .row { min-height: 60px; }
 
             .wall-big { font-size: 38px; right: 15px; top: 15px; letter-spacing: 4px; }
             .wall-big span { font-size: 16px; letter-spacing: 6px; }
@@ -524,7 +528,7 @@
 
 <div id="devicePopup">
     <div class="pop-box">
-        <div class="pop-header">SKANER ŚRODOWISKA</div>
+        <div class="pop-header">Skaner Środowiska</div>
         <div class="pop-content">
             <div id="popLoader" class="pop-loader">TRWA IDENTYFIKACJA...</div>
             <div id="sysInfoBox" class="sys-info-box" style="display:none;">
@@ -534,8 +538,8 @@
                 <div class="sys-row"><span class="lbl">EKRAN:</span><span class="val" id="popRes">...</span></div>
                 <div class="sys-row"><span class="lbl">LOKALIZACJA:</span><span class="val warn" id="popGeo">Szukanie tras...</span></div>
             </div>
-            <div class="pop-disclaimer">Spokojnie. To tylko efekt wizualny. Twoje dane nigdzie nie są zapisywane ani wysyłane.</div>
-            <button id="popBtn" class="pop-btn" style="display:none;" onclick="window.acceptDevicePopup()">WEJDŹ DO SYSTEMU</button>
+            <div class="pop-disclaimer">Spokojnie. To tylko efekt wizualny.<br>Twoje dane nigdzie nie są zapisywane ani wysyłane.</div>
+            <button id="popBtn" class="pop-btn" onclick="window.acceptDevicePopup()">Wejdź do systemu</button>
         </div>
     </div>
 </div>
@@ -714,7 +718,7 @@
       </div>
     </div>
     <div id="clock-area"></div>
-    <button id="verdictBtn" onclick="openVerdict()">▲ ZŁÓŻ RAPORT</button>
+    <button id="verdictBtn" onclick="window.openVerdict()">▲ ZŁÓŻ RAPORT</button>
   </div>
   <div id="toasts"></div>
 </div>
@@ -731,7 +735,7 @@
       <div class="hack-code" id="hackCodeDisp"></div>
       <input type="text" id="hackInput" autocomplete="off" spellcheck="false" style="background:#000;color:var(--red);border:1px solid var(--red);padding:10px;text-align:center;width:80%;letter-spacing:4px;text-transform:uppercase;margin-bottom:15px;outline:none">
       <br>
-      <button onclick="checkHack()" style="padding:10px 24px;background:var(--red);color:#fff;border:none;font-weight:bold;cursor:pointer;letter-spacing:2px">EXECUTE ABORT</button>
+      <button onclick="window.checkHack()" style="padding:10px 24px;background:var(--red);color:#fff;border:none;font-weight:bold;cursor:pointer;letter-spacing:2px">EXECUTE ABORT</button>
     </div>
   </div>
 </div>
@@ -769,9 +773,9 @@
       </div>
     </div>
     <div class="v-actions">
-      <button class="v-cancel" onclick="closeVerdict()">ANULUJ</button>
-      <button class="v-next" id="vdNextBtn" onclick="verdictNext()">NASTĘPNY ETAP →</button>
-      <button class="v-submit" id="vdSubmitBtn" onclick="submitVerdict()" style="display:none">✓ ZŁÓŻ RAPORT KOŃCOWY</button>
+      <button class="v-cancel" onclick="window.closeVerdict()">ANULUJ</button>
+      <button class="v-next" id="vdNextBtn" onclick="window.verdictNext()">NASTĘPNY ETAP →</button>
+      <button class="v-submit" id="vdSubmitBtn" onclick="window.submitVerdict()" style="display:none">✓ ZŁÓŻ RAPORT KOŃCOWY</button>
     </div>
   </div>
 </div>
@@ -1964,8 +1968,8 @@ function makeWindow(id,title,html,opts){
       <div class="dot"></div>
       <div class="title">${title}</div>
       <div class="ctl">
-        <button onclick="window.minWin('${id}')">_</button>
-        <button class="x" onclick="window.closeWin('${id}')">×</button>
+        <button onclick="window.minWin('${id}')" ontouchstart="event.stopPropagation()">_</button>
+        <button class="x" onclick="window.closeWin('${id}')" ontouchstart="event.stopPropagation()">×</button>
       </div>
     </div>
     <div class="body">${html}</div>
@@ -1988,7 +1992,7 @@ function bindDrag(el){
   const tb=el.querySelector(".tb");
   let sx,sy,ox,oy,drag=false;
   const start=(e)=>{
-    if(e.target.closest('.ctl')) return;
+    if(e.target.closest('button')) return;
     drag=true;
     const pt=e.touches?e.touches[0]:e;
     sx=pt.clientX;sy=pt.clientY;ox=el.offsetLeft;oy=el.offsetTop;
@@ -2146,10 +2150,7 @@ function renderEcho(w){
         <div class="sold ${m.sold?"yes":""}">${m.sold?"● SPRZEDANE":"● AKTYWNE"}</div>
       </div>
     </div>`).join("");
-    w.body.innerHTML=`<div class="app has-sidebar"><div class="sidebar" style="display:none"></div><div class="pane">
-      <div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE // TWOJE WIADOMOŚCI</span></div>
-      <div class="pc"><div class="match-grid">${g}</div></div>
-    </div></div>`;
+    w.body.innerHTML=`<div class="app has-sidebar"><div class="sidebar" style="width:100%"><div class="ph"><span style="color:var(--amber);letter-spacing:2px">🏷 ECHOTRADE // TWOJE WIADOMOŚCI</span></div><div class="pc"><div class="match-grid">${g}</div></div></div><div class="pane" style="display:none"></div></div>`;
   }else{
     const m=DATA.ads.find(x=>x.id===STATE.activeAd);
     const bub=m.msgs.map(x=>`<div class="bub ${x.f}">${esc(x.x)}<span class="ts">${x.t}</span></div>`).join("");
@@ -2369,7 +2370,7 @@ function renderMgPuzzle(w){
         window.closeWin("mg");
         renderIcons();
         toast("🔓 Logi systemowe odszyfrowane. Dowody zabezpieczone.");
-        openLogs();
+        window.openLogs();
         trackObj("logs");
         renderObjectives();
       },1400);
