@@ -3,887 +3,929 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-<title>Adam W. - OS</title>
+<title>macOS - Adam W.</title>
 <style>
-:root{
---bg-top:#3b82f6;
---bg-mid:#8b5cf6;
---bg-bot:#ec4899;
---primary:#007aff;
---primary-hover:#005bb5;
---window-bg:rgba(255,255,255,0.85);
---text-main:#0f172a;
---text-muted:#64748b;
---border:rgba(255,255,255,0.4);
---header-bg:rgba(241,245,249,0.7);
---danger:#ff3b30;
---warning:#ffcc00;
---success:#28cd41;
---chat-me:#007aff;
---chat-them:#e2e8f0;
---glass-shadow:0 25px 50px -12px rgba(0,0,0,0.25);
+:root {
+--bg-grad: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+--glass-bg: rgba(255, 255, 255, 0.7);
+--glass-border: rgba(255, 255, 255, 0.4);
+--text-main: #1d1d1f;
+--text-muted: #86868b;
+--primary: #007aff;
+--primary-hover: #005bb5;
+--danger: #ff3b30;
+--success: #34c759;
+--warning: #ffcc00;
+--shadow-heavy: 0 20px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.5) inset;
+--shadow-light: 0 4px 12px rgba(0,0,0,0.08);
+--blur: blur(25px);
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;user-select:none;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;width:100%;overflow:hidden;background:radial-gradient(circle at 10% 10%,var(--bg-top) 0%,transparent 50%),radial-gradient(circle at 90% 90%,var(--bg-bot) 0%,transparent 50%),radial-gradient(circle at 50% 50%,var(--bg-mid) 0%,transparent 100%);background-color:#0f172a;color:var(--text-main);}
-button{cursor:pointer;outline:none;border:none;font-family:inherit;}
-input,textarea{font-family:inherit;user-select:text;}
-::-webkit-scrollbar{width:6px;height:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(148,163,184,0.5);border-radius:10px;}
-::-webkit-scrollbar-thumb:hover{background:rgba(148,163,184,0.8);}
-#lockScreen{position:fixed;inset:0;background:inherit;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),transform 0.8s cubic-bezier(0.16,1,0.3,1);}
-.avatar-container{width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.2);padding:10px;margin-bottom:20px;box-shadow:0 10px 25px rgba(0,0,0,0.1);backdrop-filter:blur(10px);}
-.avatar{width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#e2e8f0,#94a3b8);display:grid;place-items:center;font-size:48px;color:#fff;}
-.user-name{font-size:24px;font-weight:600;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.2);margin-bottom:30px;}
-.login-btn{padding:12px 32px;background:rgba(255,255,255,0.2);color:#fff;border-radius:20px;font-weight:600;font-size:16px;letter-spacing:1px;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(10px);transition:0.3s;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
-.login-btn:hover{background:rgba(255,255,255,0.3);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.15);}
-#desktop{position:fixed;inset:0;display:none;flex-direction:column;opacity:0;transform:scale(1.05);transition:opacity 0.8s ease,transform 0.8s ease;}
-#desktop.active{display:flex;opacity:1;transform:scale(1);}
-.top-bar{height:28px;background:rgba(255,255,255,0.2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:13px;font-weight:500;color:#fff;z-index:9000;box-shadow:0 1px 5px rgba(0,0,0,0.05);}
-.top-bar-left{display:flex;gap:20px;}
-.top-bar-right{display:flex;gap:15px;align-items:center;}
-#icons{position:absolute;inset:28px 0 80px 0;padding:30px;display:flex;flex-direction:column;flex-wrap:wrap;gap:25px;align-content:flex-start;z-index:10;}
-.icon{width:80px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:10px;border-radius:12px;transition:0.2s;}
-.icon:hover{background:rgba(255,255,255,0.2);box-shadow:0 4px 15px rgba(0,0,0,0.05);}
-.icon:active{transform:scale(0.95);}
-.icon-glyph{width:64px;height:64px;background:rgba(255,255,255,0.9);border-radius:16px;display:grid;place-items:center;font-size:32px;box-shadow:0 8px 20px rgba(0,0,0,0.1);position:relative;}
-.icon-label{font-size:12px;font-weight:600;color:#fff;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.4);}
-.badge{position:absolute;top:-6px;right:-6px;background:var(--danger);color:white;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;box-shadow:0 4px 10px rgba(239,68,68,0.4);border:2px solid #fff;}
-.locked-icon .icon-glyph{background:rgba(226,232,240,0.9);color:#94a3b8;}
-#dock-container{position:absolute;bottom:15px;width:100%;display:flex;justify-content:center;z-index:9500;}
-#dock{background:rgba(255,255,255,0.4);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);padding:10px 15px;border-radius:24px;display:flex;gap:15px;box-shadow:0 10px 30px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.5);align-items:center;}
-.dock-item{width:50px;height:50px;background:rgba(255,255,255,0.9);border-radius:14px;display:grid;place-items:center;font-size:26px;cursor:pointer;transition:0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 4px 12px rgba(0,0,0,0.1);position:relative;}
-.dock-item:hover{transform:translateY(-10px) scale(1.15);box-shadow:0 12px 25px rgba(0,0,0,0.2);}
-.dock-item.running::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 5px rgba(255,255,255,0.8);}
-.dock-separator{width:1px;height:40px;background:rgba(255,255,255,0.3);margin:0 5px;}
-.report-btn{background:var(--danger)!important;color:white!important;font-weight:800;font-size:11px!important;padding:0 20px!important;width:auto!important;letter-spacing:1px;box-shadow:0 4px 15px rgba(239,68,68,0.4);text-transform:uppercase;}
-.report-btn:hover{background:#dc2626!important;box-shadow:0 12px 25px rgba(239,68,68,0.5)!important;}
-.window{position:absolute;width:750px;height:500px;background:var(--window-bg);border-radius:14px;box-shadow:var(--glass-shadow);display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:scale(0.95);transition:opacity 0.2s ease,transform 0.2s ease;pointer-events:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);}
-.window.open{opacity:1;transform:scale(1);pointer-events:auto;}
-.window.focus{z-index:1000;box-shadow:0 30px 60px rgba(0,0,0,0.3);}
-.win-header{height:46px;background:var(--header-bg);display:flex;align-items:center;padding:0 16px;border-bottom:1px solid rgba(0,0,0,0.05);cursor:default;}
-.win-controls{display:flex;gap:8px;width:70px;}
-.win-btn{width:13px;height:13px;border-radius:50%;cursor:pointer;transition:0.2s;}
-.win-close{background:var(--danger);}
-.win-min{background:var(--warning);}
-.win-max{background:var(--success);}
-.win-title{flex:1;text-align:center;font-size:13px;font-weight:700;color:#334155;pointer-events:none;}
-.win-content{flex:1;display:flex;overflow:hidden;background:rgba(255,255,255,0.6);position:relative;}
-.app-layout{display:flex;width:100%;height:100%;position:relative;}
-.sidebar{width:260px;background:rgba(248,250,252,0.5);border-right:1px solid rgba(0,0,0,0.05);display:flex;flex-direction:column;z-index:2;}
-.list-wrap{flex:1;overflow-y:auto;}
-.list-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(0,0,0,0.03);cursor:pointer;transition:0.2s;}
-.list-item:hover{background:rgba(255,255,255,0.5);}
-.list-item.active{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.02);}
-.item-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#60a5fa);color:white;display:grid;place-items:center;font-size:16px;font-weight:bold;flex-shrink:0;}
-.item-info{flex:1;overflow:hidden;}
-.item-name{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
-.item-sub{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.main-pane{flex:1;display:flex;flex-direction:column;background:#fff;z-index:1;}
-.pane-header{height:54px;padding:0 20px;display:flex;align-items:center;border-bottom:1px solid rgba(0,0,0,0.05);background:rgba(255,255,255,0.8);}
-.back-btn{display:none;background:transparent;color:var(--primary);font-size:15px;font-weight:600;padding:10px 15px 10px 0;align-items:center;gap:6px;}
-.pane-title{font-size:15px;font-weight:800;color:#0f172a;}
-.pane-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;}
-.empty-state{margin:auto;color:#94a3b8;font-size:14px;font-weight:500;text-align:center;}
-.bubble{max-width:75%;padding:10px 16px;border-radius:18px;font-size:13px;line-height:1.5;position:relative;font-weight:500;}
-.bubble.them{background:var(--chat-them);color:#1e293b;align-self:flex-start;border-bottom-left-radius:4px;}
-.bubble.me{background:var(--chat-me);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(37,99,235,0.2);}
-.bubble-time{font-size:9px;opacity:0.7;margin-top:4px;display:block;text-align:right;font-weight:600;}
-.mail-view h2{font-size:20px;color:#0f172a;margin-bottom:8px;font-weight:800;}
-.mail-meta{font-size:12px;color:#64748b;padding-bottom:15px;border-bottom:1px solid rgba(0,0,0,0.05);margin-bottom:15px;}
-.mail-content{font-size:14px;color:#334155;line-height:1.7;white-space:pre-wrap;font-weight:500;}
-.ad-item{background:#fff;border:1px solid rgba(0,0,0,0.05);border-radius:12px;overflow:hidden;margin-bottom:16px;cursor:pointer;transition:0.2s;display:flex;box-shadow:0 2px 8px rgba(0,0,0,0.02);}
-.ad-item:hover{box-shadow:0 8px 20px rgba(0,0,0,0.06);transform:translateY(-2px);}
-.ad-pic{width:110px;background:#f8fafc;display:grid;place-items:center;font-size:40px;border-right:1px solid rgba(0,0,0,0.05);}
-.ad-desc{padding:14px;flex:1;}
-.ad-price{font-size:18px;font-weight:800;color:var(--success);margin-bottom:4px;}
-.ad-title{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px;}
-.hist-item{padding:12px 20px;border-bottom:1px solid rgba(0,0,0,0.05);transition:0.2s;}
-.hist-item:hover{background:#f8fafc;}
-.hist-title{font-weight:700;font-size:13px;color:#0f172a;}
-.hist-url{font-size:11px;font-weight:500;color:var(--primary);margin-top:4px;}
-.mg-container{padding:25px;display:flex;flex-direction:column;height:100%;}
-.mg-log{background:#0f172a;color:#38bdf8;font-family:"Consolas",monospace;padding:20px;border-radius:10px;font-size:13px;line-height:1.6;flex:1;overflow-y:auto;margin-bottom:20px;white-space:pre-wrap;box-shadow:inset 0 4px 10px rgba(0,0,0,0.3);}
-.mg-log .corrupt{color:var(--danger);background:rgba(239,68,68,0.2);padding:0 4px;border-radius:3px;}
-.mg-question{font-weight:800;font-size:15px;margin-bottom:15px;color:#0f172a;text-align:center;}
-.mg-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.mg-btn{padding:12px;border:1px solid rgba(0,0,0,0.1);background:#fff;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:0.2s;color:#475569;}
-.mg-btn:hover{border-color:var(--primary);color:var(--primary);background:#f0f9ff;transform:translateY(-1px);}
-.mg-btn.correct{background:var(--success);color:white;border-color:var(--success);}
-.mg-btn.wrong{background:var(--danger);color:white;border-color:var(--danger);}
-.mg-timer-bar{width:100%;height:6px;background:#e2e8f0;border-radius:3px;margin-top:20px;overflow:hidden;}
-.mg-timer-fill{height:100%;background:var(--primary);width:100%;transition:width 1s linear;}
-#popupOverlay{position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:200000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);opacity:0;transition:opacity 0.2s;}
-#popupOverlay.active{display:flex;opacity:1;}
-.popup-box{background:#fff;border-radius:16px;width:90%;max-width:400px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,0.2);text-align:center;transform:scale(0.9);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);}
-#popupOverlay.active .popup-box{transform:scale(1);}
-.popup-title{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:10px;}
-.popup-desc{font-size:14px;color:#475569;margin-bottom:24px;line-height:1.5;white-space:pre-wrap;}
-.popup-btn{background:var(--primary);color:#fff;padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;}
-#verdictModal{position:fixed;inset:0;background:rgba(15,23,42,0.85);z-index:100000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity 0.3s;}
-#verdictModal.active{display:flex;opacity:1;}
-.v-box{width:90%;max-width:650px;background:#fff;border-radius:24px;padding:35px;box-shadow:0 25px 60px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto;transform:translateY(20px);transition:transform 0.3s;}
-#verdictModal.active .v-box{transform:translateY(0);}
-.v-title{font-size:24px;font-weight:900;color:#0f172a;margin-bottom:10px;text-align:center;}
-.v-desc{font-size:14px;font-weight:500;color:#64748b;text-align:center;margin-bottom:25px;line-height:1.5;}
-.v-step{display:none;}
-.v-step.active{display:block;}
-.v-opt{display:flex;align-items:flex-start;gap:15px;padding:15px;border:2px solid #e2e8f0;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:0.2s;}
-.v-opt:hover{border-color:var(--primary);background:#f8fafc;}
-.v-opt input{margin-top:3px;transform:scale(1.2);accent-color:var(--primary);}
-.v-opt b{font-size:14px;color:#1e293b;display:block;margin-bottom:4px;font-weight:800;}
-.v-opt span{font-size:12px;color:#64748b;line-height:1.4;display:block;}
-.v-actions{display:flex;gap:10px;margin-top:25px;}
-.v-btn{flex:1;padding:14px;border-radius:10px;font-weight:800;font-size:13px;transition:0.2s;text-transform:uppercase;}
-.v-btn.cancel{background:#f1f5f9;color:#475569;}
-.v-btn.cancel:hover{background:#e2e8f0;}
-.v-btn.next{background:var(--primary);color:white;}
-.v-btn.next:hover{background:var(--primary-hover);}
-#endingScreen{position:fixed;inset:0;background:#fff;z-index:200000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;opacity:0;transition:opacity 0.5s;}
-#endingScreen.active{display:flex;opacity:1;}
-.end-icon{font-size:80px;margin-bottom:20px;}
-.end-title{font-size:32px;font-weight:900;color:#0f172a;margin-bottom:15px;}
-.end-text{font-size:16px;color:#475569;max-width:600px;line-height:1.6;margin-bottom:35px;white-space:pre-wrap;font-weight:500;}
-.end-btn{padding:16px 40px;background:var(--primary);color:white;font-weight:800;border-radius:12px;font-size:14px;letter-spacing:1px;transition:0.2s;}
-.end-btn:hover{transform:translateY(-2px);background:var(--primary-hover);}
-@media(max-width:768px){
-.widget-clock{top:45px;right:25px;}
-.widget-time{font-size:54px;}
-.widget-date{font-size:12px;}
-#icons{padding:120px 15px 15px 15px;gap:10px;flex-direction:row;}
-.icon{width:70px;padding:5px;gap:4px;}
-.icon-glyph{width:54px;height:54px;font-size:24px;border-radius:14px;}
-.icon-label{font-size:11px;}
-#dock{padding:10px 15px;gap:12px;border-radius:20px;}
-.dock-item{width:42px;height:42px;font-size:20px;border-radius:12px;}
-.window{width:100%!important;height:calc(100% - 90px)!important;top:0!important;left:0!important;border-radius:0;border:none;transform:translateY(100%) scale(1);transition:transform 0.35s cubic-bezier(0.2,0.8,0.2,1),opacity 0.3s;}
-.window.open{transform:translateY(0) scale(1);}
-.win-header{border-radius:0;padding:0 10px;background:var(--header-bg);}
-.app-layout{position:relative;display:block;}
-.sidebar{width:100%;position:absolute;inset:0;z-index:10;transition:transform 0.3s cubic-bezier(0.2,0.8,0.2,1);}
-.main-pane{width:100%;position:absolute;inset:0;z-index:20;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.2,0.8,0.2,1);}
-.app-layout.show-pane .sidebar{transform:translateX(-30%);}
-.app-layout.show-pane .main-pane{transform:translateX(0);}
-.back-btn{display:flex;}
-.mg-options{grid-template-columns:1fr;}
-.v-opts{flex-direction:column;gap:8px;}
-.v-box{padding:20px;width:95%;border-radius:16px;}
+* {box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; outline: none;}
+html, body {height: 100%; width: 100%; overflow: hidden; background: var(--bg-grad); color: var(--text-main);}
+button {cursor: pointer; border: none; background: none; font-family: inherit;}
+input, textarea {font-family: inherit; user-select: text;}
+::-webkit-scrollbar {width: 6px; height: 6px;}
+::-webkit-scrollbar-track {background: transparent;}
+::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15); border-radius: 10px;}
+::-webkit-scrollbar-thumb:hover {background: rgba(0,0,0,0.3);}
+#lockScreen {position: fixed; inset: 0; background: rgba(255,255,255,0.3); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, transform 0.5s ease;}
+.avatar-wrap {width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.5); padding: 8px; margin-bottom: 20px; box-shadow: var(--shadow-light);}
+.avatar {width: 100%; height: 100%; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 60px;}
+.lock-name {font-size: 24px; font-weight: 600; color: #1d1d1f; margin-bottom: 30px; letter-spacing: 0.5px;}
+.lock-btn {padding: 12px 36px; background: rgba(255,255,255,0.8); color: #1d1d1f; border-radius: 20px; font-size: 15px; font-weight: 500; border: 1px solid rgba(0,0,0,0.05); backdrop-filter: var(--blur); transition: 0.2s; box-shadow: var(--shadow-light);}
+.lock-btn:hover {background: #fff; transform: scale(1.02);}
+#desktop {position: fixed; inset: 0; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;}
+#desktop.active {opacity: 1; pointer-events: auto;}
+#topBar {height: 28px; background: rgba(255,255,255,0.4); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 13px; font-weight: 500; color: #1d1d1f; border-bottom: 1px solid rgba(255,255,255,0.3); z-index: 9000;}
+.tb-left, .tb-right {display: flex; gap: 20px; align-items: center;}
+.tb-logo {font-size: 15px;}
+#iconContainer {flex: 1; position: relative; width: 100%; height: 100%; overflow: hidden;}
+.desk-icon {width: 80px; display: flex; flex-direction: column; align-items: center; gap: 6px; position: absolute; padding: 10px; border-radius: 12px; transition: background 0.2s;}
+.desk-icon:hover {background: rgba(255,255,255,0.3);}
+.icon-img {width: 60px; height: 60px; background: #ffffff; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: var(--shadow-light); border: 1px solid rgba(0,0,0,0.02); position: relative; pointer-events: none;}
+.icon-lbl {font-size: 12px; font-weight: 500; color: #1d1d1f; text-align: center; text-shadow: 0 1px 2px rgba(255,255,255,0.5); pointer-events: none;}
+.badge {position: absolute; top: -6px; right: -6px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(255,59,48,0.4); border: 2px solid #fff;}
+#dockWrap {position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; z-index: 9500; pointer-events: none;}
+#dock {background: rgba(255,255,255,0.5); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); padding: 10px 15px; border-radius: 28px; display: flex; gap: 12px; align-items: center; border: 1px solid rgba(255,255,255,0.6); box-shadow: var(--shadow-heavy); pointer-events: auto;}
+.dock-item {width: 50px; height: 50px; background: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02);}
+.dock-item:hover {transform: translateY(-8px) scale(1.15); box-shadow: 0 10px 20px rgba(0,0,0,0.1);}
+.dock-dot {position: absolute; bottom: -8px; width: 4px; height: 4px; background: #1d1d1f; border-radius: 50%; opacity: 0; transition: 0.3s;}
+.dock-item.running .dock-dot {opacity: 1;}
+.separator {width: 1px; height: 35px; background: rgba(0,0,0,0.1); margin: 0 4px;}
+.dock-btn {background: var(--danger); color: #fff; font-weight: 600; font-size: 13px; padding: 0 20px; border-radius: 12px; height: 50px; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; white-space: nowrap; box-shadow: 0 4px 10px rgba(255,59,48,0.3); transition: 0.2s;}
+.dock-btn:hover {background: #d32f2f; transform: translateY(-4px);}
+.window {position: absolute; background: rgba(255,255,255,0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-radius: 12px; box-shadow: var(--shadow-heavy); border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: scale(0.95); transition: opacity 0.2s, transform 0.2s; pointer-events: none;}
+.window.open {opacity: 1; transform: scale(1); pointer-events: auto;}
+.window.minimized {opacity: 0; transform: translateY(100px) scale(0.8); pointer-events: none;}
+.window.focus {z-index: 1000; box-shadow: 0 40px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);}
+.win-header {height: 48px; background: rgba(245,245,247,0.8); display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: default;}
+.win-controls {display: flex; gap: 8px; width: 70px;}
+.w-btn {width: 12px; height: 12px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;}
+.w-close {background: #ff5f56; border: 1px solid #e0443e;}
+.w-min {background: #ffbd2e; border: 1px solid #dea123;}
+.w-max {background: #27c93f; border: 1px solid #1aab29;}
+.win-title {flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: #1d1d1f; pointer-events: none;}
+.win-body {flex: 1; display: flex; overflow: hidden; position: relative; background: #fff;}
+.app-layout {display: flex; width: 100%; height: 100%; position: relative;}
+.sidebar {width: 260px; background: #f5f5f7; border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 2;}
+.sidebar-head {padding: 16px 20px; font-size: 20px; font-weight: 700; color: #1d1d1f; border-bottom: 1px solid rgba(0,0,0,0.03);}
+.list-scroll {flex: 1; overflow-y: auto;}
+.list-item {display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.02);}
+.list-item:hover {background: rgba(0,0,0,0.03);}
+.list-item.active {background: var(--primary); color: #fff;}
+.item-av {width: 40px; height: 40px; border-radius: 50%; background: #e5e5ea; color: #1d1d1f; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 500; flex-shrink: 0;}
+.list-item.active .item-av {background: #fff; color: var(--primary);}
+.item-info {flex: 1; overflow: hidden;}
+.item-name {font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;}
+.list-item:not(.active) .item-name {color: #1d1d1f;}
+.item-sub {font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.list-item:not(.active) .item-sub {color: #86868b;}
+.list-item.active .item-sub {color: rgba(255,255,255,0.8);}
+.main-pane {flex: 1; display: flex; flex-direction: column; background: #fff; z-index: 1;}
+.pane-head {height: 60px; padding: 0 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.95);}
+.back-btn {display: none; color: var(--primary); font-size: 15px; font-weight: 500; padding: 10px 15px 10px 0; align-items: center; gap: 5px;}
+.pane-title {font-size: 15px; font-weight: 600; color: #1d1d1f;}
+.pane-scroll {flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;}
+.empty-msg {margin: auto; color: #86868b; font-size: 14px;}
+.bubble {max-width: 75%; padding: 10px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative;}
+.bubble.them {background: #e5e5ea; color: #000; align-self: flex-start; border-bottom-left-radius: 4px;}
+.bubble.me {background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px;}
+.bubble-time {font-size: 10px; opacity: 0.6; margin-top: 4px; display: block; text-align: right;}
+.mail-view h2 {font-size: 22px; font-weight: 700; color: #1d1d1f; margin-bottom: 8px;}
+.mail-meta {font-size: 13px; color: #86868b; padding-bottom: 15px; border-bottom: 1px solid #f5f5f7; margin-bottom: 15px;}
+.mail-body {font-size: 14px; line-height: 1.6; color: #1d1d1f; white-space: pre-wrap;}
+.market-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; padding: 15px;}
+.ad-card {background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; overflow: hidden; cursor: pointer; transition: 0.2s;}
+.ad-card:hover {box-shadow: var(--shadow-light); border-color: #d1d1d6;}
+.ad-pic {height: 100px; background: #f5f5f7; display: flex; align-items: center; justify-content: center; font-size: 40px; border-bottom: 1px solid #e5e5ea;}
+.ad-info {padding: 12px;}
+.ad-price {font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;}
+.ad-title {font-size: 13px; font-weight: 500; color: #1d1d1f; margin-bottom: 4px; line-height: 1.3;}
+.ad-seller {font-size: 11px; color: #86868b; margin-bottom: 6px;}
+.ad-desc {font-size: 12px; color: #64748b; line-height: 1.4;}
+.hist-item {padding: 12px 20px; border-bottom: 1px solid #f5f5f7;}
+.hist-item:hover {background: #fafafa;}
+.h-title {font-size: 14px; font-weight: 500; color: #1d1d1f; margin-bottom: 4px;}
+.h-url {font-size: 12px; color: var(--text-muted);}
+.h-cat {font-size: 10px; font-weight: 600; color: #fff; background: #c7c7cc; padding: 2px 6px; border-radius: 8px; margin-left: 8px;}
+.files-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; padding: 20px;}
+.f-item {display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 10px; border-radius: 8px;}
+.f-item:hover {background: rgba(0,0,0,0.04);}
+.f-icon {font-size: 40px;}
+.f-name {font-size: 12px; font-weight: 500; color: #1d1d1f; text-align: center; word-break: break-word;}
+.bank-head {background: #ff2d55; color: #fff; padding: 25px; text-align: center; font-size: 18px; font-weight: 600;}
+.bank-bal {font-size: 40px; font-weight: 300; margin: 10px 0;}
+.bank-tx {display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #f5f5f7;}
+.tx-l {display: flex; flex-direction: column; gap: 4px;}
+.tx-title {font-weight: 600; font-size: 14px; color: #1d1d1f;}
+.tx-date {font-size: 12px; color: #86868b;}
+.tx-amt {font-weight: 600; font-size: 15px;}
+.tx-out {color: #1d1d1f;}
+.tx-in {color: #34c759;}
+.mg-wrap {padding: 30px; display: flex; flex-direction: column; height: 100%; background: #fff;}
+.mg-head {font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 20px; text-transform: uppercase;}
+.mg-log {background: #f5f5f7; color: #1d1d1f; padding: 20px; border-radius: 12px; font-size: 13px; line-height: 1.6; flex: 1; overflow-y: auto; margin-bottom: 20px; border: 1px solid #e5e5ea; white-space: pre-wrap;}
+.mg-q {font-size: 16px; font-weight: 600; color: #1d1d1f; margin-bottom: 16px;}
+.mg-opts {display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
+.mg-btn {padding: 14px; background: #fff; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 13px; font-weight: 500; color: #1d1d1f; transition: 0.2s;}
+.mg-btn:hover {border-color: var(--primary); color: var(--primary);}
+.mg-btn.correct {background: var(--success); color: #fff; border-color: var(--success);}
+.mg-btn.wrong {background: var(--danger); color: #fff; border-color: var(--danger);}
+.mg-bar {height: 6px; background: #e5e5ea; border-radius: 3px; margin-top: 20px; overflow: hidden;}
+.mg-fill {height: 100%; background: var(--primary); transition: width 1s linear;}
+#customModal {position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 200000; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s;}
+#customModal.on {display: flex; opacity: 1;}
+.md-box {background: #fff; width: 90%; max-width: 380px; border-radius: 16px; padding: 24px; text-align: center; box-shadow: var(--shadow-heavy); transform: scale(0.9); transition: 0.3s;}
+#customModal.on .md-box {transform: scale(1);}
+.md-title {font-size: 18px; font-weight: 600; color: #1d1d1f; margin-bottom: 10px;}
+.md-desc {font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 20px; white-space: pre-wrap;}
+.md-btn {background: var(--primary); color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500;}
+#verdictScreen {position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 150000; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s;}
+#verdictScreen.on {display: flex; opacity: 1;}
+.v-box {background: #fff; width: 90%; max-width: 650px; border-radius: 20px; padding: 40px; box-shadow: var(--shadow-heavy); max-height: 90vh; overflow-y: auto; border: 1px solid rgba(0,0,0,0.05);}
+.v-head {text-align: center; margin-bottom: 30px;}
+.v-title {font-size: 24px; font-weight: 700; color: #1d1d1f; margin-bottom: 8px;}
+.v-sub {font-size: 14px; color: #64748b; line-height: 1.5;}
+.v-step {display: none;}
+.v-step.active {display: block; animation: fadeDesktop 0.3s;}
+.v-label {font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 8px;}
+.v-q {font-size: 18px; font-weight: 600; color: #1d1d1f; margin-bottom: 20px;}
+.v-opts {display: flex; flex-direction: column; gap: 10px;}
+.v-opt {display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid #e5e5ea; border-radius: 12px; cursor: pointer; transition: 0.2s;}
+.v-opt:hover {border-color: var(--primary); background: #fafafa;}
+.v-opt input {margin-top: 3px; transform: scale(1.2); accent-color: var(--primary);}
+.v-opt b {display: block; font-size: 15px; font-weight: 600; color: #1d1d1f; margin-bottom: 2px;}
+.v-opt span {display: block; font-size: 13px; color: #64748b; line-height: 1.4;}
+.v-acts {display: flex; gap: 12px; margin-top: 30px;}
+.v-btn {flex: 1; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 600; transition: 0.2s;}
+.v-btn.cancel {background: #f1f5f9; color: #475569;}
+.v-btn.next {background: var(--primary); color: #fff;}
+#endScreen {position: fixed; inset: 0; background: #fff; z-index: 300000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; opacity: 0; transition: 0.5s;}
+#endScreen.on {display: flex; opacity: 1;}
+.e-icon {font-size: 80px; margin-bottom: 20px;}
+.e-title {font-size: 32px; font-weight: 700; color: #1d1d1f; margin-bottom: 16px;}
+.e-txt {font-size: 16px; color: #475569; max-width: 600px; line-height: 1.6; margin-bottom: 30px;}
+.e-btn {padding: 14px 32px; background: var(--primary); color: #fff; font-size: 15px; font-weight: 600; border-radius: 12px;}
+@media(max-width: 768px) {
+#topBar {height: 34px;}
+.tb-logo {font-size: 18px;}
+.mobile-hide {display: none;}
+#iconContainer {padding: 10px;}
+.desk-icon {width: 70px; padding: 8px;}
+.icon-img {width: 50px; height: 50px; font-size: 24px; border-radius: 12px;}
+.icon-lbl {font-size: 11px;}
+#dockWrap {bottom: 15px;}
+#dock {padding: 10px; gap: 8px; border-radius: 20px; width: 95%; justify-content: space-evenly;}
+.dock-item {width: 40px; height: 40px; font-size: 20px; border-radius: 10px;}
+.separator {display: none;}
+.dock-btn {padding: 0 12px; font-size: 11px; height: 40px;}
+.window {width: 100% !important; height: calc(100% - 34px) !important; top: 34px !important; left: 0 !important; border-radius: 0; border: none; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2,0.8,0.2,1), opacity 0.3s;}
+.window.open {transform: translateY(0);}
+.win-header {border-radius: 0; padding: 0 10px; background: rgba(255,255,255,0.95);}
+.app-layout {display: block;}
+.sidebar {width: 100%; height: 100%; position: absolute; inset: 0; z-index: 10; transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1);}
+.main-pane {width: 100%; height: 100%; position: absolute; inset: 0; z-index: 20; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1);}
+.app-layout.show-pane .sidebar {transform: translateX(-30%);}
+.app-layout.show-pane .main-pane {transform: translateX(0);}
+.back-btn {display: flex;}
+.mg-opts {grid-template-columns: 1fr;}
+.v-box {padding: 24px 20px; width: 95%; border-radius: 16px;}
+.v-opt {padding: 12px; gap: 10px;}
 }
 </style>
 </head>
 <body>
 
-<div id="bootScreen">
-    <div class="avatar-container">
-        <div class="avatar">👨🏻</div>
-    </div>
-    <div class="user-name">Adam W.</div>
+<div id="lockScreen">
+  <div class="avatar-wrap"><div class="avatar">👨🏻</div></div>
+  <div class="lock-name">Adam W.</div>
+  <div class="lock-input-wrap">
     <div class="spinner" id="bootSpinner"></div>
-    <button class="login-btn" id="bootBtn" onclick="startOS()">Zaloguj się</button>
+    <button class="lock-btn" id="bootBtn" onclick="startOS()">Odblokuj Mac</button>
+  </div>
 </div>
 
 <div id="desktop">
-    <div class="wallpaper-overlay"></div>
-    <div class="top-bar">
-        <div class="top-bar-left">
-            <span></span>
-            <span style="font-weight:600">Finder</span>
-            <span>Plik</span>
-            <span>Edycja</span>
-        </div>
-        <div class="top-bar-right">
-            <span>100%</span>
-            <span id="topTime">--:--</span>
-        </div>
+  <div id="topBar">
+    <div class="tb-left">
+      <span class="tb-logo"></span>
+      <span style="font-weight:700">Finder</span>
+      <span class="mobile-hide">Plik</span>
+      <span class="mobile-hide">Edycja</span>
+      <span class="mobile-hide">Widok</span>
     </div>
-    <div class="widget-clock">
-        <div class="widget-time" id="clockTime">--:--</div>
-        <div class="widget-date" id="clockDate">PIĄTEK, 24 MAJA</div>
-        <div class="widget-user">Konto Lokalne</div>
+    <div class="tb-right">
+      <span style="font-size:16px">🔋</span>
+      <span class="mobile-hide">100%</span>
+      <span id="topTime">--:--</span>
     </div>
+  </div>
+  
+  <div id="iconContainer">
+    <div class="desk-icon" style="top:20px; left:20px;" onclick="openApp('chat')" data-app="chat">
+      <div class="icon-img" style="color:#25d366;">💬<div class="badge" id="chatBadge" style="display:none">1</div></div>
+      <div class="icon-lbl">Wiadomości</div>
+    </div>
+    <div class="desk-icon" style="top:120px; left:20px;" onclick="openApp('mail')" data-app="mail">
+      <div class="icon-img" style="color:#ef4444;">📧</div>
+      <div class="icon-lbl">Poczta</div>
+    </div>
+    <div class="desk-icon" style="top:220px; left:20px;" onclick="openApp('market')" data-app="market">
+      <div class="icon-img" style="color:#0ea5e9;">🛒</div>
+      <div class="icon-lbl">Ogłoszenia</div>
+    </div>
+    <div class="desk-icon" style="top:320px; left:20px;" onclick="openApp('bank')" data-app="bank">
+      <div class="icon-img" style="color:#ff2d55;">🏦</div>
+      <div class="icon-lbl">Finanse</div>
+    </div>
+    <div class="desk-icon" style="top:20px; left:120px;" onclick="openApp('browser')" data-app="browser">
+      <div class="icon-img" style="color:#f59e0b;">🌐</div>
+      <div class="icon-lbl">Safari</div>
+    </div>
+    <div class="desk-icon" style="top:120px; left:120px;" onclick="openApp('files')" data-app="files">
+      <div class="icon-img" style="color:#3b82f6;">📁</div>
+      <div class="icon-lbl">Katalog</div>
+    </div>
+    <div class="desk-icon locked-icon" style="top:220px; left:120px;" onclick="openApp('report')" id="iconReport" data-app="report">
+      <div class="icon-img" id="glyphReport">🔒</div>
+      <div class="icon-lbl" id="labelReport">Akta</div>
+    </div>
+  </div>
 
-    <div id="icons">
-        <div class="icon" onclick="openApp('chat')">
-            <div class="icon-glyph" style="background:#25d366;color:#fff;">💬<div class="badge" id="chatBadge" style="display:none">1</div></div>
-            <div class="icon-label">Messenger</div>
-        </div>
-        <div class="icon" onclick="openApp('mail')">
-            <div class="icon-glyph" style="background:#ef4444;color:#fff;">📧</div>
-            <div class="icon-label">Poczta</div>
-        </div>
-        <div class="icon" onclick="openApp('market')">
-            <div class="icon-glyph" style="background:#0ea5e9;color:#fff;">🛒</div>
-            <div class="icon-label">OLX</div>
-        </div>
-        <div class="icon" onclick="openApp('browser')">
-            <div class="icon-glyph" style="background:#f59e0b;color:#fff;">🌐</div>
-            <div class="icon-label">Chrome</div>
-        </div>
-        <div class="icon" onclick="openApp('files')">
-            <div class="icon-glyph" style="background:#3b82f6;color:#fff;">📁</div>
-            <div class="icon-label">Dokumenty</div>
-        </div>
-        <div class="icon locked-icon" onclick="openApp('report')" id="iconReport">
-            <div class="icon-glyph" id="glyphReport">🔒</div>
-            <div class="icon-label" id="labelReport">Akta Policji</div>
-        </div>
+  <div id="dockWrap">
+    <div id="dock">
+      <div class="dock-item" id="dock_chat" onclick="handleDock('chat')" style="color:#25d366">💬<div class="dock-dot"></div></div>
+      <div class="dock-item" id="dock_mail" onclick="handleDock('mail')" style="color:#ef4444">📧<div class="dock-dot"></div></div>
+      <div class="dock-item" id="dock_market" onclick="handleDock('market')" style="color:#0ea5e9">🛒<div class="dock-dot"></div></div>
+      <div class="dock-item" id="dock_bank" onclick="handleDock('bank')" style="color:#ff2d55">🏦<div class="dock-dot"></div></div>
+      <div class="dock-item" id="dock_browser" onclick="handleDock('browser')" style="color:#f59e0b">🌐<div class="dock-dot"></div></div>
+      <div class="dock-item" id="dock_files" onclick="handleDock('files')" style="color:#3b82f6">📁<div class="dock-dot"></div></div>
+      <div class="separator"></div>
+      <div class="dock-btn" onclick="openVerdict()">ZŁÓŻ ZEZNANIA</div>
     </div>
-
-    <div id="dock-container">
-        <div id="dock">
-            <div class="dock-item" id="dock_chat" onclick="openApp('chat')" title="Wiadomości" style="color:#25d366">💬</div>
-            <div class="dock-item" id="dock_mail" onclick="openApp('mail')" title="Poczta" style="color:#ef4444">📧</div>
-            <div class="dock-item" id="dock_browser" onclick="openApp('browser')" title="Przeglądarka" style="color:#f59e0b">🌐</div>
-            <div class="dock-separator"></div>
-            <div class="dock-item report-btn" onclick="openVerdict()">ZŁÓŻ ZEZNANIA</div>
-        </div>
-    </div>
+  </div>
 </div>
 
-<div id="popupOverlay">
-    <div class="popup-box">
-        <div class="popup-title" id="popupTitle">Tytuł</div>
-        <div class="popup-desc" id="popupDesc">Opis</div>
-        <button class="popup-btn" onclick="closePopup()">Zrozumiałem</button>
-    </div>
+<div id="customModal">
+  <div class="md-box">
+    <div class="md-title" id="mdTitle">Tytuł</div>
+    <div class="md-desc" id="mdDesc">Opis</div>
+    <button class="md-btn" onclick="closeModal()">Rozumiem</button>
+  </div>
 </div>
 
-<div id="verdictModal">
-    <div class="v-box">
-        <div class="v-title">ZŁÓŻ ZEZNANIA</div>
-        <div class="v-desc">Jesteś przesłuchiwany w sprawie śmierci Grzegorza. Złóż spójne zeznania na podstawie danych z komputera.</div>
-        
-        <div class="v-step active" id="vStep1">
-            <div style="font-weight:800; color:var(--primary); margin-bottom: 8px; font-size:12px; letter-spacing:1px;">PYTANIE 1 Z 3</div>
-            <div style="margin-bottom:15px; font-size:16px; font-weight:700;">Kto bezpośrednio odpowiada za zgon Grzegorza?</div>
-            <div class="v-opts">
-                <label class="v-opt"><input type="radio" name="v_who" value="adam"><div><b>Ja (Adam)</b><span>Zabiłem go w garażu po kłótni o wiertarkę.</span></div></label>
-                <label class="v-opt"><input type="radio" name="v_who" value="monika"><div><b>Monika (Żona)</b><span>Otruła go jedzeniem.</span></div></label>
-                <label class="v-opt"><input type="radio" name="v_who" value="grzesiu"><div><b>Nieszczęśliwy wypadek</b><span>Sąsiad sam doprowadził do swojej śmierci.</span></div></label>
-                <label class="v-opt"><input type="radio" name="v_who" value="unknown"><div><b>Włamywacz z OLX</b><span>Napadł go ktoś obcy.</span></div></label>
-            </div>
-        </div>
-
-        <div class="v-step" id="vStep2">
-            <div style="font-weight:800; color:var(--primary); margin-bottom: 8px; font-size:12px; letter-spacing:1px;">PYTANIE 2 Z 3</div>
-            <div style="margin-bottom:15px; font-size:16px; font-weight:700;">Jaka była bezpośrednia przyczyna śmierci?</div>
-            <div class="v-opts">
-                <label class="v-opt"><input type="radio" name="v_how" value="wiertarka"><div><b>Cios tępym narzędziem</b><span>Uderzenie skradzioną wiertarką.</span></div></label>
-                <label class="v-opt"><input type="radio" name="v_how" value="nawoz"><div><b>Otrucie nawozem</b><span>Użycie chemii (Roundup).</span></div></label>
-                <label class="v-opt"><input type="radio" name="v_how" value="thc"><div><b>Odurzenie i upadek</b><span>Zatrucie THC i niefortunne uderzenie głową o kosiarkę.</span></div></label>
-            </div>
-        </div>
-
-        <div class="v-step" id="vStep3">
-            <div style="font-weight:800; color:var(--primary); margin-bottom: 8px; font-size:12px; letter-spacing:1px;">PYTANIE 3 Z 3</div>
-            <div style="margin-bottom:15px; font-size:16px; font-weight:700;">Jaki konflikt z sąsiadem miał miejsce wczoraj?</div>
-            <div class="v-opts">
-                <label class="v-opt"><input type="radio" name="v_why" value="kasa"><div><b>Długi pieniężne</b><span>Wisial mi gotówkę.</span></div></label>
-                <label class="v-opt"><input type="radio" name="v_why" value="sprzet"><div><b>Sprzęt i granica działki</b><span>Kłótnia o kosiarkę, wiertarkę i płot.</span></div></label>
-                <label class="v-opt"><input type="radio" name="v_why" value="ciagnik"><div><b>Części do traktora</b><span>Ukradł mi części do Ursusa C330.</span></div></label>
-            </div>
-        </div>
-
-        <div class="v-actions">
-            <button class="v-btn cancel" onclick="closeVerdict()">ANULUJ</button>
-            <button class="v-btn next" id="vBtnNext" onclick="nextVerdict()">DALEJ</button>
-            <button class="v-btn next" id="vBtnSubmit" style="display:none" onclick="submitVerdict()">ZATWIERDŹ</button>
-        </div>
+<div id="verdictScreen">
+  <div class="v-box">
+    <div class="v-head">
+      <div class="v-title">OSTATECZNE ZEZNANIA</div>
+      <div class="v-sub">Zostałeś wezwany na przesłuchanie w sprawie śmierci sąsiada. Połącz ślady cyfrowe, aby złożyć wiarygodne wyjaśnienia i uniknąć więzienia.</div>
     </div>
+    <div class="v-step active" id="vStep1">
+      <div class="v-label">KROK 1 Z 3</div>
+      <div class="v-q">Kto bezpośrednio odpowiada za śmierć Grzegorza?</div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="v_who" value="adam"><div><b>Ja (Adam W.)</b><span>Straciłem panowanie po kłótni o wiertarkę. Zrobiłem to w garażu.</span></div></label>
+        <label class="v-opt"><input type="radio" name="v_who" value="monika"><div><b>Monika (Moja Żona)</b><span>Jej domowa szarlotka była zatruta, żeby raz na zawsze uciszyć konflikt.</span></div></label>
+        <label class="v-opt"><input type="radio" name="v_who" value="grzesiu"><div><b>Sąsiad Grzesiu (Wypadek)</b><span>Zginął przez własną lekkomyślność i substancje, które przyjął.</span></div></label>
+        <label class="v-opt"><input type="radio" name="v_who" value="unknown"><div><b>Nieznany sprawca</b><span>Napadł go anonimowy handlarz sprzętem z OLX.</span></div></label>
+      </div>
+    </div>
+    <div class="v-step" id="vStep2">
+      <div class="v-label">KROK 2 Z 3</div>
+      <div class="v-q">Jaka jest faktyczna medyczna przyczyna śmierci?</div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="v_how" value="wiertarka"><div><b>Uraz celowy</b><span>Cios skradzioną wiertarką zadaną w tył głowy.</span></div></label>
+        <label class="v-opt"><input type="radio" name="v_how" value="nawoz"><div><b>Otrucie pestycydami</b><span>Silny środek chwastobójczy (Roundup) wlany do jedzenia.</span></div></label>
+        <label class="v-opt"><input type="radio" name="v_how" value="thc"><div><b>Odurzenie THC i nieszczęśliwy upadek</b><span>Potężny atak paniki po zjedzeniu własnych ciastek i uderzenie głową o maszynę.</span></div></label>
+      </div>
+    </div>
+    <div class="v-step" id="vStep3">
+      <div class="v-label">KROK 3 Z 3</div>
+      <div class="v-q">Co było jądrem najgłośniejszego konfliktu przed śmiercią?</div>
+      <div class="v-opts">
+        <label class="v-opt"><input type="radio" name="v_why" value="kasa"><div><b>Brak gotówki</b><span>Nie chciał oddać mi pieniędzy za wcześniejszy remont.</span></div></label>
+        <label class="v-opt"><input type="radio" name="v_why" value="sprzet"><div><b>Przywłaszczenie maszyn i ziemia</b><span>Przesunięty słupek, zarekwirowana kosiarka i wiertarka wystawiona na sprzedaż.</span></div></label>
+        <label class="v-opt"><input type="radio" name="v_why" value="romans"><div><b>Zdrada w rodzinie</b><span>Odkrycie schadzek Moniki z sąsiadem.</span></div></label>
+      </div>
+    </div>
+    <div class="v-acts">
+      <button class="v-btn cancel" onclick="closeVerdict()">ANULUJ</button>
+      <button class="v-btn next" id="vBtnNext" onclick="nextVerdict()">DALEJ</button>
+      <button class="v-btn next" id="vBtnSubmit" style="display:none" onclick="submitVerdict()">ZAKOŃCZ</button>
+    </div>
+  </div>
 </div>
 
-<div id="endingScreen">
-    <div class="end-icon" id="endIcon">✅</div>
-    <div class="end-title" id="endTitle">Wynik</div>
-    <div class="end-text" id="endText">Tekst</div>
-    <button class="end-btn" id="endBtnAction" onclick="location.reload()">ZAMKNIJ SYSTEM</button>
+<div id="endScreen">
+  <div class="e-icon" id="endIcon">✅</div>
+  <div class="e-title" id="endTitle">Wynik</div>
+  <div class="e-txt" id="endTxt">Tekst</div>
+  <button class="e-btn" id="endBtnAction" onclick="location.reload()">WYJDŹ</button>
 </div>
 
 <script>
 const DATA = {
-    chats: [
-        {
-            id: "zona", name: "Monika (Żona)", sub: "Kup mleko",
-            msgs: [
-                { t: "Wczoraj 14:20", f: "them", x: "Adam, uspokój się z tym Grześkiem. Przez ten płot w końcu się pozabijacie." },
-                { t: "Wczoraj 14:25", f: "me", x: "On zaczął! Przesunął słupek o 10 centymetrów na naszą stronę! I nie oddał sprzętu!" },
-                { t: "Wczoraj 14:28", f: "them", x: "Zachowujecie się jak dzieci. Upiekłam szarlotkę. Zanieś mu kawałek i się pogódźcie." },
-                { t: "Wczoraj 14:30", f: "me", x: "Nigdy. Nie po tym, jak przywłaszczył moją wiertarkę." },
-                { t: "Wczoraj 21:00", f: "them", x: "Adam, znowu śmierdzi ziołem. Grzesiek coś piecze w tym swoim garażu?" },
-                { t: "Wczoraj 21:05", f: "me", x: "Tak, narkoman jeden. Dzwonię jutro na straż miejską." }
-            ]
-        },
-        {
-            id: "synek", name: "Jakub (Synek)", sub: "Odpisz",
-            msgs: [
-                { t: "Wczoraj 10:00", f: "them", x: "Tato, pożyczysz 50 zł blikiem? Oddam we wtorek." },
-                { t: "Wczoraj 10:15", f: "me", x: "Na co ci tyle kasy?" },
-                { t: "Wczoraj 10:20", f: "them", x: "Idę z chłopakami na pizzę." },
-                { t: "Wczoraj 10:25", f: "me", x: "Poszło. Ale jutro musisz opryskać ziemniaki, opryskiwacz kupiłem." },
-                { t: "Wczoraj 10:30", f: "them", x: "Dzięki! A widziałem rano jak Grzesiek niósł twoją Makitę do siebie." },
-                { t: "Dzisiaj 08:00", f: "them", x: "Tato, dlaczego pod domem Grześka stoją dwa radiowozy?" }
-            ]
-        },
-        {
-            id: "grzesiu", name: "Grzesiu (Sąsiad)", sub: "Oddawaj to",
-            msgs: [
-                { t: "Wczoraj 18:00", f: "them", x: "Adam, jak nie oddasz tej kosiarki do wieczora to dzwonie na policje." },
-                { t: "Wczoraj 18:05", f: "me", x: "Zabrałeś moją wiertarkę, to kosiarka jest w zastawie. Oddasz sprzęt, dostaniesz kosiarkę." },
-                { t: "Wczoraj 18:10", f: "them", x: "Jesteś nienormalny. Wiertarke to ty sam zgubiles." },
-                { t: "Wczoraj 18:12", f: "them", x: "Z reszta mam to gdzies. Upieklem sobie wlasnie moje specjalne ciasteczka. Zjem cala blache i zapomne ze mam takiego sasiada." },
-                { t: "Wczoraj 18:15", f: "me", x: "Tylko nie padnij tam, ćpunie. Będę miał spokój na weekend." }
-            ]
-        },
-        {
-            id: "tata", name: "Dziadek Kaziu", sub: "ZDROWIE",
-            msgs: [
-                { t: "Dzisiaj 09:00", f: "me", x: "Wszystkiego najlepszego z okazji Dnia Ojca, tatusiu! Dużo zdrowia i spokoju. Kocham Cię! ❤️" },
-                { t: "Dzisiaj 09:15", f: "them", x: "DZIEKUJE SYNKU BARDZO MI MILO" },
-                { t: "Dzisiaj 09:20", f: "me", x: "Wiem tato. Wpadniemy w niedzielę na obiad. I wyłącz tego capslocka." },
-                { t: "Dzisiaj 09:30", f: "them", x: "CO TO JEST CAPSLOK. KUP MI MASĆ NA STAWY I POMPE WODY DO URSUSA C330." }
-            ]
-        },
-        {
-            id: "mama", name: "Babcia Gienia", sub: "Ksiądz pytał",
-            msgs: [
-                { t: "Wtorek 12:00", f: "them", x: "Adasiu, byłeś w niedzielę w kościele? Proboszcz pytał." },
-                { t: "Wtorek 12:15", f: "me", x: "Byliśmy mamo, siedzieliśmy z tyłu." }
-            ]
-        }
-    ],
-    mails: [
-        { from: "powiadomienia@allegro.pl", sub: "Kupiłeś: Środek chwastobójczy ROUNDUP", time: "Środa 12:30", body: "Dziękujemy za zakupy Adam!\n\nKupiłeś:\n- ROUNDUP Flex 480 5L (Bardzo silny środek chemiczny)\n- Opryskiwacz plecakowy 10L\n\nSprzedawca przygotowuje paczkę." },
-        { from: "wspolnota@osiedle.pl", sub: "Wezwanie do zaprzestania hałasów", time: "Wtorek 09:00", body: "Szanowny Panie Adamie,\n\nOtrzymaliśmy skargę od sąsiada (Grzegorz K.) na temat kłótni przy ogrodzeniu. Prosimy o polubowne rozwiązanie sporu o granicę działki, w przeciwnym razie sprawa trafi do nadzoru." },
-        { from: "rolnik-sklep@agro.pl", sub: "Zamówienie zrealizowane", time: "Poniedziałek 08:00", body: "Twoje części do Ursus C330 (chłodnica, paski klinowe) zostały wysłane." }
-    ],
-    market: [
-        { title: "Wiertarka Udarowa Makita 18V (Używana)", price: "250 zł", seller: "Anonimowy_G", pic: "🔧", desc: "Sprzedam szybko wiertarkę. Brak ładowarki w zestawie. Odbiór osobisty tylko po 22:00." },
-        { title: "Kosiarka Spalinowa NAC (Na części)", price: "100 zł", seller: "Janusz_Wawa", pic: "🚜", desc: "Niestety nie odpala, nie wiem co jest grane. Sprzedaję tak jak stoi." },
-        { title: "Pompa Wody Ursus C330 (Nowa)", price: "180 zł", seller: "AgroCzesci", pic: "⚙️", desc: "Nowa pompa wody do ciagnika Ursus C330. Szybka wysylka." }
-    ],
-    history: [
-        { t: "jak uspokoić nerwy po ostrej kłótni z idiotą", u: "poradnik-zdrowie.pl", time: "Wczoraj 19:15" },
-        { t: "czy od marihuany mozna zejsc z tego swiata", u: "forum-medyczne.pl", time: "Wczoraj 21:40" },
-        { t: "gdzie zgłosić kradzież narzędzi przez sąsiada", u: "policja.gov.pl", time: "Środa 15:30" },
-        { t: "jak skutecznie wypalić trawę u sąsiada bez przypału", u: "ogrodnicze-triki.pl/roundup", time: "Wtorek 11:20" },
-        { t: "ursus c330 wymiana pompy wody instrukcja", u: "agrofoto.pl", time: "Poniedziałek 10:00" }
-    ],
-    files: [
-        { n: "list_do_sasiada_BRUDNOPIS.txt", desc: "Szkic pisma", content: "Grzesiek,\nOddaj moją wiertarkę, bo inaczej to się bardzo źle skończy dla nas obu. Z tą swoją nową kosiarką możesz się pożegnać, dopóki nie zobaczę sprzętu u siebie." },
-        { n: "przepis_szarlotka.txt", desc: "Przepisy kulinarne", content: "Szybka szarlotka Moniki:\n- 5 kwaśnych jabłek\n- 2 szklanki mąki\n- 200g masła\n(Notatka: Monika chciała, żebym mu to zaniósł na zgodę. Niedoczekanie.)" },
-        { n: "lista_zakupow_traktor.txt", desc: "Notatki dla ojca", content: "Ursus C330 - części do kupienia:\n1. Pompa wody\n2. Uszczelki\n3. Olej silnikowy 15W40\nZawieźć tacie w niedzielę." }
-    ],
-    report: `[ T A J N E - RAPORT WSTĘPNY OGLĘDZIN MIEJSCA ZDARZENIA ]
+  chats: [
+    {
+      id: "zona", name: "Monika", sub: "Uspokój się.",
+      msgs: [
+        { t: "Wczoraj 14:20", f: "them", x: "Adam, przestań się awanturować z Grześkiem. Słychać was na całym osiedlu." },
+        { t: "Wczoraj 14:25", f: "me", x: "On zaczął! Przesunął słupek o 10 centymetrów na naszą stronę w nocy! I nie oddał mi sprzętu!" },
+        { t: "Wczoraj 14:28", f: "them", x: "Daj spokój, to tylko głupi słupek. Upiekłam świeżą szarlotkę. Zanieś mu kawałek i się w końcu pogódźcie." },
+        { t: "Wczoraj 14:30", f: "me", x: "Nigdy. Przywłaszczył sobie moją wiertarkę. Zobaczy z powrotem swoje maszyny jak świnia niebo." },
+        { t: "Wczoraj 21:00", f: "them", x: "Adam, znowu koszmarnie śmierdzi ziołem na zewnątrz. Grzesiek piecze coś w tym garażu?" },
+        { t: "Wczoraj 21:05", f: "me", x: "Tak, narkoman jeden. Dzwonię do straży miejskiej rano." }
+      ]
+    },
+    {
+      id: "synek", name: "Jakub (Syn)", sub: "Odbierz.",
+      msgs: [
+        { t: "Wczoraj 10:00", f: "them", x: "Tato, pożyczysz 50 zł blikiem? Oddam we wtorek." },
+        { t: "Wczoraj 10:15", f: "me", x: "Na co ci tyle? Dałem ci wczoraj." },
+        { t: "Wczoraj 10:20", f: "them", x: "Idę z chłopakami na miasto." },
+        { t: "Wczoraj 10:25", f: "me", x: "Przelałem. Ale w sobotę kosisz trawnik i opryskujesz ziemniaki z żuków, kupiłem opryskiwacz plecakowy." },
+        { t: "Wczoraj 10:30", f: "them", x: "Okej. A tak w ogóle widziałem rano, jak Grzesiek niósł twoją wiertarkę do siebie." },
+        { t: "Wczoraj 10:35", f: "me", x: "Oszust. Zaraz do niego idę." },
+        { t: "Dzisiaj 08:00", f: "them", x: "Tato, dlaczego pod domem Grześka stoi policja?" },
+        { t: "Dzisiaj 08:05", f: "them", x: "Halo? Odbierz." }
+      ]
+    },
+    {
+      id: "grzesiu", name: "Grzesiu (Sąsiad)", sub: "Dzwonie na psy.",
+      msgs: [
+        { t: "Wczoraj 18:00", f: "them", x: "Adam, jak nie oddasz mi kosiarki to dzwonie na policje. Kradzież to kradzież." },
+        { t: "Wczoraj 18:05", f: "me", x: "Zabrałeś moją wiertarkę, to kosiarkę masz u mnie w zastawie. Jak oddasz sprzęt, to dostaniesz swoją zabawkę." },
+        { t: "Wczoraj 18:10", f: "them", x: "Jesteś nienormalny. Wiertarke to sam zgubiles pijaku. Widzialem ze ja gdzies w internecie wystawiasz." },
+        { t: "Wczoraj 18:12", f: "them", x: "Mam to gdzies. Upieklem sobie specjalne ziolowe ciasteczka. Zjem cala blache i zapomne ze mam takiego zjeba za sasiada." },
+        { t: "Wczoraj 18:15", f: "me", x: "Smacznego. Tylko nie padnij tam, przynajmniej będzie spokój." }
+      ]
+    },
+    {
+      id: "tata", name: "Dziadek Kaziu", sub: "Pompa",
+      msgs: [
+        { t: "Dzisiaj 09:00", f: "me", x: "Wszystkiego najlepszego z okazji Dnia Ojca, tatusiu! Dużo zdrowia i spokoju. ❤️" },
+        { t: "Dzisiaj 09:15", f: "them", x: "DZIEKUJE SYNKU BARDZO MI MILO" },
+        { t: "Dzisiaj 09:20", f: "me", x: "Wiem tato. Pamiętaj wyłączyć capslocka." },
+        { t: "Dzisiaj 09:30", f: "them", x: "CO TO CAPSLOK. ORAZ ZNAJDZ MI CHLODNICE DO URSUSA C330." },
+        { t: "Dzisiaj 09:35", f: "me", x: "Zamówiłem, w poniedziałek przywiezie kurier." }
+      ]
+    },
+    {
+      id: "wspolnota", name: "Zarząd Osiedla", sub: "Skargi",
+      msgs: [
+        { t: "Wtorek 09:30", f: "them", x: "Panie Adamie, wysłaliśmy oficjalne pismo w sprawie tych awantur z sąsiadem." },
+        { t: "Wtorek 09:45", f: "me", x: "Widziałem maila. Ale to on rzuca we mnie wyzwiskami." },
+        { t: "Wtorek 09:50", f: "them", x: "Nie wnikamy kto zaczął. Macie przestać hałasować." }
+      ]
+    }
+  ],
+  mails: [
+    { id: "m1", from: "powiadomienia@allegro.pl", sub: "Kupiłeś: Środek chwastobójczy ROUNDUP", time: "Środa 12:30", body: "Dziękujemy za zakupy Adam!\n\nZamówienie:\n- ROUNDUP Flex 480 5L (Bardzo silny środek chemiczny)\n- Opryskiwacz plecakowy 10L\n\nUwaga: Ostrzeżenie producenta - środek żrący, stosować maskę ochronną." },
+    { id: "m2", from: "wspolnota@osiedle.pl", sub: "Ostateczne wezwanie do zaprzestania hałasów", time: "Wtorek 09:00", body: "Szanowny Panie Adamie,\n\nOtrzymaliśmy oficjalną skargę od sąsiada (Grzegorz K.) na temat ciągłego piłowania, wyzwisk i nocnych kłótni o rzekomo przestawiony słupek.\n\nProsimy o natychmiastowe, polubowne rozwiązanie sporu. W przeciwnym razie zawiadomimy policję." },
+    { id: "m3", from: "sklep@rolnik-czesci.pl", sub: "Potwierdzenie zakupu", time: "Poniedziałek 08:00", body: "Witaj Adam,\nTwoje zamówienie na chłodnicę wody do ciągnika Ursus C330 zostało przyjęte. Towar wyruszy w poniedziałek." }
+  ],
+  market: [
+    { title: "Wiertarka Udarowa Makita 18V", price: "250 zł", seller: "Anonimowy_G", pic: "🔧", desc: "Sprzedam szybko używaną wiertarkę. Brak ładowarki w zestawie. Dostałem w rozliczeniu za dług. Odbiór osobisty tylko w późnych godzinach na ul. Wiosennej." },
+    { title: "Kosiarka Spalinowa NAC (Uszkodzona)", price: "100 zł", seller: "Janusz_Handel", pic: "🚜", desc: "Kosiarka spalinowa. Niestety nie odpala. Sprzedaję w całości na części. Bez zwrotów." },
+    { title: "Pompa Wody Ursus C330 (Nowa)", price: "180 zł", seller: "AgroPolska", pic: "⚙️", desc: "Nowa pompa. Szybka realizacja." }
+  ],
+  bank: [
+    { title: "Przelew na telefon BLIK", desc: "Odbiorca: Jakub W.", amt: "- 50.00 PLN", cls: "tx-out", date: "Wczoraj 10:25" },
+    { title: "Allegro Pay", desc: "ROUNDUP Flex 480 5L + Opryskiwacz", amt: "- 240.00 PLN", cls: "tx-out", date: "Środa 12:30" },
+    { title: "Sklep Rolnik-Części", desc: "Chłodnica Ursus C330", amt: "- 450.00 PLN", cls: "tx-out", date: "Poniedziałek 08:00" },
+    { title: "Wpływ - Wynagrodzenie", desc: "Bud-Max Sp. z o.o.", amt: "+ 4800.00 PLN", cls: "tx-in", date: "10 Maja" },
+    { title: "Stacja Paliw Orlen", desc: "Płatność kartą", amt: "- 112.50 PLN", cls: "tx-out", date: "9 Maja" }
+  ],
+  history: [
+    { t: "jak uspokoić nerwy po ostrej kłótni", u: "poradnik.pl/nerwy", time: "Wczoraj 19:15", cat: "PSYCHOLOGIA" },
+    { t: "atak serca a marihuana objawy", u: "zdrowie.pl/kardiologia", time: "Wczoraj 20:10", cat: "MEDYCYNA" },
+    { t: "czy mozna przedawkowac jedzac ciastka z thc", u: "forum.pl/overdose", time: "Wczoraj 21:40", cat: "MEDYCYNA" },
+    { t: "kradzież mienia do 500zł co grozi", u: "prawo.pl/kradzieze", time: "Środa 16:10", cat: "PRAWO" },
+    { t: "prawo własności geodezja przesunięcie płotu", u: "lex.pl/porady", time: "Środa 14:00", cat: "PRAWO" },
+    { t: "jak pozbyc sie trawy u sasiada roundup", u: "ogrodek.pl/triki", time: "Wtorek 11:20", cat: "DOM I OGRÓD" },
+    { t: "chłodnica ursus c330 schemat montażu", u: "agro.pl/mechanika", time: "Poniedziałek 10:00", cat: "ROLNICTWO" }
+  ],
+  files: [
+    { n: "Szkic_Pisma_Do_Wspolnoty.txt", desc: "Notatnik", content: "Szanowny Zarządzie,\nOdpowiadając na skargę Grzegorza pragnę zauważyć, że to on zaczął. Przestawił słupek graniczny o kilkanaście centymetrów w nocy. Co więcej, notorycznie wypala zielska w garażu. Zabrał moją wiertarkę, dlatego zarekwirowałem jego kosiarkę NAC jako zastaw." },
+    { n: "Instrukcja_Opryskiwacza.pdf", desc: "Pobrany plik PDF", content: "Uwaga: Używając ROUNDUP Flex zachowaj ostrożność. (Do Kuby: uważaj jak będziesz pryskał te ziemniaki w sobotę, załóż maskę)." },
+    { n: "Notatki_Osobiste.txt", desc: "Zapiski z kalendarza", content: "- Sobota: Kuba kosi trawę.\n- Niedziela: Obiad z okazji Dnia Ojca.\n- Szarlotka Moniki (notatka: nie zanosić Grześkowi, ten facet nie zasługuje na ugodę)." },
+    { n: "BRUDNOPIS_List_Do_Grzeska.txt", desc: "Zapisany szkic", content: "Grzesiek,\nOddaj moją wiertarkę, bo inaczej to się bardzo źle skończy. Wiem, że to ty wystawiłeś ją na sprzedaż na necie. Z tą swoją nową kosiarką możesz się pożegnać, dopóki nie zobaczę sprzętu u siebie." }
+  ],
+  report: `[ T A J N E - RAPORT WSTĘPNY OGLĘDZIN MIEJSCA ZDARZENIA ]
 SYGNATURA SPRAWY: KRP-2026/06/104
+
 DATA ZDARZENIA: Wczoraj, godz. 23:45
+MIEJSCE OGLĘDZIN: Garaż przy ul. Wiosennej 4 (posesja Grzegorza K.)
 OFIARA: Grzegorz K., lat 42
 
 STAN FAKTYCZNY NA MIEJSCU:
-Ciało zmarłego w zamkniętym od wewnątrz garażu. Na potylicy rozległa rana tłuczona. Obok ciała kosiarka spalinowa ze śladami krwi na metalowym korpusie silnika. Na stole pusta blacha do pieczenia. Brak śladów walki.
+Ciało zmarłego odnaleziono w głębi zamkniętego garażu. Na potylicy widoczna rozległa rana tłuczona. Obok ciała znajdowała się zepsuta kosiarka spalinowa (marki NAC) należąca do zmarłego, ze śladami krwi na ostrym, metalowym korpusie silnika.
+Brak jakichkolwiek śladów walki. Drzwi garażowe były zamknięte od wewnątrz na masywną zasuwę. 
+Na stole roboczym odnaleziono pustą blachę do pieczenia.
 
-WYNIKI TOKSYKOLOGII:
-We krwi denata wykryto ekstremalnie wysokie, toksyczne stężenie związków psychoaktywnych (syntetyczne THC z wypieków). 
+WYNIKI SZYBKIEJ TOKSYKOLOGII:
+We krwi denata wykryto ekstremalnie wysokie, toksyczne wręcz stężenie związków psychoaktywnych (bardzo silne, syntetyczne THC). Źródłem przyjęcia był układ pokarmowy (wyroby cukiernicze wypiekane w garażu).
 
-WNIOSKI LEKARZA SĄDOWEGO:
-Denat w wyniku spożycia ogromnej dawki doznał ostrego ataku paniki. Potknął się i upadł do tyłu, uderzając głową w twardy, metalowy rant kosiarki.
+WNIOSKI LEKARZA SĄDOWEGO (WSTĘPNE):
+Denat w wyniku spożycia monstrualnej dawki substancji psychoaktywnej doznał ostrego ataku paniki, paranoi i tachykardii. W wyniku utraty kontroli nad ciałem, potknął się o własne nogi i upadł z dużą siłą do tyłu.
+Rana głowy jest wynikiem bezpośredniego i niefortunnego uderzenia w twardy, metalowy rant kosiarki.
 
 KONKLUZJA ŚLEDCZA:
-Brak udziału osób trzecich. Nieszczęśliwy wypadek wywołany silnym odurzeniem.`
+Nieszczęśliwy wypadek wywołany odurzeniem. Biorąc pod uwagę zamknięcie pomieszczenia od wewnątrz, z całą stanowczością wyklucza się udział osób trzecich.`
 };
 
 let STATE = {
-    windows: {},
-    zIndex: 100,
-    reportUnlocked: false,
-    vStep: 1,
-    vAnswers: {}
+  windows: {},
+  zTop: 100,
+  logsUnlocked: false
 };
 
 setTimeout(() => {
-    document.getElementById('bootText').textContent = "AUTORYZACJA ZAKOŃCZONA";
-    setTimeout(() => {
-        document.getElementById('bootSpinner').style.display = 'none';
-        document.getElementById('bootBtn').style.display = 'block';
-    }, 800);
-}, 1500);
+  document.getElementById('bootSpinner').style.display='none';
+  document.getElementById('bootBtn').style.display='block';
+}, 1200);
 
 function startOS() {
-    document.getElementById('bootScreen').style.opacity = '0';
-    document.getElementById('bootScreen').style.transform = 'scale(1.05)';
-    setTimeout(() => {
-        document.getElementById('bootScreen').style.display = 'none';
-        document.getElementById('desktop').classList.add('active');
-        startClock();
-        setInterval(updateTopTime, 1000);
-    }, 800);
+  const scr = document.getElementById('lockScreen');
+  scr.style.opacity = '0';
+  scr.style.transform = 'scale(1.1)';
+  setTimeout(() => {
+    scr.style.display = 'none';
+    document.getElementById('desktop').classList.add('active');
+    startClock();
+    setupIconsDrag();
+  }, 600);
 }
 
 function startClock() {
-    const clockTime = document.getElementById('clockTime');
-    setInterval(() => {
-        const d = new Date();
-        clockTime.textContent = String(d.getHours()).padStart(2, '0') + ":" + String(d.getMinutes()).padStart(2, '0');
-    }, 1000);
-}
-
-function updateTopTime() {
+  const t1 = document.getElementById('clockTime');
+  const t2 = document.getElementById('topTime');
+  const days = ["Niedz","Pon","Wt","Śr","Czw","Pt","Sob"];
+  const upd = () => {
     const d = new Date();
-    document.getElementById('topTime').textContent = String(d.getHours()).padStart(2, '0') + ":" + String(d.getMinutes()).padStart(2, '0');
+    const hs = String(d.getHours()).padStart(2,'0');
+    const ms = String(d.getMinutes()).padStart(2,'0');
+    t1.textContent = hs + ":" + ms;
+    t2.textContent = days[d.getDay()] + " " + hs + ":" + ms;
+  };
+  upd();
+  setInterval(upd, 1000);
 }
 
-function showPopup(title, text) {
-    document.getElementById('popupTitle').textContent = title;
-    document.getElementById('popupDesc').textContent = text;
-    const overlay = document.getElementById('popupOverlay');
-    overlay.style.display = 'flex';
-    setTimeout(() => overlay.classList.add('active'), 10);
+function showModal(title, desc) {
+  document.getElementById('mdTitle').textContent = title;
+  document.getElementById('mdDesc').textContent = desc;
+  const overlay = document.getElementById('customModal');
+  overlay.style.display = 'flex';
+  setTimeout(() => overlay.classList.add('on'), 10);
 }
 
-function closePopup() {
-    const overlay = document.getElementById('popupOverlay');
-    overlay.classList.remove('active');
-    setTimeout(() => overlay.style.display = 'none', 200);
+function closeModal() {
+  const overlay = document.getElementById('customModal');
+  overlay.classList.remove('on');
+  setTimeout(() => overlay.style.display = 'none', 300);
 }
 
-function openWindow(id, title, contentHTML) {
-    if(STATE.windows[id]) {
-        if(STATE.windows[id].classList.contains('minimized')) {
-            STATE.windows[id].classList.remove('minimized');
-            STATE.windows[id].style.display = 'flex';
-        }
-        bringToFront(id);
-        return;
+function openWindow(id, title, htmlContent) {
+  if(STATE.windows[id]) {
+    if(STATE.windows[id].el.classList.contains('minimized')) {
+      STATE.windows[id].el.classList.remove('minimized');
     }
-
-    const win = document.createElement('div');
-    win.className = 'window open';
-    win.id = 'win_' + id;
-    
-    if(window.innerWidth > 768) {
-        const w = 750, h = 500;
-        const left = Math.max(10, (window.innerWidth - w)/2 + (Math.random() * 40 - 20));
-        const top = Math.max(10, (window.innerHeight - h)/2 + (Math.random() * 40 - 20) - 30);
-        win.style.left = left + 'px';
-        win.style.top = top + 'px';
-    }
-    
-    win.style.zIndex = ++STATE.zIndex;
-
-    win.innerHTML = `
-        <div class="win-header" onmousedown="startDrag(event, '${id}')" ontouchstart="startDrag(event, '${id}')">
-            <div class="win-controls">
-                <div class="win-btn win-close" onclick="closeWindow('${id}')"></div>
-                <div class="win-btn win-min" onclick="minimizeWindow('${id}')"></div>
-                <div class="win-btn win-max"></div>
-            </div>
-            <div class="win-title">${title}</div>
-            <div style="width:70px"></div>
-        </div>
-        <div class="win-content">${contentHTML}</div>
-    `;
-
-    document.getElementById('desktop').appendChild(win);
-    STATE.windows[id] = win;
-    updateDock();
-    
-    win.addEventListener('mousedown', () => bringToFront(id));
-    win.addEventListener('touchstart', () => bringToFront(id), {passive: true});
+    bringToFront(id);
+    return;
+  }
+  const win = document.createElement('div');
+  win.className = 'window open';
+  win.id = 'win_' + id;
+  
+  if(window.innerWidth > 768) {
+    const w = 750, h = 520;
+    const left = Math.max(10, (window.innerWidth - w)/2 + (Math.random()*60-30));
+    const top = Math.max(30, (window.innerHeight - h)/2 + (Math.random()*60-30));
+    win.style.left = left + 'px';
+    win.style.top = top + 'px';
+    win.style.width = w + 'px';
+    win.style.height = h + 'px';
+  }
+  
+  win.style.zIndex = ++STATE.zTop;
+  win.innerHTML = `
+    <div class="win-header">
+      <div class="win-controls">
+        <div class="w-btn w-close" onclick="closeWindow('${id}')"></div>
+        <div class="w-btn w-min" onclick="minimizeWindow('${id}')"></div>
+        <div class="w-btn w-max"></div>
+      </div>
+      <div class="win-title">${title}</div>
+      <div style="width:80px"></div>
+    </div>
+    <div class="win-body">${htmlContent}</div>
+  `;
+  document.getElementById('desktop').appendChild(win);
+  STATE.windows[id] = {el: win, id: id};
+  updateDock();
+  
+  if(window.innerWidth > 768) bindWinDrag(win, id);
+  
+  win.addEventListener('mousedown', () => bringToFront(id));
+  win.addEventListener('touchstart', () => bringToFront(id), {passive: true});
 }
 
 function closeWindow(id) {
-    const win = STATE.windows[id];
-    if(!win) return;
-    win.style.opacity = '0';
-    if(window.innerWidth > 768) win.style.transform = 'scale(0.95)';
-    else win.style.transform = 'translateY(100%)';
-    
-    setTimeout(() => {
-        win.remove();
-        delete STATE.windows[id];
-        updateDock();
-    }, 200);
+  const win = STATE.windows[id];
+  if(!win) return;
+  win.el.style.opacity = '0';
+  if(window.innerWidth > 768) win.el.style.transform = 'scale(0.95)';
+  else win.el.style.transform = 'translateY(100%)';
+  setTimeout(() => {
+    win.el.remove();
+    delete STATE.windows[id];
+    updateDock();
+  }, 200);
 }
 
 function minimizeWindow(id) {
-    const win = STATE.windows[id];
-    if(!win) return;
-    win.classList.add('minimized');
-    win.style.opacity = '0';
-    setTimeout(() => win.style.display = 'none', 200);
-    updateDock();
+  const win = STATE.windows[id];
+  if(!win) return;
+  win.el.classList.add('minimized');
+  updateDock();
 }
 
 function bringToFront(id) {
-    const win = STATE.windows[id];
-    if(!win || win.style.zIndex == STATE.zIndex) return;
-    Object.values(STATE.windows).forEach(w => w.classList.remove('focus'));
-    win.style.zIndex = ++STATE.zIndex;
-    win.classList.add('focus');
+  const win = STATE.windows[id];
+  if(!win || win.el.style.zIndex == STATE.zTop) return;
+  win.el.style.zIndex = ++STATE.zTop;
 }
 
 function updateDock() {
-    const dockIds = ['chat', 'mail', 'browser'];
-    dockIds.forEach(id => {
-        const el = document.getElementById('dock_' + id);
-        if(el) {
-            if(STATE.windows[id]) el.classList.add('running');
-            else el.classList.remove('running');
-        }
-    });
-}
-
-let dragInfo = null;
-function startDrag(e, id) {
-    if(window.innerWidth <= 768) return; 
-    if(e.target.classList.contains('win-btn')) return;
-    const win = STATE.windows[id];
-    bringToFront(id);
-    const touch = e.type === 'touchstart' ? e.touches[0] : e;
-    dragInfo = {
-        win: win,
-        ox: touch.clientX - win.offsetLeft,
-        oy: touch.clientY - win.offsetTop
-    };
-}
-window.addEventListener('mousemove', (e) => {
-    if(!dragInfo) return;
-    dragInfo.win.style.left = (e.clientX - dragInfo.ox) + 'px';
-    dragInfo.win.style.top = (e.clientY - dragInfo.oy) + 'px';
-});
-window.addEventListener('touchmove', (e) => {
-    if(!dragInfo) return;
-    dragInfo.win.style.left = (e.touches[0].clientX - dragInfo.ox) + 'px';
-    dragInfo.win.style.top = (e.touches[0].clientY - dragInfo.oy) + 'px';
-}, {passive: true});
-window.addEventListener('mouseup', () => dragInfo = null);
-window.addEventListener('touchend', () => dragInfo = null);
-
-function openApp(appId) {
-    let content = "";
-    let title = "";
-
-    switch(appId) {
-        case 'chat':
-            title = "Messenger";
-            const chatList = DATA.chats.map((c, i) => `
-                <div class="list-item" onclick="loadChat(${i})">
-                    <div class="item-av">${c.name[0]}</div>
-                    <div class="item-info">
-                        <div class="item-name">${c.name}</div>
-                        <div class="item-sub">${c.sub}</div>
-                    </div>
-                </div>
-            `).join('');
-            content = `
-                <div class="app-layout" id="chatLayout">
-                    <div class="sidebar">
-                        <div class="sidebar-header">Czaty</div>
-                        <div class="list-wrap">${chatList}</div>
-                    </div>
-                    <div class="main-pane">
-                        <div class="pane-header">
-                            <button class="back-btn" onclick="backPane('chatLayout')">◀ Wróć</button>
-                            <div class="pane-title" id="chatTitle">Wybierz rozmowę</div>
-                        </div>
-                        <div class="pane-body" id="chatBody">
-                            <div class="empty-state">Wybierz osobę z listy, aby otworzyć historię.</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            break;
-            
-        case 'mail':
-            title = "Poczta WP";
-            const mailList = DATA.mails.map((m, i) => `
-                <div class="list-item" onclick="loadMail(${i})">
-                    <div class="item-av" style="background:var(--danger)">@</div>
-                    <div class="item-info">
-                        <div class="item-name">${m.sub}</div>
-                        <div class="item-sub">${m.from}</div>
-                    </div>
-                </div>
-            `).join('');
-            content = `
-                <div class="app-layout" id="mailLayout">
-                    <div class="sidebar">
-                        <div class="sidebar-header">Odebrane</div>
-                        <div class="list-wrap">${mailList}</div>
-                    </div>
-                    <div class="main-pane">
-                        <div class="pane-header">
-                            <button class="back-btn" onclick="backPane('mailLayout')">◀ Wróć</button>
-                            <div class="pane-title">Podgląd wiadomości</div>
-                        </div>
-                        <div class="pane-body" id="mailBody">
-                            <div class="empty-state">Wybierz e-mail z listy.</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            break;
-
-        case 'market':
-            title = "OLX Lokalnie";
-            const adList = DATA.market.map((m) => `
-                <div class="ad-item" onclick="showPopup('Ogłoszenie niedostępne', 'Sprzedający ukrył ogłoszenie lub nie odpowiada na wiadomości.')">
-                    <div class="ad-pic">${m.pic}</div>
-                    <div class="ad-desc">
-                        <div class="ad-price">${m.price}</div>
-                        <div class="ad-title">${m.title}</div>
-                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Od: <b>${m.seller}</b></div>
-                        <div style="font-size:13px; color:#475569; line-height:1.4;">${m.desc}</div>
-                    </div>
-                </div>
-            `).join('');
-            content = `<div style="padding:20px; width:100%; height:100%; overflow-y:auto; background:#f8fafc;">
-                <h3 style="margin-bottom:15px; color:#0f172a;">Ostatnio przeglądane</h3>
-                ${adList}
-            </div>`;
-            break;
-
-        case 'browser':
-            title = "Chrome - Historia";
-            const histList = DATA.history.map(h => `
-                <div class="hist-item">
-                    <div class="hist-title">${h.t}</div>
-                    <div class="hist-url">${h.u} &nbsp;&bull;&nbsp; ${h.time}</div>
-                </div>
-            `).join('');
-            content = `<div style="width:100%; height:100%; overflow-y:auto;">
-                <div style="padding:12px 20px; background:#f1f5f9; border-bottom:1px solid var(--border); font-weight:800; font-size:11px; color:#64748b;">HISTORIA WYSZUKIWANIA</div>
-                ${histList}
-            </div>`;
-            break;
-
-        case 'files':
-            title = "Moje Dokumenty";
-            const fileList = DATA.files.map((f, i) => `
-                <div class="list-item" onclick="openFileViewer(${i})">
-                    <div class="item-av" style="background:#f59e0b; font-size:20px;">📄</div>
-                    <div class="item-info">
-                        <div class="item-name">${f.n}</div>
-                        <div class="item-sub">${f.desc}</div>
-                    </div>
-                </div>
-            `).join('');
-            content = `<div style="width:100%; height:100%; overflow-y:auto; background:#fff;">${fileList}</div>`;
-            break;
-
-        case 'report':
-            if(!STATE.reportUnlocked) {
-                openDecodeGame();
-                return;
-            }
-            title = "Akta Policji - Podgląd";
-            content = `<div style="padding:25px; width:100%; height:100%; overflow-y:auto; background:#0f172a; color:#f8fafc; font-family:'Consolas', monospace; line-height:1.6; font-size:13px; white-space:pre-wrap;">${DATA.report}</div>`;
-            break;
+  ['chat','mail','market','bank','browser','files'].forEach(id => {
+    const icon = document.getElementById('dock_' + id);
+    if(icon) {
+      if(STATE.windows[id]) icon.classList.add('running');
+      else icon.classList.remove('running');
     }
-
-    openWindow(appId, title, content);
+  });
 }
 
-function showPane(layoutId) {
-    if(window.innerWidth <= 768) document.getElementById(layoutId).classList.add('show-pane');
+function handleDock(id) {
+  if(STATE.windows[id]) {
+    if(STATE.windows[id].el.classList.contains('minimized')) {
+      STATE.windows[id].el.classList.remove('minimized');
+      bringToFront(id);
+    } else {
+      if(STATE.windows[id].el.style.zIndex == STATE.zTop) minimizeWindow(id);
+      else bringToFront(id);
+    }
+  } else {
+    openApp(id);
+  }
 }
-function backPane(layoutId) {
-    document.getElementById(layoutId).classList.remove('show-pane');
+
+function bindWinDrag(win, id) {
+  const header = win.querySelector('.win-header');
+  let isDragging = false, startX, startY, oX, oY;
+  const down = (e) => {
+    if(e.target.classList.contains('w-btn')) return;
+    isDragging = true;
+    bringToFront(id);
+    startX = e.clientX || e.touches[0].clientX;
+    startY = e.clientY || e.touches[0].clientY;
+    oX = win.offsetLeft;
+    oY = win.offsetTop;
+  };
+  const move = (e) => {
+    if(!isDragging) return;
+    let x = e.clientX || e.touches[0].clientX;
+    let y = e.clientY || e.touches[0].clientY;
+    win.style.left = (oX + x - startX) + 'px';
+    win.style.top = (oY + y - startY) + 'px';
+  };
+  const up = () => { isDragging = false; };
+  header.addEventListener('mousedown', down);
+  header.addEventListener('touchstart', down, {passive:true});
+  window.addEventListener('mousemove', move);
+  window.addEventListener('touchmove', move, {passive:true});
+  window.addEventListener('mouseup', up);
+  window.addEventListener('touchend', up);
 }
+
+function setupIconsDrag() {
+  if(window.innerWidth <= 768) return;
+  const icons = document.querySelectorAll('.desk-icon');
+  icons.forEach(icon => {
+    let dragging=false, moved=false, sX, sY, oX, oY;
+    const dn = (e) => {
+      dragging=true; moved=false;
+      sX = e.clientX; sY = e.clientY; oX = icon.offsetLeft; oY = icon.offsetTop;
+      icon.style.zIndex=100;
+    };
+    const mv = (e) => {
+      if(!dragging) return;
+      let dx = e.clientX - sX, dy = e.clientY - sY;
+      if(Math.abs(dx)>3 || Math.abs(dy)>3) moved=true;
+      if(moved){
+        icon.style.left = (oX+dx)+'px'; icon.style.top = (oY+dy)+'px';
+      }
+    };
+    const up = (e) => {
+      if(!dragging) return;
+      dragging=false; icon.style.zIndex='';
+      if(!moved){
+        let appId = icon.getAttribute('data-app');
+        if(appId) openApp(appId);
+      }
+    };
+    icon.addEventListener('mousedown', dn);
+    window.addEventListener('mousemove', mv);
+    window.addEventListener('mouseup', up);
+  });
+}
+
+function openApp(id) {
+  let t = "", h = "";
+  if(id === 'chat') {
+    t = "Wiadomości";
+    const list = DATA.chats.map((c,i) => `
+      <div class="list-item" onclick="loadChat(${i})">
+        <div class="item-av">${c.name[0]}</div>
+        <div class="item-info">
+          <div class="item-name">${c.name}</div>
+          <div class="item-sub">${c.sub}</div>
+        </div>
+      </div>`).join('');
+    h = `<div class="app-layout" id="lay_chat">
+      <div class="sidebar"><div class="sidebar-head">Czaty</div><div class="list-scroll" id="chatList">${list}</div></div>
+      <div class="main-pane">
+        <div class="pane-head"><button class="back-btn" onclick="backPane('lay_chat')">◀ Wróć</button><span class="pane-title" id="chatTitle">Wybierz rozmowę</span></div>
+        <div class="pane-scroll" id="chatBody"><div class="empty-msg">Wybierz osobę z listy, aby odczytać historię.</div></div>
+      </div>
+    </div>`;
+  }
+  else if(id === 'mail') {
+    t = "Poczta WP";
+    const list = DATA.mails.map((m,i) => `
+      <div class="list-item" onclick="loadMail(${i})">
+        <div class="item-av" style="background:var(--danger)">@</div>
+        <div class="item-info">
+          <div class="item-name">${m.sub}</div>
+          <div class="item-sub">${m.from}</div>
+        </div>
+      </div>`).join('');
+    h = `<div class="app-layout" id="lay_mail">
+      <div class="sidebar" style="width:300px"><div class="sidebar-head">Skrzynka (${DATA.mails.length})</div><div class="list-scroll" id="mailList">${list}</div></div>
+      <div class="main-pane">
+        <div class="pane-head"><button class="back-btn" onclick="backPane('lay_mail')">◀ Wróć</button><span class="pane-title" id="mailTitle">Podgląd e-mail</span></div>
+        <div class="pane-scroll" id="mailBody"><div class="empty-msg">Wybierz wiadomość z listy.</div></div>
+      </div>
+    </div>`;
+  }
+  else if(id === 'market') {
+    t = "OLX Lokalnie";
+    const ads = DATA.market.map(m => `
+      <div class="ad-card" onclick="showModal('Brak odpowiedzi', 'Sprzedawca ukrył ogłoszenie lub nie odpowiada.')">
+        <div class="ad-pic">${m.pic}</div>
+        <div class="ad-info">
+          <div class="ad-price">${m.price}</div>
+          <div class="ad-title">${m.title}</div>
+          <div class="ad-seller">Sprzedaje: <b>${m.seller}</b></div>
+          <div class="ad-desc">${m.desc}</div>
+        </div>
+      </div>`).join('');
+    h = `<div style="width:100%;height:100%;overflow-y:auto;background:#fff;">
+      <div style="padding:24px 24px 10px 24px;font-size:20px;font-weight:800;color:#0f172a;">Ostatnio przeglądane</div>
+      <div class="market-grid">${ads}</div>
+    </div>`;
+  }
+  else if(id === 'bank') {
+    t = "Santander - Historia Operacji";
+    const txs = DATA.bank.map(x => `
+      <div class="bank-tx">
+        <div class="tx-l">
+          <div class="tx-title">${x.title}</div>
+          <div class="tx-date">${x.desc} &bull; ${x.date}</div>
+        </div>
+        <div class="tx-amt ${x.cls}">${x.amt}</div>
+      </div>
+    `).join('');
+    h = `<div style="width:100%;height:100%;overflow-y:auto;background:#fff;">
+      <div class="bank-head">Rachunek Osobisty: Adam W.<div class="bank-bal">14 250.00 PLN</div></div>
+      <div style="padding:20px 24px;font-weight:700;color:#64748b;font-size:12px;background:#f8fafc;border-bottom:1px solid #e2e8f0;letter-spacing:1px;">OSTATNIE OPERACJE</div>
+      <div>${txs}</div>
+    </div>`;
+  }
+  else if(id === 'browser') {
+    t = "Google Chrome - Historia Ostatnich 48H";
+    const list = DATA.history.map(x => `
+      <div class="hist-item">
+        <div class="h-title">${x.t} <span class="h-cat">${x.cat}</span></div>
+        <div class="h-url">${x.u} &bull; ${x.time}</div>
+      </div>`).join('');
+    h = `<div style="width:100%;height:100%;overflow-y:auto;background:#fff;">
+      <div class="hist-list" style="padding:0;">${list}</div>
+    </div>`;
+  }
+  else if(id === 'files') {
+    t = "Katalog Dokumentów";
+    const list = DATA.files.map((f,i) => `
+      <div class="f-item" onclick="openFileViewer(${i})">
+        <div class="f-icon">📄</div>
+        <div class="f-name">${f.n}</div>
+        <div class="f-desc">${f.desc}</div>
+      </div>`).join('');
+    h = `<div style="width:100%;height:100%;overflow-y:auto;background:#fff;"><div class="files-grid">${list}</div></div>`;
+  }
+  else if(id === 'report') {
+    if(!STATE.logsUnlocked) { openDecodeGame(); return; }
+    t = "Raport Medyczny/Policyjny - Wgląd";
+    h = `<div style="padding:30px;width:100%;height:100%;overflow-y:auto;background:#fff;color:#1e293b;font-family:'SF Mono',Consolas,monospace;font-size:14px;line-height:1.7;white-space:pre-wrap;">${DATA.report}</div>`;
+  }
+  openWindow(id, t, h);
+}
+
+function showPane(id) { if(window.innerWidth <= 768) document.getElementById(id).classList.add('show-pane'); }
+function backPane(id) { document.getElementById(id).classList.remove('show-pane'); }
 
 function loadChat(idx) {
-    const c = DATA.chats[idx];
-    document.getElementById('chatTitle').textContent = c.name;
-    const bubbles = c.msgs.map(m => `
-        <div class="bubble ${m.f}">
-            ${m.x}
-            <span class="bubble-time">${m.t}</span>
-        </div>
-    `).join('');
-    const body = document.getElementById('chatBody');
-    body.innerHTML = bubbles;
-    setTimeout(() => body.scrollTop = body.scrollHeight, 50);
-    showPane('chatLayout');
+  const c = DATA.chats[idx];
+  document.getElementById('chatTitle').textContent = c.name;
+  const items = document.querySelectorAll('#chatList .list-item');
+  items.forEach(el => el.classList.remove('active'));
+  if(items[idx]) items[idx].classList.add('active');
+  const b = document.getElementById('chatBody');
+  b.innerHTML = c.msgs.map(m => `<div class="bubble ${m.f}">${m.x}<span class="bubble-time">${m.t}</span></div>`).join('');
+  setTimeout(() => b.scrollTop = b.scrollHeight, 50);
+  showPane('lay_chat');
 }
 
 function loadMail(idx) {
-    const m = DATA.mails[idx];
-    document.getElementById('mailBody').innerHTML = `
-        <div class="mail-view">
-            <h2>${m.sub}</h2>
-            <div class="mail-meta">Od: <b>${m.from}</b><br>Data: ${m.time}</div>
-            <div class="mail-content">${m.body}</div>
-        </div>
-    `;
-    showPane('mailLayout');
+  const m = DATA.mails[idx];
+  document.getElementById('mailTitle').textContent = "Odczyt Wiadomości";
+  const items = document.querySelectorAll('#mailList .list-item');
+  items.forEach(el => el.classList.remove('active'));
+  if(items[idx]) items[idx].classList.add('active');
+  document.getElementById('mailBody').innerHTML = `
+    <div class="mail-view">
+      <h2>${m.sub}</h2>
+      <div class="mail-meta">Od: <b>${m.from}</b><br>Otrzymano: ${m.time}</div>
+      <div class="mail-body">${m.body}</div>
+    </div>`;
+  showPane('lay_mail');
 }
 
 function openFileViewer(idx) {
-    const f = DATA.files[idx];
-    openWindow('fileViewer_' + idx, f.n, `<div style="padding:20px; font-family:monospace; font-size:14px; white-space:pre-wrap; color:#334155;">${f.content}</div>`);
+  const f = DATA.files[idx];
+  openWindow('fv_' + idx, f.n, `<div style="padding:25px;width:100%;height:100%;overflow-y:auto;background:#fff;color:#334155;font-size:15px;line-height:1.7;white-space:pre-wrap;"><b>${f.desc}</b><br><br>${f.content}</div>`);
 }
 
-let mgTimer, mgTime = 60, mgStep = 0;
+let mgTimer, mgTime = 90, mgStep = 0;
 const MG_DATA = [
-    { 
-        text: "[MODUŁ WERYFIKACJI]\nSystem policyjny odnotował zakup internetowy środka chemicznego. Ze względu na potencjalne zatrucie, wskaż poprawny preparat nabyty przez użytkownika komputera.", 
-        q: "Jaki preparat chwastobójczy kupił niedawno Adam?", 
-        opts: ["ROUNDUP Flex", "Domestos", "Nawoz-Pro", "Odszczurzarz"], 
-        ans: 0 
-    },
-    { 
-        text: "[MODUŁ WERYFIKACJI]\nKonflikt o narzędzie pracy był jednym z powodów narastającej agresji. Grzesiu posiadał sprzęt, który był przedmiotem wystawionym w internecie.", 
-        q: "Wiertarkę jakiej firmy Grzesiu zabrał Adamowi?", 
-        opts: ["Bosch", "DeWalt", "Makita", "Parkside"], 
-        ans: 2 
-    },
-    { 
-        text: "[MODUŁ WERYFIKACJI]\nUstalono źródło i sposób przyjęcia ogromnej, letalnej dawki substancji psychoaktywnej u ofiary. Sposób przyjęcia sugeruje drogę pokarmową.", 
-        q: "W jakiej formie Grzesiu spożył syntetyczne THC?", 
-        opts: ["Palił skręta", "Zjadł 'ziołowe ciasteczka'", "Wypił nalewkę", "Wziął tabletki"], 
-        ans: 1 
-    }
+  { text: "[SZYFR_WERYFIKACYJNY_01]\nLogika behawioralna wskazuje na ostry konflikt sąsiedzki o zarekwirowane mienie. Sprzęt ten wystawiono potajemnie w sieci.", q: "Jaka firma wyprodukowała wiertarkę, o którą toczył się spór?", opts: ["Bosch", "DeWalt", "Makita", "Parkside"], ans: 2 },
+  { text: "[SZYFR_WERYFIKACYJNY_02]\nOdkryto rachunek za środek chemiczny o silnym stężeniu nabyty przez platformę aukcyjną.", q: "Jak nazywa się bardzo silny herbicyd z potwierdzenia zapłaty z Allegro Pay?", opts: ["ROUNDUP Flex", "Domestos", "Nawoz-Pro", "Odszczurzarz"], ans: 0 },
+  { text: "[SZYFR_WERYFIKACYJNY_03]\nW sieci odnotowano transfer wychodzący za pośrednictwem systemu BLIK. Nastąpiła weryfikacja.", q: "Kto otrzymał przelew z dopiskiem - 50 PLN?", opts: ["Sąsiad Grzegorz", "Synek (Jakub)", "Żona Monika", "Zarząd Osiedla"], ans: 1 }
 ];
 
 function openDecodeGame() {
-    mgStep = 0; 
-    mgTime = 90;
-    const content = `
-        <div class="mg-container">
-            <div style="font-weight:900; color:var(--danger); margin-bottom:15px; font-size:12px; letter-spacing:1px; text-transform:uppercase;">WERYFIKACJA DOSTĘPU DO AKT</div>
-            <div class="mg-log" id="mgLog"></div>
-            <div class="mg-question" id="mgQ"></div>
-            <div class="mg-options" id="mgOpts"></div>
-            <div class="mg-timer-bar"><div class="mg-timer-fill" id="mgTimerFill"></div></div>
-            <div style="text-align:center; font-weight:800; color:var(--primary); margin-top:10px; font-size:12px;" id="mgTimerText">Czas: 90s</div>
-        </div>
-    `;
-    openWindow('decode', 'Odblokuj Akta Policji', content);
-    renderMgStep();
-    
-    clearInterval(mgTimer);
-    mgTimer = setInterval(() => {
-        mgTime--;
-        const txt = document.getElementById('mgTimerText');
-        const fill = document.getElementById('mgTimerFill');
-        if(txt) txt.textContent = `Czas: ${mgTime}s`;
-        if(fill) {
-            fill.style.width = (mgTime / 90 * 100) + '%';
-            if(mgTime <= 15) fill.style.background = 'var(--danger)';
-        }
-        if(mgTime <= 0) {
-            clearInterval(mgTimer);
-            closeWindow('decode');
-            showPopup('Brak dostępu', 'Czas minął. Przeczytaj wiadomości, by zdobyć poprawne odpowiedzi.');
-        }
-    }, 1000);
+  mgStep = 0; mgTime = 90;
+  const content = `
+    <div class="mg-wrap">
+      <div class="mg-head">Odblokowanie Dowodów Niejawnych</div>
+      <div class="mg-log" id="mgLog"></div>
+      <div class="mg-q" id="mgQ"></div>
+      <div class="mg-opts" id="mgOpts"></div>
+      <div class="mg-bar"><div class="mg-fill" id="mgFill"></div></div>
+      <div style="text-align:center;font-weight:700;color:var(--text-muted);margin-top:15px;font-size:13px;" id="mgTxt">Auto-Blokada za: 90s</div>
+    </div>`;
+  openWindow('decode', 'Bezpieczeństwo Systemu', content);
+  renderMgStep();
+  clearInterval(mgTimer);
+  mgTimer = setInterval(() => {
+    mgTime--;
+    const t = document.getElementById('mgTxt');
+    const f = document.getElementById('mgFill');
+    if(t) t.textContent = `Auto-Blokada za: ${mgTime}s`;
+    if(f) {
+      f.style.width = (mgTime / 90 * 100) + '%';
+      if(mgTime <= 15) f.style.background = 'var(--danger)';
+    }
+    if(mgTime <= 0) {
+      clearInterval(mgTimer);
+      closeWindow('decode');
+      showModal('Brak Dostępu', 'Czas autoryzacji minął. Przejrzyj pliki i wiadomości, po czym spróbuj jeszcze raz.');
+    }
+  }, 1000);
 }
 
 function renderMgStep() {
-    if(mgStep >= MG_DATA.length) {
-        clearInterval(mgTimer);
-        STATE.reportUnlocked = true;
-        document.getElementById('iconReport').classList.remove('locked-icon');
-        document.getElementById('glyphReport').textContent = "📄";
-        closeWindow('decode');
-        openApp('report');
-        return;
-    }
-    const d = MG_DATA[mgStep];
-    document.getElementById('mgLog').textContent = d.text;
-    document.getElementById('mgQ').textContent = d.q;
-    const optsHtml = d.opts.map((o, i) => `<button class="mg-btn" onclick="checkMg(${i})">${o}</button>`).join('');
-    document.getElementById('mgOpts').innerHTML = optsHtml;
+  if(mgStep >= MG_DATA.length) {
+    clearInterval(mgTimer);
+    STATE.logsUnlocked = true;
+    const icn = document.getElementById('iconReport');
+    if(icn) { icn.classList.remove('locked-icon'); document.getElementById('glyphReport').textContent = "📄"; }
+    closeWindow('decode');
+    openApp('report');
+    return;
+  }
+  const d = MG_DATA[mgStep];
+  document.getElementById('mgLog').textContent = d.text;
+  document.getElementById('mgQ').textContent = d.q;
+  document.getElementById('mgOpts').innerHTML = d.opts.map((o, i) => `<button class="mg-btn" onclick="checkMg(${i})">${o}</button>`).join('');
 }
 
 window.checkMg = function(idx) {
-    const btns = document.querySelectorAll('.mg-btn');
-    if(idx === MG_DATA[mgStep].ans) {
-        btns[idx].classList.add('correct');
-        setTimeout(() => { mgStep++; renderMgStep(); }, 600);
-    } else {
-        btns[idx].classList.add('wrong');
-        mgTime -= 15; 
-    }
+  const btns = document.querySelectorAll('.mg-btn');
+  if(idx === MG_DATA[mgStep].ans) {
+    btns[idx].classList.add('correct');
+    setTimeout(() => { mgStep++; renderMgStep(); }, 500);
+  } else {
+    btns[idx].classList.add('wrong');
+    mgTime -= 15;
+  }
 }
 
 function openVerdict() {
-    STATE.vStep = 1;
-    STATE.vAnswers = {};
-    document.querySelectorAll('.v-step').forEach(e => e.classList.remove('active'));
-    document.getElementById('vStep1').classList.add('active');
-    document.getElementById('vBtnNext').style.display = 'block';
-    document.getElementById('vBtnSubmit').style.display = 'none';
-    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-    document.getElementById('verdictModal').classList.add('active');
+  STATE.vStep = 1;
+  STATE.vAnswers = {};
+  document.querySelectorAll('.v-step').forEach(e => e.classList.remove('active'));
+  document.getElementById('vStep1').classList.add('active');
+  document.getElementById('vBtnNext').style.display = 'block';
+  document.getElementById('vBtnSubmit').style.display = 'none';
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  
+  const m = document.getElementById('verdictScreen');
+  m.style.display = 'flex';
+  setTimeout(() => m.classList.add('on'), 10);
 }
 
 function closeVerdict() {
-    document.getElementById('verdictModal').classList.remove('active');
+  const m = document.getElementById('verdictScreen');
+  m.classList.remove('on');
+  setTimeout(() => m.style.display = 'none', 300);
 }
 
 function nextVerdict() {
-    if(STATE.vStep === 1) {
-        const sel = document.querySelector('input[name="v_who"]:checked');
-        if(!sel) return showPopup('Uwaga', 'Wybierz odpowiedź, aby przejść dalej.');
-        STATE.vAnswers.who = sel.value;
-        document.getElementById('vStep1').classList.remove('active');
-        document.getElementById('vStep2').classList.add('active');
-        STATE.vStep = 2;
-    } else if(STATE.vStep === 2) {
-        const sel = document.querySelector('input[name="v_how"]:checked');
-        if(!sel) return showPopup('Uwaga', 'Wybierz odpowiedź, aby przejść dalej.');
-        STATE.vAnswers.how = sel.value;
-        document.getElementById('vStep2').classList.remove('active');
-        document.getElementById('vStep3').classList.add('active');
-        document.getElementById('vBtnNext').style.display = 'none';
-        document.getElementById('vBtnSubmit').style.display = 'block';
-        STATE.vStep = 3;
-    }
+  if(STATE.vStep === 1) {
+    const sel = document.querySelector('input[name="v_who"]:checked');
+    if(!sel) return showModal('Informacja', 'Wybierz jedną z opcji, aby kontynuować.');
+    STATE.vAnswers.who = sel.value;
+    document.getElementById('vStep1').classList.remove('active');
+    document.getElementById('vStep2').classList.add('active');
+    STATE.vStep = 2;
+  } else if(STATE.vStep === 2) {
+    const sel = document.querySelector('input[name="v_how"]:checked');
+    if(!sel) return showModal('Informacja', 'Wybierz jedną z opcji, aby kontynuować.');
+    STATE.vAnswers.how = sel.value;
+    document.getElementById('vStep2').classList.remove('active');
+    document.getElementById('vStep3').classList.add('active');
+    document.getElementById('vBtnNext').style.display = 'none';
+    document.getElementById('vBtnSubmit').style.display = 'block';
+    STATE.vStep = 3;
+  }
 }
 
 function submitVerdict() {
-    const sel = document.querySelector('input[name="v_why"]:checked');
-    if(!sel) return showPopup('Uwaga', 'Wybierz powód konfliktu.');
-    STATE.vAnswers.why = sel.value;
-    closeVerdict();
-    evaluateEnding();
+  const sel = document.querySelector('input[name="v_why"]:checked');
+  if(!sel) return showModal('Informacja', 'Wybierz opcję, by sfinalizować.');
+  STATE.vAnswers.why = sel.value;
+  closeVerdict();
+  evaluateEnding();
 }
 
 function evaluateEnding() {
-    const a = STATE.vAnswers;
-    const win = a.who === 'grzesiu' && a.how === 'thc' && a.why === 'sprzet';
-    const adamJail = a.who === 'adam';
-    
-    const scr = document.getElementById('endingScreen');
-    const title = document.getElementById('endTitle');
-    const text = document.getElementById('endText');
-    const icon = document.getElementById('endIcon');
-    const btn = document.getElementById('endBtnAction');
+  const a = STATE.vAnswers;
+  const win = a.who === 'grzesiu' && a.how === 'thc' && a.why === 'sprzet';
+  const adamJail = a.who === 'adam';
+  
+  const scr = document.getElementById('endScreen');
+  const title = document.getElementById('endTitle');
+  const text = document.getElementById('endTxt');
+  const icon = document.getElementById('endIcon');
+  const btn = document.getElementById('endBtnAction');
 
-    if(win) {
-        icon.textContent = "⚖️";
-        title.textContent = "Oczyszczony z Zarzutów";
-        title.style.color = "var(--success)";
-        text.textContent = "Prawidłowo połączyłeś wszystkie fakty.\n\nChoć Adam pisał w notatniku oskarżycielskie groźby i kłócił się o wiertarkę, nie zabił Grześka. Z wiadomości wynikało, że Grzesiu sam upiekł niezwykle silne 'ziołowe ciasteczka'. Po ich zjedzeniu dostał ataku paniki i tachykardii, przez co potknął się i uderzył głową o metalową kosiarkę, o którą toczył się spór.\n\nPolicja zamyka śledztwo uznając zdarzenie za śmiertelny, nieszczęśliwy wypadek pod wpływem środków psychoaktywnych. Adam wraca do rodziny na niedzielny obiad z okazji Dnia Ojca.";
-        btn.textContent = "ZAINICJUJ HOWLORA v7.0 >>";
-        btn.onclick = () => window.location.href = 'howlora3.html';
-    } else if(adamJail) {
-        icon.textContent = "🚓";
-        title.textContent = "Skazany za Zabójstwo";
-        title.style.color = "var(--danger)";
-        text.textContent = "Pogrzebałeś niewinnego człowieka własnymi, niespójnymi zeznaniami.\n\nChoć raport medyczny jasno wskazywał na wypadek wywołany silnym odurzeniem Grześka, ty przyznałeś się do winy pod wpływem stresu. Mściwe SMSy Adama i groźby w notatkach posłużyły prokuraturze za motyw. \n\nAdam W. zostaje skazany na wiele lat więzienia, choć prawdziwą przyczyną śmierci była blacha feralnych ciastek upieczonych przez samego denata.";
-        btn.textContent = "RESTART SYSTEMU";
-        btn.onclick = () => location.reload();
-    } else {
-        icon.textContent = "❌";
-        title.textContent = "Brak Logiki w Zeznaniach";
-        title.style.color = "var(--danger)";
-        text.textContent = "Podane przez Ciebie fakty całkowicie się wykluczają.\n\nŚledczy nie wierzą w twoje wyjaśnienia. Opowieści o truciznach z allegro czy włamywaczach są sprzeczne z wynikami autopsji (potężne stężenie THC i rana tłuczona od kosiarki). \n\nTwoje zeznania wydają się śledczym celowym mataczeniem. Adam zostaje zatrzymany w areszcie śledczym do czasu dokładnego zbadania sprawy. Następnym razem czytaj raporty uważniej.";
-        btn.textContent = "RESTART SYSTEMU";
-        btn.onclick = () => location.reload();
-    }
-    
-    scr.classList.add('active');
+  if(win) {
+    icon.textContent = "⚖️";
+    title.textContent = "Zarzuty Oddalone";
+    title.style.color = "var(--success)";
+    text.textContent = "Rozszyfrowałeś ciąg zdarzeń bezbłędnie.\n\nMimo mściwych notatek Adama na komputerze (i jego kłótni o kosiarkę oraz wiertarkę), z autopsji jasno wynika, że Grzesiek sam był powodem swojej śmierci. \n\nUpiekł własne „specjalne ciasteczka”, wpadł w panikę po potężnym uderzeniu thc, potknął się i niefortunnie rozbił sobie głowę o twardy rant kosiarki. Zamknięty od wewnątrz garaż wyklucza całkowicie Twoją winę.\n\nPolicja klasyfikuje sprawę jako fatalny wypadek. Wrócisz do Moniki i Jakuba na niedzielny, ojczysty obiad.";
+    btn.textContent = "ZAŁADUJ HOWLORA v7.0 >>";
+    btn.onclick = () => window.location.href = 'howlora3.html';
+  } else if(adamJail) {
+    icon.textContent = "🚓";
+    title.textContent = "Trafiłeś za Kratki";
+    title.style.color = "var(--danger)";
+    text.textContent = "Twoje niespójne, obciążające samego siebie zeznania doprowadziły Cię do katastrofy.\n\nChociaż policyjny raport po autopsji wprost mówił o wypadku po przedawkowaniu syntetycznego THC i kosiarkowej tragedii, twoje przyznanie się do winy okazało się samobójcze. Mściwe wiadomości z komunikatora zostały użyte jako potwierdzenie premedytacji zbrodni.\n\nSpędzisz za to lata w więzieniu. Wystarczyło uważniej przestudiować pliki medyczne.";
+    btn.textContent = "SPRÓBUJ PONOWNIE";
+    btn.onclick = () => location.reload();
+  } else {
+    icon.textContent = "❌";
+    title.textContent = "Zeznania Odrzucone";
+    title.style.color = "var(--danger)";
+    text.textContent = "Stworzona przez ciebie hipoteza całkowicie mija się z twardymi dowodami z raportu.\n\nPolicja nie uwierzyła ani w historię o wędrownym włamywaczu, ani w otrucie chemią typu Roundup. Medycyna sądowa wyraźnie udowadnia upadek i uderzenie o maszynę po potężnym zatruciu ciasteczkami. Ze względu na ukrywanie prawdy zostajesz w areszcie tymczasowym do odwołania.";
+    btn.textContent = "SPRÓBUJ PONOWNIE";
+    btn.onclick = () => location.reload();
+  }
+  
+  scr.style.display = 'flex';
+  setTimeout(() => scr.classList.add('on'), 10);
 }
 </script>
 </body>
