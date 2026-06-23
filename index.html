@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HOWLORA — PROTOKÓŁ DLA TATY</title>
+    <title>AdamOS — PROTOKÓŁ DLA TATY</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -12,10 +12,10 @@
         }
         :root {
             --primary-color: #c5cdd8;
-            --accent-color: #ff3b30; /* Oryginalny czerwony */
-            --celebrate-color: #ffcc00; /* Złoty na Dzień Ojca */
+            --accent-color: #ff3b30;
+            --celebrate-color: #ffcc00;
             --bg-color: #050608;
-            --panel-bg: rgba(11, 13, 18, 0.85);
+            --panel-bg: rgba(11, 13, 18, 0.9);
         }
 
         body {
@@ -29,7 +29,6 @@
             animation: crt-flicker 0.15s infinite;
         }
 
-        /* CRT Effects */
         .crt-overlay {
             position: fixed;
             top: 0;
@@ -48,7 +47,7 @@
             left: 0;
             width: 100%;
             height: 6px;
-            background: rgba(255, 204, 0, 0.04); /* Złota skanlinia */
+            background: rgba(255, 204, 0, 0.04);
             z-index: 10000;
             pointer-events: none;
             animation: scanmove 8s linear infinite;
@@ -71,7 +70,6 @@
             text-shadow: 0 0 5px rgba(255, 204, 0, 0.6);
         }
 
-        /* Screens Management */
         #boot-screen, #login-screen, #wish-popup-overlay {
             position: fixed;
             top: 0;
@@ -87,7 +85,6 @@
             transition: opacity 0.5s ease-out;
         }
 
-        /* Boot Screen */
         #boot-screen {
             justify-content: flex-start;
             align-items: flex-start;
@@ -110,8 +107,8 @@
         }
         .boot-success { color: #00ff66; font-weight: bold; }
         .boot-accent { color: var(--celebrate-color); }
+        .boot-tata { color: #00ccff; font-weight: bold; }
 
-        /* Login Screen */
         #login-screen {
             display: none;
             opacity: 0;
@@ -125,18 +122,35 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             text-align: center;
             border: 1px solid var(--celebrate-color);
-            padding: 30px;
-            background: rgba(10, 10, 10, 0.9);
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+            padding: 40px;
+            background: rgba(10, 10, 10, 0.95);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.15), inset 0 0 10px rgba(255, 204, 0, 0.1);
+            position: relative;
+        }
+        .login-box::before, .login-box::after {
+            content: '';
+            position: absolute;
+            width: 20px; height: 20px;
+            border: 2px solid var(--celebrate-color);
+        }
+        .login-box::before { top: -5px; left: -5px; border-right: none; border-bottom: none; }
+        .login-box::after { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+
+        .login-prompt {
+            color: var(--celebrate-color);
+            text-transform: uppercase;
+            font-weight: bold;
         }
         .login-input-wrapper {
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 204, 0, 0.5);
+            border-bottom: 2px solid rgba(255, 204, 0, 0.3);
             padding-bottom: 5px;
+            width: 100%;
+            justify-content: center;
         }
         .login-input {
             background: transparent;
@@ -146,23 +160,34 @@
             font-size: 18px;
             font-weight: bold;
             outline: none;
-            width: 200px;
+            width: 100%;
+            max-width: 240px;
             letter-spacing: 3px;
             text-transform: uppercase;
             text-align: center;
         }
+        .login-input::placeholder {
+            color: rgba(255, 204, 0, 0.2);
+            text-transform: none;
+            letter-spacing: 1px;
+        }
         .login-btn {
-            background: transparent;
+            background: rgba(255, 204, 0, 0.1);
             border: 1px solid var(--celebrate-color);
             color: var(--celebrate-color);
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 10px;
             letter-spacing: 2px;
             transition: all 0.2s;
             width: 100%;
+            text-transform: uppercase;
+        }
+        .login-btn:hover {
+            background: rgba(255, 204, 0, 0.2);
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
         }
         .login-btn:active {
             background: var(--celebrate-color);
@@ -172,9 +197,9 @@
             animation: blink 1s step-end infinite;
             color: var(--celebrate-color);
             font-size: 18px;
+            margin-left: -15px;
         }
 
-        /* Main Interface */
         #main-interface {
             opacity: 0;
             transition: opacity 1s ease-in-out;
@@ -205,7 +230,6 @@
         header .sys-title { color: var(--celebrate-color); font-weight: bold; text-transform: uppercase;}
         header .sys-time { color: var(--accent-color); }
 
-        /* Workspace Grid */
         .workspace {
             flex: 1;
             display: grid;
@@ -216,7 +240,6 @@
             overflow: hidden;
         }
 
-        /* Sidebars */
         .sidebar-left, .sidebar-right {
             background: var(--panel-bg);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -238,7 +261,6 @@
             margin-bottom: 5px;
         }
 
-        /* Status Items */
         .status-group { display: flex; flex-direction: column; gap: 12px; }
         .status-item { display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
         .status-label { color: #627285; font-size: 10px; text-transform: uppercase; }
@@ -246,9 +268,8 @@
         
         .status-ok { color: #00ff66; }
         .status-special { color: var(--celebrate-color); animation: pulse-glow 2s infinite; }
-        .status-warn { color: var(--accent-color); }
+        .status-critical { color: var(--accent-color); animation: pulse-alert 1s infinite; font-weight: 900; }
 
-        /* Main Menu Content */
         .main-menu {
             background: rgba(9, 11, 15, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.03);
@@ -290,21 +311,21 @@
 
         .description {
             max-width: 500px;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #92a1b3;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #c5cdd8;
             margin-bottom: 40px;
             letter-spacing: 1px;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.2);
         }
 
-        /* Big Celebrate Button */
         .btn-celebrate {
             background: transparent;
             border: 2px solid var(--celebrate-color);
             color: #ffffff;
-            padding: 16px 30px;
+            padding: 18px 36px;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
             letter-spacing: 3px;
             cursor: pointer;
@@ -312,7 +333,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
             width: 90%;
-            max-width: 320px;
+            max-width: 350px;
             text-transform: uppercase;
         }
         .btn-celebrate:hover, .btn-celebrate:active {
@@ -322,13 +343,13 @@
             animation: btn-glitch 0.2s infinite;
         }
 
-        /* Dossier List (Spersonalizowane osiągnięcia) */
         .dossier-list { display: flex; flex-direction: column; gap: 10px; }
         .dossier-card {
             background: rgba(5, 6, 8, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.04);
             padding: 12px;
             font-size: 11px;
+            position: relative;
         }
         .dossier-card::before {
             content: '';
@@ -365,7 +386,6 @@
             text-align: center;
         }
 
-        /* Wish Popup (Dla Mobile) */
         #wish-popup-overlay {
             display: none;
             opacity: 0;
@@ -399,7 +419,7 @@
             font-size: 14px;
             line-height: 1.6;
             margin-bottom: 25px;
-            min-height: 60px; /* Zapobiega skakaniu */
+            min-height: 60px; 
         }
         .wish-popup-btn {
             background: var(--celebrate-color);
@@ -411,9 +431,9 @@
             cursor: pointer;
             width: 100%;
             letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        /* Animations */
         @keyframes crt-flicker {
             0% { opacity: 0.995; }
             50% { opacity: 1; }
@@ -432,6 +452,11 @@
             50% { text-shadow: 0 0 8px rgba(255, 204, 0, 0.8); }
             100% { text-shadow: 0 0 2px rgba(255, 204, 0, 0.4); }
         }
+        @keyframes pulse-alert {
+            0% { opacity: 1; text-shadow: 0 0 5px var(--accent-color); }
+            50% { opacity: 0.5; text-shadow: none; }
+            100% { opacity: 1; text-shadow: 0 0 5px var(--accent-color); }
+        }
         @keyframes btn-glitch {
             0% { transform: translate(0); text-shadow: none; }
             20% { transform: translate(-2px, 1px); text-shadow: -1px 0 var(--accent-color), 1px 0 #00fff2; }
@@ -444,7 +469,6 @@
             100% { transform: scale(1); opacity: 1; background: #0a0b0d; }
         }
 
-        /* Mobile Optimization */
         @media (max-width: 1024px) {
             body { overflow-y: auto; height: auto; }
             .workspace { 
@@ -454,7 +478,6 @@
                 padding: 10px;
                 gap: 15px;
             }
-            /* Wymuszenie kolejności na mobile: Logo/Przycisk -> Statusy -> Osiągnięcia */
             .main-menu { order: -1; padding: 25px 15px; }
             .sidebar-left { order: 0; }
             .sidebar-right { order: 1; }
@@ -465,8 +488,8 @@
             header { padding: 10px; font-size: 10px; justify-content: center; text-align: center;}
             header .sys-title { width: 100%; margin-bottom: 3px;}
 
-            .login-box { width: 90%; padding: 20px; }
-            .login-input { width: 100%; max-width: 160px; font-size: 16px;}
+            .login-box { width: 95%; padding: 25px; gap: 15px; }
+            .login-input { width: 100%; max-width: 180px; font-size: 16px;}
         }
     </style>
 </head>
@@ -481,29 +504,29 @@
 
     <div id="login-screen">
         <div class="login-box">
-            <span class="celebrate-glow">SYSTEM OPERACYJNY 'TATA v1.0'</span>
-            <span>PODAJ KOD DOSTĘPU SUPER OJCA:</span>
+            <span class="boot-tata">AdamOS v1.0</span>
+            <span class="login-prompt">Weryfikacja tożsamości</span>
             <div class="login-input-wrapper">
-                <input type="text" id="login-input" class="login-input" autocomplete="off" spellcheck="false" maxlength="12" placeholder="Wpisz cokolwiek">
+                <input type="text" id="login-input" class="login-input" autocomplete="off" spellcheck="false" maxlength="12" placeholder="Wpisz 'TATA'">
                 <span class="login-cursor">█</span>
             </div>
-            <button id="login-btn" class="login-btn">ZALOGUJ DO SYSTEMU</button>
+            <button id="login-btn" class="login-btn">Zaloguj</button>
         </div>
     </div>
 
     <div id="main-interface">
         <header>
-            <div class="sys-title">CENTRALNY TERMINAL RODZINNY // Protokół: DZIEŃ OJCA</div>
+            <div class="sys-title">CENTRALNY TERMINAL RODZINNY // Profil: Najlepszy Tata (Adam)</div>
             <div class="sys-time" id="live-clock">00:00:00</div>
         </header>
 
         <main class="workspace">
             <section class="sidebar-left">
-                <div class="panel-title">Status Diagnostyczny</div>
+                <div class="panel-title">Diagnostyka systemowa</div>
                 <div class="status-group">
                     <div class="status-item">
-                        <span class="status-label">Obiekt monitorowany</span>
-                        <span class="status-value status-special">NAJLEPSZY TATA NA ŚWIECIE</span>
+                        <span class="status-label">Użytkownik</span>
+                        <span class="status-value status-special">TATA ADAM</span>
                     </div>
                     <div class="status-item">
                         <span class="status-label">Poziom Miłości</span>
@@ -511,39 +534,40 @@
                     </div>
                     <div class="status-item">
                         <span class="status-label">Cierpliwość</span>
-                        <span class="status-value status-ok">NOMINALNA (Wysoka)</span>
+                        <span class="status-value status-critical">KRYTYCZNA</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Zapotrzebowanie na kawę</span>
-                        <span class="status-value status-warn">KRYTYCZNE</span>
+                        <span class="status-label">Nerwy</span>
+                        <span class="status-value status-critical">KRYTYCZNE</span>
                     </div>
                 </div>
             </section>
 
             <section class="main-menu">
                 <div class="logo-container">
-                    <h1 class="logo">TATA</h1>
-                    <span class="logo-tag">Special Recognition Protocol</span>
+                    <h1 class="logo">ADAM</h1>
+                    <span class="logo-tag">Special Father's Day Protocol</span>
                 </div>
                 <p class="description">
-                    Wykryto specjalną okazję. System HOWLORA wstrzymuje analizę cyfrową, aby uruchomić dedykowany moduł życzeń dla najważniejszej osoby w zespole.
+                    Wszystkiego najlepszego z okazji Dnia Ojca, Tato! <br><br>
+                    Jesteś najlepszym wzorem, o jakim mogłem marzyć. Dziękuję Ci za każdą lekcję, wsparcie i miłość. Ta mała gra to skromny upominek dla Ciebie. Odpocznij i baw się dobrze!
                 </p>
-                <button class="btn-celebrate" id="celebrate-btn">INICJUJ ŻYCZENIA</button>
+                <button class="btn-celebrate" id="celebrate-btn">Otwórz wiadomość</button>
             </section>
 
             <section class="sidebar-right">
-                <div class="panel-title">Zarchiwizowane Osiągnięcia</div>
+                <div class="panel-title">Rejestr Osiągnięć (Dad-Chievements)</div>
                 <div class="dossier-list">
                     <div class="dossier-card">
-                        <div class="dossier-header">🏆 Budowanie Domu<span class="status-badge">ZALICZONE</span></div>
-                        Analiza strukturalna potwierdza stabilność i ciepło.
+                        <div class="dossier-header">🏆 Budowniczy Domu<span class="status-badge">Odblokowano</span></div>
+                        Analiza potwierdza: fundamenty rodziny stabilne.
                     </div>
                     <div class="dossier-card">
-                        <div class="dossier-header">🚗 Naprawa Wszystkiego<span class="status-badge">AKTYWNE</span></div>
-                        Niezliczone interwencje techniczne (od zabawek po auto).
+                        <div class="dossier-header">🔧 Ekspert Techniczny<span class="status-badge">Aktywne</span></div>
+                        Niezliczone interwencje naprawcze (od zabawek po auto).
                     </div>
                     <div class="dossier-card">
-                        <div class="dossier-header">👨‍🏫 Życiowy Mentor<span class="status-badge">LEGENDARNE</span></div>
+                        <div class="dossier-header">🎓 Mentor Życiowy<span class="status-badge">Mistrzostwo</span></div>
                         Baza danych pełna mądrych rad i wsparcia.
                     </div>
                 </div>
@@ -551,20 +575,19 @@
         </main>
 
         <footer>
-            DOKUMENT POUFNY — TYLKO DO UŻYTKU WEWNĘTRZNEGO RODZINY — PROTOKÓŁ 'DZIEŃ OJCA' v1.0
+            DOKUMENT POUFNY — DLA OCZU TATY ADAMA — PROTOKÓŁ 'DZIEŃ OJCA' v1.0
         </footer>
     </div>
 
     <div id="wish-popup-overlay">
         <div class="wish-popup phosphor-glow">
-            <div class="wish-popup-title" id="wish-title">Dekodowanie wiadomości...</div>
-            <div class="wish-popup-text" id="wish-text">Uruchamianie skryptu życzeń. Proszę czekać...</div>
-            <button class="wish-popup-btn" id="wish-next-btn">DALEJ ></button>
+            <div class="wish-popup-title" id="wish-title">Dekodowanie...</div>
+            <div class="wish-popup-text" id="wish-text">Uruchamianie skryptu życzeń...</div>
+            <button class="wish-popup-btn" id="wish-next-btn">Dalej ></button>
         </div>
     </div>
 
     <script>
-        // --- AUDIO SYSTEM (Z oryginału) ---
         let audioCtx;
         function initAudio() {
             if(!audioCtx) {
@@ -581,33 +604,35 @@
             
             if(type === 'beep') {
                 osc.type = 'square'; osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.1);
             } else if(type === 'click') {
                 osc.type = 'triangle'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.05);
             } else if(type === 'confirm') {
                 osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.1);
             }
         }
 
-        // --- SEKWENCJA BOOTOWANIA (Spersonalizowana) ---
         const bootLines = [
-            { text: "DAD_OS v1.0 Standard Boot Procedure", delay: 100 },
-            { text: "CORE: Sprawdzanie poziomu epickości...", delay: 400 },
-            { text: "EPIC LEVEL: Maximum.", delay: 600, success: true },
-            { text: "MEM: Ładowanie bazy 'Suchary i Żarty Dziadka'...", delay: 1000 },
-            { text: "Baza załadowana (Pojemność krytyczna).", delay: 1300, highlight: true },
-            { text: "NET: Nawiązywanie bezpiecznego połączenia z sercem...", delay: 1800 },
-            { text: "Zabezpieczenia aktywne. Miłość wykryta.", delay: 2200, success: true },
-            { text: "Wymagana autoryzacja Ojca.", delay: 2600 }
+            { text: "AdamOS Boot Loader v1.0", delay: 100 },
+            { text: "CORE: Sprawdzanie poziomu epickości użytkownika...", delay: 400 },
+            { text: "Użytkownik: <span class='boot-tata'>ADAM</span> confirmed.", delay: 600 },
+            { text: "EPIC LEVEL: Maximum.", delay: 800, success: true },
+            { text: "SYS: Weryfikacja parametrów ojcostwa...", delay: 1200 },
+            { text: "Baza danych 'Żarty i Suchary' załadowana.", delay: 1500, highlight: true },
+            { text: "Wykryto krytyczny poziom cierpliwości.", delay: 1900, alert: true },
+            { text: "Wykryto krytyczny poziom nerwów.", delay: 2100, alert: true },
+            { text: "Miłość rodzicielska: Stabilna (∞).", delay: 2400, success: true },
+            { text: "Ładowanie protokołu Dzień Ojca 2024...", delay: 2800 },
+            { text: "System gotowy. Wymagana autoryzacja.", delay: 3200 }
         ];
 
         const bootTerminal = document.getElementById('boot-terminal');
@@ -617,31 +642,28 @@
         const loginBtn = document.getElementById('login-btn');
         const mainInterface = document.getElementById('main-interface');
 
-        // Uruchomienie bootowania
         bootLines.forEach(line => {
             setTimeout(() => {
                 const p = document.createElement('p');
                 p.className = 'boot-line visible';
                 if (line.success) p.innerHTML = `[ <span class="boot-success">OK</span> ] ${line.text}`;
                 else if (line.highlight) p.innerHTML = `[ <span class="boot-accent">>></span> ] ${line.text}`;
+                else if (line.alert) p.innerHTML = `[ <span class="boot-accent">WARN</span> ] ${line.text}`;
                 else p.innerHTML = `[ SYS ] ${line.text}`;
                 bootTerminal.appendChild(p);
             }, line.delay);
         });
 
-        // Przejście do logowania
         setTimeout(() => {
             bootScreen.style.opacity = '0';
             setTimeout(() => {
                 bootScreen.style.display = 'none';
                 loginScreen.style.display = 'flex';
-                setTimeout(() => { loginScreen.style.opacity = '1'; }, 50);
+                setTimeout(() => { loginScreen.style.opacity = '1'; loginInput.focus(); }, 50);
             }, 500);
-        }, 3200);
+        }, 3800);
 
-        // --- LOGOWANIE ---
         function executeLogin() {
-            // Działa z każdym hasłem, żeby Tata się nie stresował, ale klimat jest
             initAudio();
             playSound('confirm');
             loginInput.disabled = true;
@@ -657,7 +679,6 @@
         loginInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') executeLogin(); });
         loginBtn.addEventListener('click', executeLogin);
 
-        // --- ZEGAR ---
         function updateClock() {
             const now = new Date();
             const hrs = String(now.getHours()).padStart(2, '0');
@@ -667,20 +688,19 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // --- SYSTEM ŻYCZEŃ (Popupy na Mobile) ---
         const celebrateBtn = document.getElementById('celebrate-btn');
         const wishOverlay = document.getElementById('wish-popup-overlay');
         const wishTitle = document.getElementById('wish-title');
         const wishText = document.getElementById('wish-text');
         const wishNextBtn = document.getElementById('wish-next-btn');
 
-        // Treść życzeń w sekwencji
         const wishes = [
             { title: "ZASZYFROWANA WIADOMOŚĆ", text: "Cześć Tato! W dniu Twojego święta, system Howlora ma dla Ciebie coś specjalnego." },
-            { title: "ANALIZA: TATA", text: "Z naszej analizy wynika, że jesteś absolutnie najlepszym Ojcem we wszystkich znanych sektorach cyfrowych." },
-            { title: "DZIĘKUJĘ", text: "Dziękuję Ci za Twoją cierpliwość, za każdą naprawioną rzecz i za to, że zawsze mogę na Ciebie liczyć." },
-            { title: "ŻYCZENIA", text: "Życzę Ci mnóstwo zdrowia, czasu na relaks (i kawę!), oraz samych sukcesów (w grach i w życiu!)." },
-            { title: "KONIEC PROTOKOŁU", text: "Jesteś naszym Super Bohaterem. Kocham Cię! <br><br> (Kliknij, aby uruchomić grę)" }
+            { title: "ANALIZA OSOBOWOŚCI", text: "Z naszej analizy wynika, że jesteś absolutnie najlepszym Tatą (i Adamem) we wszystkich znanych sektorach." },
+            { title: "RAPORT: DIAGNOSTYKA", text: "Wykryto krytyczne poziomy cierpliwości i nerwów, ale spokojnie... to tylko dowód na to, ile dla nas robisz!" },
+            { title: "DZIĘKUJĘ", text: "Dziękuję Ci za każdą naprawioną rzecz, za wsparcie, za Twoją wiedzę i za to, że po prostu jesteś." },
+            { title: "ŻYCZENIA", text: "Życzę Ci mnóstwo zdrowia, świętego spokoju (regeneracja cierpliwości!) oraz czasu na Twoje pasje." },
+            { title: "KONIEC TRANSMISJI", text: "Jesteś legendą. Kocham Cię! <br><br> (Kliknij, aby uruchomić grę)" }
         ];
 
         let currentWishIndex = 0;
@@ -698,7 +718,6 @@
             wishTitle.classList.remove('celebrate-glow');
             wishText.style.opacity = 0;
             
-            // Efekt maszynopisu (uproszczony dla wydajności)
             setTimeout(() => {
                 wishTitle.textContent = wishes[index].title;
                 wishText.innerHTML = wishes[index].text;
@@ -706,7 +725,9 @@
                 playSound('beep');
                 if(index === wishes.length - 1) {
                     wishTitle.classList.add('celebrate-glow');
-                    wishNextBtn.textContent = "URUCHOM GRE >";
+                    wishNextBtn.textContent = "Zagraj w Howlora >";
+                } else {
+                    wishNextBtn.textContent = "Dalej >";
                 }
             }, 200);
         }
@@ -716,11 +737,9 @@
             if(currentWishIndex < wishes.length - 1) {
                 showWish(currentWishIndex + 1);
             } else {
-                // Koniec życzeń -> Przejście do gry
                 wishOverlay.style.opacity = '0';
                 setTimeout(() => {
                     wishOverlay.style.display = 'none';
-                    // Przekierowanie do właściwej gry (z Twojego oryginału)
                     location.href = 'howlora.html'; 
                 }, 500);
             }
