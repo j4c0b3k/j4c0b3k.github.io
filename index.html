@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusTrade Pro - Trading Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #050505; color: #e2e8f0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .glass-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .text-glow-green { text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        .text-glow-red { text-shadow: 0 0 10px rgba(244, 63, 94, 0.5); }
+        .chart-grid { stroke: #1e293b; stroke-width: 1; stroke-dasharray: 4 4; }
+        .chart-path { stroke: #3b82f6; stroke-width: 2; fill: none; filter: drop-shadow(0px 4px 6px rgba(59, 130, 246, 0.6)); }
+        .chart-area { fill: url(#gradient); opacity: 0.2; }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex text-sm">
+
+    <aside class="w-64 bg-[#0a0f1c] border-r border-slate-800 flex flex-col justify-between h-full z-20 shrink-0">
+        <div>
+            <div class="h-16 flex items-center px-6 border-b border-slate-800">
+                <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <span class="text-xl font-bold tracking-tight text-white">Nexus<span class="text-blue-500">Pro</span></span>
+            </div>
+            <div class="p-4 space-y-1">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 ml-2">Menu</div>
+                <button id="navDashboard" class="w-full flex items-center px-4 py-2.5 bg-blue-600/10 text-blue-400 rounded-lg font-medium transition-colors cursor-pointer border border-blue-500/20">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Terminal
+                </button>
+                <button class="w-full flex items-center px-4 py-2.5 text-slate-400 hover:bg-slate-800/50 hover:text-white rounded-lg font-medium transition-colors cursor-pointer">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Markets
+                </button>
+                <button class="w-full flex items-center px-4 py-2.5 text-slate-400 hover:bg-slate-800/50 hover:text-white rounded-lg font-medium transition-colors cursor-pointer">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Transfers
+                </button>
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-800">
+            <button id="navProfile" class="w-full flex items-center p-3 bg-[#0f172a] hover:bg-slate-800 border border-slate-700 rounded-xl transition-all cursor-pointer group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">J</div>
+                <div class="ml-3 text-left">
+                    <div class="text-white font-semibold text-sm group-hover:text-blue-400 transition-colors">Jakub</div>
+                    <div class="text-slate-500 text-xs font-mono">ID: 3950863804</div>
+                </div>
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full bg-[#050505] relative overflow-hidden">
+        
+        <header class="h-16 glass-panel flex items-center justify-between px-6 z-10 sticky top-0">
+            <div class="flex items-center bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-1.5 w-64">
+                <svg class="w-4 h-4 text-slate-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" placeholder="Search symbol..." class="bg-transparent border-none outline-none text-white w-full placeholder-slate-500 text-sm">
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="flex flex-col items-end">
+                    <span class="text-slate-500 text-xs uppercase font-bold tracking-wider">Net Liquidity</span>
+                    <span class="text-white font-mono font-bold text-lg" id="topNetValue">$0.00</span>
+                </div>
+                <div class="h-8 w-px bg-slate-700"></div>
+                <div class="flex flex-col items-end">
+                    <span class="text-slate-500 text-xs uppercase font-bold tracking-wider">Purchasing Power</span>
+                    <span class="text-emerald-400 font-mono font-bold text-lg" id="topBalance">$2,491.53</span>
+                </div>
+            </div>
+        </header>
+
+        <div id="viewDashboard" class="flex-1 overflow-y-auto p-6 flex flex-col xl:flex-row gap-6">
+            
+            <div class="flex-1 space-y-6">
+                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"></div>
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                                <span id="mainSymbol">AAPL</span> 
+                                <span class="text-sm font-normal text-slate-400 bg-slate-800 px-2 py-1 rounded" id="mainName">Apple Inc.</span>
+                            </h2>
+                            <div class="flex items-center mt-2 gap-4">
+                                <span class="text-4xl font-mono font-bold text-white" id="mainPrice">$173.50</span>
+                                <span class="text-emerald-500 font-semibold flex items-center text-lg bg-emerald-500/10 px-2 py-1 rounded">
+                                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                    +1.24%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-1.5 text-xs font-bold bg-slate-800 text-slate-400 rounded-lg hover:bg-slate-700 transition">1D</button>
+                            <button class="px-4 py-1.5 text-xs font-bold bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-lg">1W</button>
+                            <button class="px-4 py-1.5 text-xs font-bold bg-slate-800 text-slate-400 rounded-lg hover:bg-slate-700 transition">1M</button>
+                            <button class="px-4 py-1.5 text-xs font-bold bg-slate-800 text-slate-400 rounded-lg hover:bg-slate-700 transition">YTD</button>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full h-64 bg-[#0a0f1c] rounded-xl border border-slate-800/80 p-0 relative">
+                        <svg class="w-full h-full absolute inset-0" viewBox="0 0 800 200" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.4" />
+                                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+                                </linearGradient>
+                            </defs>
+                            <path class="chart-grid" d="M0 50 H800 M0 100 H800 M0 150 H800"></path>
+                            <path class="chart-grid" d="M160 0 V200 M320 0 V200 M480 0 V200 M640 0 V200"></path>
+                            <path class="chart-area" d="M0 180 L40 160 L80 170 L120 140 L160 145 L200 110 L240 120 L280 80 L320 90 L360 60 L400 70 L440 30 L480 50 L520 20 L560 40 L600 10 L640 30 L680 15 L720 25 L760 5 L800 10 V200 H0 Z"></path>
+                            <path class="chart-path" d="M0 180 L40 160 L80 170 L120 140 L160 145 L200 110 L240 120 L280 80 L320 90 L360 60 L400 70 L440 30 L480 50 L520 20 L560 40 L600 10 L640 30 L680 15 L720 25 L760 5 L800 10"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl overflow-hidden flex flex-col">
+                    <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-[#0f172a]/80">
+                        <h3 class="text-lg font-bold text-white">Positions & Orders</h3>
+                        <div class="flex gap-4 text-sm font-mono">
+                            <span class="text-slate-400">Total Equity: <span class="text-white font-bold" id="totalEquity">$0.00</span></span>
+                            <span class="text-slate-400">Day P&L: <span class="text-emerald-400 font-bold" id="dayPL">+$0.00</span></span>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto min-h-[250px]">
+                        <table class="w-full text-left whitespace-nowrap">
+                            <thead class="bg-[#0a0f1c] text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                                <tr>
+                                    <th class="px-6 py-3 font-semibold">Symbol</th>
+                                    <th class="px-6 py-3 font-semibold text-right">Shares</th>
+                                    <th class="px-6 py-3 font-semibold text-right">Avg Cost</th>
+                                    <th class="px-6 py-3 font-semibold text-right">Mkt Price</th>
+                                    <th class="px-6 py-3 font-semibold text-right">Mkt Value</th>
+                                    <th class="px-6 py-3 font-semibold text-right">Total Return</th>
+                                </tr>
+                            </thead>
+                            <tbody id="portfolioTable" class="font-mono text-sm divide-y divide-slate-800/50">
+                            </tbody>
+                        </table>
+                        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 text-slate-500">
+                            <svg class="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            <p class="text-base font-semibold">No Active Positions</p>
+                            <p class="text-sm mt-1">Execute a trade to build your portfolio.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full xl:w-[400px] flex flex-col gap-6 shrink-0">
+                <div class="glass-panel p-6 rounded-2xl relative">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold text-white">Order Ticket</h3>
+                        <span class="text-xs font-mono text-slate-400 bg-slate-800 px-2 py-1 rounded">Margin Active</span>
+                    </div>
+
+                    <div class="space-y-4 relative z-10">
+                        <div class="relative">
+                            <select id="tradeSelect" class="w-full bg-[#0a0f1c] border border-slate-700 rounded-xl pl-4 pr-10 py-3.5 text-white font-bold text-lg outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer">
+                                <option value="AAPL" data-name="Apple Inc." data-price="173.50">AAPL - Apple Inc.</option>
+                                <option value="TSLA" data-name="Tesla Inc." data-price="202.64">TSLA - Tesla Inc.</option>
+                                <option value="NVDA" data-name="NVIDIA Corp." data-price="822.43">NVDA - NVIDIA Corp.</option>
+                                <option value="MSFT" data-name="Microsoft Corp." data-price="415.10">MSFT - Microsoft Corp.</option>
+                                <option value="BTC" data-name="Bitcoin USD" data-price="64210.00">BTC - Bitcoin Trust</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+
+                        <div class="flex p-1 bg-[#0a0f1c] rounded-xl border border-slate-700">
+                            <button id="btnActionBuy" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-emerald-900/20 transition-all">Buy</button>
+                            <button id="btnActionSell" class="flex-1 bg-transparent text-slate-400 py-2 rounded-lg font-bold hover:text-white transition-all">Sell</button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-500 text-xs font-bold uppercase mb-2">Order Type</label>
+                                <select class="w-full bg-[#0a0f1c] border border-slate-700 text-white rounded-xl px-3 py-2.5 text-sm font-semibold outline-none focus:border-blue-500 appearance-none">
+                                    <option>Market</option>
+                                    <option disabled>Limit</option>
+                                    <option disabled>Stop</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 text-xs font-bold uppercase mb-2">Shares</label>
+                                <input type="number" id="tradeQty" value="1" min="1" class="w-full bg-[#0a0f1c] border border-slate-700 rounded-xl px-3 py-2.5 text-white font-mono text-lg outline-none focus:border-blue-500 text-right">
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 mt-2 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Market Price</span>
+                                <span class="font-mono text-white" id="ticketPrice">$173.50</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Commission</span>
+                                <span class="font-mono text-white">$0.00</span>
+                            </div>
+                            <div class="h-px bg-slate-800 my-2"></div>
+                            <div class="flex justify-between font-bold">
+                                <span class="text-white text-base">Estimated Cost</span>
+                                <span class="font-mono text-blue-400 text-lg" id="ticketCost">$173.50</span>
+                            </div>
+                        </div>
+
+                        <button id="btnExecute" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(5,150,105,0.3)] hover:shadow-[0_0_30px_rgba(5,150,105,0.5)] transform active:scale-95 mt-2 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Confirm Market Order
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl flex-1 flex flex-col">
+                    <h3 class="text-lg font-bold text-white mb-4">Market News</h3>
+                    <div class="space-y-4 overflow-y-auto flex-1 pr-2">
+                        <div class="pb-3 border-b border-slate-800 cursor-pointer hover:bg-slate-800/30 p-2 rounded transition">
+                            <div class="text-xs text-blue-400 font-bold mb-1">NVDA • 12m ago</div>
+                            <div class="text-sm font-semibold text-white leading-tight">NVIDIA Announces New Generation AI Chips Exceeding Expectations</div>
+                        </div>
+                        <div class="pb-3 border-b border-slate-800 cursor-pointer hover:bg-slate-800/30 p-2 rounded transition">
+                            <div class="text-xs text-slate-400 font-bold mb-1">MACRO • 45m ago</div>
+                            <div class="text-sm font-semibold text-slate-300 leading-tight">Fed Signals Potential Rate Cuts Later This Year As Inflation Cools</div>
+                        </div>
+                        <div class="pb-3 cursor-pointer hover:bg-slate-800/30 p-2 rounded transition">
+                            <div class="text-xs text-blue-400 font-bold mb-1">TSLA • 2h ago</div>
+                            <div class="text-sm font-semibold text-slate-300 leading-tight">Tesla Production Numbers Hit Record High In Shanghai Gigafactory</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="viewProfile" class="hidden flex-1 overflow-y-auto p-6 flex justify-center">
+            <div class="max-w-4xl w-full space-y-6">
+                
+                <div class="glass-panel p-8 rounded-2xl relative overflow-hidden flex items-center gap-8">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="w-28 h-28 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-5xl shadow-[0_0_30px_rgba(59,130,246,0.3)] border-4 border-slate-800">
+                        J
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3">
+                            <h1 class="text-4xl font-bold text-white">Jakub</h1>
+                            <span class="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                Pro Member
+                            </span>
+                        </div>
+                        <div class="mt-2 text-slate-400 font-mono text-sm">Account ID: <span class="text-white">3950863804</span></div>
+                        <div class="mt-4 flex gap-6 text-sm">
+                            <div class="flex flex-col">
+                                <span class="text-slate-500 uppercase text-xs font-bold">Total Account Value</span>
+                                <span class="text-white font-mono font-bold text-xl" id="profileTotalVal">$0.00</span>
+                            </div>
+                            <div class="w-px bg-slate-700"></div>
+                            <div class="flex flex-col">
+                                <span class="text-slate-500 uppercase text-xs font-bold">Withdrawable Cash</span>
+                                <span class="text-emerald-400 font-mono font-bold text-xl" id="profileCash">$2,491.53</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            Funding & Transfers
+                        </h3>
+                        
+                        <div class="bg-[#0a0f1c] border border-slate-700 rounded-xl p-4 mb-6 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-2">
+                                    <svg class="w-full h-full text-blue-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 8H23L12 2ZM2 10V20H5V10H2ZM7 10V20H10V10H7ZM12 10V20H15V10H12ZM17 10V20H20V10H17ZM1 22V24H23V22H1Z"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="text-white font-bold">JPMorgan Chase Bank</div>
+                                    <div class="text-slate-500 font-mono text-sm">Checking •••• 8492</div>
+                                </div>
+                            </div>
+                            <span class="text-emerald-500 text-xs font-bold bg-emerald-500/10 px-2 py-1 rounded">Linked</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold transition-colors">Deposit Funds</button>
+                            <button id="btnInitWithdraw" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white py-3 rounded-xl font-bold transition-colors">Withdraw</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Security Settings
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 hover:bg-slate-800/30 rounded-lg transition-colors cursor-pointer">
+                                <div>
+                                    <div class="text-white font-semibold">Two-Factor Authentication (2FA)</div>
+                                    <div class="text-slate-500 text-sm">Authenticator App configured</div>
+                                </div>
+                                <span class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold">Enabled</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 hover:bg-slate-800/30 rounded-lg transition-colors cursor-pointer">
+                                <div>
+                                    <div class="text-white font-semibold">Change Password</div>
+                                    <div class="text-slate-500 text-sm">Last changed 45 days ago</div>
+                                </div>
+                                <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                            <div class="flex items-center justify-between p-3 hover:bg-slate-800/30 rounded-lg transition-colors cursor-pointer">
+                                <div>
+                                    <div class="text-white font-semibold">Trusted Devices</div>
+                                    <div class="text-slate-500 text-sm">Manage active sessions</div>
+                                </div>
+                                <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-[#0f172a] border-l-4 border-emerald-500 text-white px-6 py-4 rounded shadow-2xl transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center gap-3">
+        <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div>
+            <div class="font-bold text-sm" id="toastTitle">Success</div>
+            <div class="text-slate-400 text-xs" id="toastMsg">Order executed successfully.</div>
+        </div>
+    </div>
+
+    <div id="modalWithdraw" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center opacity-0 transition-opacity duration-200">
+        <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl transform scale-95 transition-transform duration-200" id="modalWithdrawInner">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">Withdraw Funds</h2>
+                <button id="btnCloseModal" class="text-slate-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="text-slate-400 text-sm mb-1">Available to Withdraw</div>
+                <div class="text-3xl font-mono font-bold text-emerald-400" id="modalAvailCash">$2,491.53</div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-slate-400 text-xs font-bold uppercase mb-2">Transfer To</label>
+                    <div class="bg-[#0a0f1c] border border-slate-700 rounded-xl p-3 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            <span class="text-white font-medium text-sm">Chase Checking (•••• 8492)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 text-xs font-bold uppercase mb-2">Amount (USD)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-slate-400 font-mono text-lg">$</span>
+                        </div>
+                        <input type="number" id="withdrawAmt" placeholder="0.00" step="0.01" class="w-full bg-[#0a0f1c] border border-slate-700 rounded-xl pl-8 pr-4 py-3 text-white font-mono text-xl outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+                    </div>
+                </div>
+
+                <button id="btnConfirmWithdraw" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold text-lg transition-all mt-4 shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+                    Confirm Withdrawal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = 2491.53;
+        let actionType = 'buy';
+        const portfolio = {
+            'NVDA': { name: 'NVIDIA Corp.', shares: 12, avgPrice: 710.20 },
+            'AAPL': { name: 'Apple Inc.', shares: 15, avgPrice: 165.40 }
+        };
+
+        const navDash = document.getElementById('navDashboard');
+        const navProf = document.getElementById('navProfile');
+        const viewDash = document.getElementById('viewDashboard');
+        const viewProf = document.getElementById('viewProfile');
+
+        const topBalance = document.getElementById('topBalance');
+        const topNetValue = document.getElementById('topNetValue');
+        
+        const mainSymbol = document.getElementById('mainSymbol');
+        const mainName = document.getElementById('mainName');
+        const mainPrice = document.getElementById('mainPrice');
+        
+        const totalEquityEl = document.getElementById('totalEquity');
+        const dayPLEl = document.getElementById('dayPL');
+        const portTable = document.getElementById('portfolioTable');
+        const emptyState = document.getElementById('emptyState');
+
+        const tradeSelect = document.getElementById('tradeSelect');
+        const tradeQty = document.getElementById('tradeQty');
+        const btnActionBuy = document.getElementById('btnActionBuy');
+        const btnActionSell = document.getElementById('btnActionSell');
+        const btnExecute = document.getElementById('btnExecute');
+        const ticketPrice = document.getElementById('ticketPrice');
+        const ticketCost = document.getElementById('ticketCost');
+
+        const profileTotalVal = document.getElementById('profileTotalVal');
+        const profileCash = document.getElementById('profileCash');
+        const btnInitWithdraw = document.getElementById('btnInitWithdraw');
+        
+        const modalWithdraw = document.getElementById('modalWithdraw');
+        const modalWithdrawInner = document.getElementById('modalWithdrawInner');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const btnConfirmWithdraw = document.getElementById('btnConfirmWithdraw');
+        const withdrawAmt = document.getElementById('withdrawAmt');
+        const modalAvailCash = document.getElementById('modalAvailCash');
+
+        const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMsg = document.getElementById('toastMsg');
+
+        function fmtM(n) { return n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+
+        function showToast(title, msg, type) {
+            toastTitle.textContent = title;
+            toastMsg.textContent = msg;
+            
+            toast.className = 'fixed bottom-6 right-6 px-6 py-4 rounded shadow-2xl transform transition-all duration-300 z-50 flex items-center gap-3 border-l-4 ' + 
+                (type === 'error' ? 'bg-[#0f172a] border-rose-500' : 'bg-[#0f172a] border-emerald-500');
+            
+            toast.children[0].className = 'w-6 h-6 ' + (type === 'error' ? 'text-rose-500' : 'text-emerald-500');
+            toast.children[0].innerHTML = type === 'error' 
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 4000);
+        }
+
+        function getPrice(sym) {
+            for(let i=0; i<tradeSelect.options.length; i++) {
+                if(tradeSelect.options[i].value === sym) return parseFloat(tradeSelect.options[i].getAttribute('data-price'));
+            }
+            return 0;
+        }
+
+        function render() {
+            topBalance.textContent = '$' + fmtM(balance);
+            profileCash.textContent = '$' + fmtM(balance);
+            modalAvailCash.textContent = '$' + fmtM(balance);
+
+            let stockEq = 0;
+            let dayPL = 0;
+            let pCount = 0;
+            portTable.innerHTML = '';
+
+            for (const sym in portfolio) {
+                if (portfolio[sym].shares > 0) {
+                    pCount++;
+                    const data = portfolio[sym];
+                    const p = getPrice(sym);
+                    const v = data.shares * p;
+                    stockEq += v;
+                    
+                    const ret = v - (data.shares * data.avgPrice);
+                    const retPct = (ret / (data.shares * data.avgPrice)) * 100;
+                    
+                    dayPL += (ret * 0.1); 
+                    
+                    const cClass = ret >= 0 ? 'text-emerald-400 text-glow-green' : 'text-rose-400 text-glow-red';
+                    const sign = ret >= 0 ? '+' : '';
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/30 transition-colors';
+                    tr.innerHTML = `
+                        <td class="px-6 py-3">
+                            <div class="font-bold text-white">${sym}</div>
+                            <div class="text-xs text-slate-500">${data.name}</div>
+                        </td>
+                        <td class="px-6 py-3 text-right text-white">${data.shares}</td>
+                        <td class="px-6 py-3 text-right text-slate-400">$${fmtM(data.avgPrice)}</td>
+                        <td class="px-6 py-3 text-right text-slate-300 font-bold">$${fmtM(p)}</td>
+                        <td class="px-6 py-3 text-right text-white font-bold">$${fmtM(v)}</td>
+                        <td class="px-6 py-3 text-right font-bold ${cClass}">${sign}$${fmtM(ret)}<br><span class="text-xs opacity-80">${sign}${retPct.toFixed(2)}%</span></td>
+                    `;
+                    portTable.appendChild(tr);
+                }
+            }
+
+            if (pCount === 0) {
+                portTable.parentElement.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                portTable.parentElement.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+
+            const netValue = balance + stockEq;
+            topNetValue.textContent = '$' + fmtM(netValue);
+            profileTotalVal.textContent = '$' + fmtM(netValue);
+            totalEquityEl.textContent = '$' + fmtM(stockEq);
+            
+            dayPLEl.textContent = (dayPL >= 0 ? '+' : '') + '$' + fmtM(dayPL);
+            dayPLEl.className = dayPL >= 0 ? 'text-emerald-400 font-bold text-glow-green' : 'text-rose-400 font-bold text-glow-red';
+
+            const opt = tradeSelect.options[tradeSelect.selectedIndex];
+            const p = parseFloat(opt.getAttribute('data-price'));
+            const q = parseInt(tradeQty.value) || 0;
+            
+            mainSymbol.textContent = opt.value;
+            mainName.textContent = opt.getAttribute('data-name');
+            mainPrice.textContent = '$' + fmtM(p);
+            
+            ticketPrice.textContent = '$' + fmtM(p);
+            ticketCost.textContent = '$' + fmtM(p * q);
+        }
+
+        navDash.onclick = () => { viewDash.classList.remove('hidden'); viewProf.classList.add('hidden'); navDash.classList.add('bg-blue-600/10','text-blue-400','border-blue-500/20'); navDash.classList.remove('text-slate-400'); navProf.classList.remove('bg-slate-800'); };
+        navProf.onclick = () => { viewProf.classList.remove('hidden'); viewDash.classList.add('hidden'); navDash.classList.remove('bg-blue-600/10','text-blue-400','border-blue-500/20'); navDash.classList.add('text-slate-400'); navProf.classList.add('bg-slate-800'); };
+
+        tradeSelect.onchange = render;
+        tradeQty.oninput = () => { if(tradeQty.value < 1) tradeQty.value = 1; render(); };
+
+        btnActionBuy.onclick = () => {
+            actionType = 'buy';
+            btnActionBuy.className = 'flex-1 bg-emerald-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-emerald-900/20 transition-all';
+            btnActionSell.className = 'flex-1 bg-transparent text-slate-400 py-2 rounded-lg font-bold hover:text-white transition-all';
+            btnExecute.className = 'w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(5,150,105,0.3)] hover:shadow-[0_0_30px_rgba(5,150,105,0.5)] transform active:scale-95 mt-2 flex items-center justify-center gap-2';
+            btnExecute.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Confirm Market Buy';
+        };
+
+        btnActionSell.onclick = () => {
+            actionType = 'sell';
+            btnActionSell.className = 'flex-1 bg-rose-600 text-white py-2 rounded-lg font-bold shadow-lg shadow-rose-900/20 transition-all';
+            btnActionBuy.className = 'flex-1 bg-transparent text-slate-400 py-2 rounded-lg font-bold hover:text-white transition-all';
+            btnExecute.className = 'w-full bg-rose-600 hover:bg-rose-500 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(225,29,72,0.3)] hover:shadow-[0_0_30px_rgba(225,29,72,0.5)] transform active:scale-95 mt-2 flex items-center justify-center gap-2';
+            btnExecute.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 14v7l9-11h-7V3l-9 11h7z"></path></svg> Confirm Market Sell';
+        };
+
+        btnExecute.onclick = () => {
+            const sym = tradeSelect.value;
+            const opt = tradeSelect.options[tradeSelect.selectedIndex];
+            const name = opt.getAttribute('data-name');
+            const p = parseFloat(opt.getAttribute('data-price'));
+            const q = parseInt(tradeQty.value);
+            const cost = p * q;
+
+            if (isNaN(q) || q <= 0) return showToast('Error', 'Invalid quantity.', 'error');
+
+            if (actionType === 'buy') {
+                if (cost > balance) return showToast('Rejected', 'Insufficient purchasing power.', 'error');
+                balance -= cost;
+                if (!portfolio[sym]) portfolio[sym] = { name: name, shares: 0, avgPrice: 0 };
+                const oldVal = portfolio[sym].shares * portfolio[sym].avgPrice;
+                portfolio[sym].shares += q;
+                portfolio[sym].avgPrice = (oldVal + cost) / portfolio[sym].shares;
+                showToast('Order Filled', `Bought ${q} ${sym} @ $${fmtM(p)}`, 'success');
+            } else {
+                if (!portfolio[sym] || portfolio[sym].shares < q) return showToast('Rejected', `Insufficient shares of ${sym}.`, 'error');
+                portfolio[sym].shares -= q;
+                balance += cost;
+                if (portfolio[sym].shares === 0) delete portfolio[sym];
+                showToast('Order Filled', `Sold ${q} ${sym} @ $${fmtM(p)}`, 'success');
+            }
+            render();
+        };
+
+        btnInitWithdraw.onclick = () => {
+            withdrawAmt.value = '';
+            modalWithdraw.classList.remove('hidden');
+            setTimeout(() => { 
+                modalWithdraw.classList.remove('opacity-0');
+                modalWithdrawInner.classList.remove('scale-95');
+            }, 10);
+        };
+
+        const closeModal = () => {
+            modalWithdraw.classList.add('opacity-0');
+            modalWithdrawInner.classList.add('scale-95');
+            setTimeout(() => { modalWithdraw.classList.add('hidden'); }, 200);
+        };
+
+        btnCloseModal.onclick = closeModal;
+        
+        btnConfirmWithdraw.onclick = () => {
+            const amt = parseFloat(withdrawAmt.value);
+            if (isNaN(amt) || amt <= 0) return showToast('Error', 'Enter a valid amount.', 'error');
+            if (amt > balance) return showToast('Error', 'Amount exceeds available cash.', 'error');
+            
+            const btnOrig = btnConfirmWithdraw.innerHTML;
+            btnConfirmWithdraw.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3 inline text-white" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...';
+            btnConfirmWithdraw.disabled = true;
+
+            setTimeout(() => {
+                balance -= amt;
+                render();
+                closeModal();
+                showToast('Withdrawal Initiated', `$${fmtM(amt)} is being transferred to Chase Checking.`, 'success');
+                btnConfirmWithdraw.innerHTML = btnOrig;
+                btnConfirmWithdraw.disabled = false;
+            }, 1500);
+        };
+
+        setInterval(() => {
+            for(let i=0; i<tradeSelect.options.length; i++) {
+                let p = parseFloat(tradeSelect.options[i].getAttribute('data-price'));
+                let vol = p > 1000 ? 0.005 : 0.002;
+                let chg = p * (Math.random() * vol - (vol / 2));
+                let newP = Math.max(1, p + chg).toFixed(2);
+                tradeSelect.options[i].setAttribute('data-price', newP);
+                
+                if (tradeSelect.selectedIndex === i) {
+                    mainPrice.className = chg > 0 ? 'text-4xl font-mono font-bold text-emerald-400 transition-colors' : 'text-4xl font-mono font-bold text-rose-400 transition-colors';
+                    setTimeout(() => { mainPrice.className = 'text-4xl font-mono font-bold text-white transition-colors duration-500'; }, 300);
+                }
+            }
+            render();
+        }, 2500);
+
+        render();
+    </script>
+</body>
+</html>
