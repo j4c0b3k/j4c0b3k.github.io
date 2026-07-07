@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusTrade - Advanced Web Trading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #0b0f19; 
+            color: #f1f5f9; 
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+        }
+        .chart-line { stroke: #3b82f6; stroke-width: 2.5; fill: none; }
+        .chart-glow { filter: drop-shadow(0px 4px 6px rgba(59, 130, 246, 0.4)); }
+        .grid-line { stroke: #1e293b; stroke-width: 1; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    
+    <nav class="bg-[#0f172a] border-b border-slate-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center space-x-2">
+            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            <div class="text-2xl font-bold tracking-tight text-white">Nexus<span class="text-blue-500">Trade</span></div>
+        </div>
+        <div class="flex items-center space-x-6">
+            <div class="hidden md:block text-slate-400 text-sm">
+                Account: <span class="text-white font-semibold">Jakub</span>
+            </div>
+            <div class="bg-slate-800/50 border border-slate-700 px-4 py-2 rounded-lg font-mono text-lg flex items-center space-x-2 shadow-inner">
+                <span class="text-slate-400 text-sm">Buying Power</span>
+                <span class="text-emerald-400 font-bold">$<span id="balance">2491.53</span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 flex-grow">
+        <div class="xl:col-span-2 space-y-6">
+            <div class="bg-[#131c31] p-6 rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-purple-600"></div>
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white" id="currentStock">AAPL - Apple Inc.</h2>
+                        <div class="text-sm text-slate-400 mt-1">NASDAQ Real-Time Data</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-mono font-bold text-white" id="stockPrice">$173.50</div>
+                        <div class="text-emerald-500 text-sm font-semibold flex items-center justify-end mt-1">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                            +1.24% (Today)
+                        </div>
+                    </div>
+                </div>
+                <div class="relative w-full h-72 bg-[#0b0f19] rounded-xl border border-slate-800/60 p-4">
+                    <svg class="w-full h-full" viewBox="0 0 800 200" preserveAspectRatio="none">
+                        <path class="grid-line" d="M0 40 H800 M0 80 H800 M0 120 H800 M0 160 H800"></path>
+                        <path class="grid-line" d="M160 0 V200 M320 0 V200 M480 0 V200 M640 0 V200"></path>
+                        <path class="chart-line chart-glow" d="M0 180 L40 175 L80 182 L120 150 L160 155 L200 130 L240 145 L280 110 L320 115 L360 85 L400 95 L440 60 L480 75 L520 40 L560 55 L600 30 L640 35 L680 15 L720 25 L760 10 L800 15"></path>
+                    </svg>
+                </div>
+                <div class="flex space-x-2 mt-4">
+                    <button class="px-3 py-1 text-xs font-semibold bg-slate-800 text-slate-300 rounded hover:bg-slate-700 transition">1D</button>
+                    <button class="px-3 py-1 text-xs font-semibold bg-blue-600 text-white rounded shadow-lg shadow-blue-900/20">1W</button>
+                    <button class="px-3 py-1 text-xs font-semibold bg-slate-800 text-slate-300 rounded hover:bg-slate-700 transition">1M</button>
+                    <button class="px-3 py-1 text-xs font-semibold bg-slate-800 text-slate-300 rounded hover:bg-slate-700 transition">3M</button>
+                    <button class="px-3 py-1 text-xs font-semibold bg-slate-800 text-slate-300 rounded hover:bg-slate-700 transition">1Y</button>
+                    <button class="px-3 py-1 text-xs font-semibold bg-slate-800 text-slate-300 rounded hover:bg-slate-700 transition">ALL</button>
+                </div>
+            </div>
+
+            <div class="bg-[#131c31] rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
+                <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-white">Your Portfolio</h2>
+                    <span class="text-sm font-semibold text-slate-400 bg-slate-800 px-3 py-1 rounded-full" id="portfolioCount">0 Positions</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left whitespace-nowrap">
+                        <thead class="bg-[#0f172a] text-slate-400 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold">Asset</th>
+                                <th class="px-6 py-4 font-semibold text-right">Shares</th>
+                                <th class="px-6 py-4 font-semibold text-right">Avg Price</th>
+                                <th class="px-6 py-4 font-semibold text-right">Current Price</th>
+                                <th class="px-6 py-4 font-semibold text-right">Total Value</th>
+                                <th class="px-6 py-4 font-semibold text-right">Total Return</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolioTable" class="font-mono text-sm divide-y divide-slate-800/50">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="emptyPortfolio" class="p-8 text-center text-slate-500 hidden">
+                    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <p>No open positions. Start trading to build your portfolio.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#131c31] p-6 rounded-2xl border border-slate-800 shadow-xl h-fit sticky top-24">
+            <h2 class="text-xl font-bold text-white mb-6 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                Order Entry
+            </h2>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Symbol</label>
+                    <div class="relative">
+                        <select id="stockSelect" class="w-full bg-[#0b0f19] border border-slate-700 rounded-xl pl-4 pr-10 py-3 text-white font-bold outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer">
+                            <option value="AAPL" data-price="173.50">AAPL - Apple Inc.</option>
+                            <option value="TSLA" data-price="202.64">TSLA - Tesla Inc.</option>
+                            <option value="NVDA" data-price="822.43">NVDA - NVIDIA Corp.</option>
+                            <option value="MSFT" data-price="415.10">MSFT - Microsoft Corp.</option>
+                            <option value="AMZN" data-price="178.22">AMZN - Amazon.com Inc.</option>
+                            <option value="AMD" data-price="180.49">AMD - Advanced Micro Devices</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex p-1 bg-[#0b0f19] rounded-xl border border-slate-800">
+                        <button id="btnBuy" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-bold text-sm shadow-md transition-all duration-200 transform scale-100">BUY</button>
+                        <button id="btnSell" class="flex-1 bg-transparent text-slate-400 hover:text-white py-2.5 rounded-lg font-bold text-sm transition-all duration-200">SELL</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Shares</label>
+                    <div class="relative">
+                        <input type="number" id="quantity" value="1" min="1" class="w-full bg-[#0b0f19] border border-slate-700 rounded-xl px-4 py-3 text-white font-mono text-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-right">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Order Type</label>
+                    <select disabled class="w-full bg-[#0b0f19] border border-slate-800 text-slate-500 rounded-xl px-4 py-3 font-semibold appearance-none cursor-not-allowed">
+                        <option>Market Order</option>
+                    </select>
+                </div>
+
+                <div class="pt-4 border-t border-slate-800">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-slate-400">Current Price</span>
+                        <span class="font-mono text-white" id="summaryPrice">$173.50</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold mt-2">
+                        <span class="text-white">Estimated Cost</span>
+                        <span id="estCost" class="font-mono text-blue-400">$173.50</span>
+                    </div>
+                    
+                    <button id="btnSubmit" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_15px_rgba(5,150,105,0.4)] hover:shadow-[0_0_25px_rgba(5,150,105,0.6)] transform active:scale-[0.98]">
+                        Submit Buy Order
+                    </button>
+                </div>
+                
+                <div id="message" class="text-center text-sm font-bold p-3 rounded-lg hidden transition-all"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = 2491.53;
+        let currentAction = 'buy';
+        const portfolio = {
+            'NVDA': { shares: 2, avgPrice: 795.50 }
+        };
+
+        const balanceEl = document.getElementById('balance');
+        const stockSelect = document.getElementById('stockSelect');
+        const quantityInput = document.getElementById('quantity');
+        const estCostEl = document.getElementById('estCost');
+        const summaryPriceEl = document.getElementById('summaryPrice');
+        const btnBuy = document.getElementById('btnBuy');
+        const btnSell = document.getElementById('btnSell');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const currentStockEl = document.getElementById('currentStock');
+        const stockPriceEl = document.getElementById('stockPrice');
+        const portfolioTable = document.getElementById('portfolioTable');
+        const messageEl = document.getElementById('message');
+        const portfolioCountEl = document.getElementById('portfolioCount');
+        const emptyPortfolioEl = document.getElementById('emptyPortfolio');
+
+        function formatMoney(num) {
+            return num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function updateUI() {
+            balanceEl.textContent = formatMoney(balance);
+            
+            const selectedOption = stockSelect.options[stockSelect.selectedIndex];
+            const price = parseFloat(selectedOption.getAttribute('data-price'));
+            const qty = parseInt(quantityInput.value) || 0;
+            const cost = price * qty;
+            
+            estCostEl.textContent = '$' + formatMoney(cost);
+            summaryPriceEl.textContent = '$' + formatMoney(price);
+            currentStockEl.textContent = selectedOption.text;
+            stockPriceEl.textContent = '$' + formatMoney(price);
+
+            portfolioTable.innerHTML = '';
+            let posCount = 0;
+            
+            for (const sym in portfolio) {
+                if (portfolio[sym].shares > 0) {
+                    posCount++;
+                    const data = portfolio[sym];
+                    const currentPrice = getPrice(sym);
+                    const totalVal = data.shares * currentPrice;
+                    const pl = totalVal - (data.shares * data.avgPrice);
+                    const plPercent = (pl / (data.shares * data.avgPrice)) * 100;
+                    
+                    const isPositive = pl >= 0;
+                    const colorClass = isPositive ? 'text-emerald-500' : 'text-rose-500';
+                    const sign = isPositive ? '+' : '';
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/30 transition-colors';
+                    tr.innerHTML = `
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-white text-base">${sym}</div>
+                        </td>
+                        <td class="px-6 py-4 text-right text-white">${data.shares}</td>
+                        <td class="px-6 py-4 text-right text-slate-300">$${formatMoney(data.avgPrice)}</td>
+                        <td class="px-6 py-4 text-right text-slate-300">$${formatMoney(currentPrice)}</td>
+                        <td class="px-6 py-4 text-right font-bold text-white">$${formatMoney(totalVal)}</td>
+                        <td class="px-6 py-4 text-right font-bold ${colorClass}">
+                            ${sign}$${formatMoney(pl)}<br>
+                            <span class="text-xs opacity-80">${sign}${plPercent.toFixed(2)}%</span>
+                        </td>
+                    `;
+                    portfolioTable.appendChild(tr);
+                }
+            }
+            
+            portfolioCountEl.textContent = `${posCount} Position${posCount !== 1 ? 's' : ''}`;
+            
+            if (posCount === 0) {
+                portfolioTable.parentElement.classList.add('hidden');
+                emptyPortfolioEl.classList.remove('hidden');
+            } else {
+                portfolioTable.parentElement.classList.remove('hidden');
+                emptyPortfolioEl.classList.add('hidden');
+            }
+        }
+
+        function getPrice(symbol) {
+            for(let i = 0; i < stockSelect.options.length; i++) {
+                if(stockSelect.options[i].value === symbol) {
+                    return parseFloat(stockSelect.options[i].getAttribute('data-price'));
+                }
+            }
+            return 0;
+        }
+
+        function showMessage(msg, type) {
+            messageEl.textContent = msg;
+            messageEl.classList.remove('hidden', 'bg-emerald-500/20', 'text-emerald-400', 'bg-rose-500/20', 'text-rose-400', 'bg-blue-500/20', 'text-blue-400');
+            
+            if (type === 'error') {
+                messageEl.classList.add('bg-rose-500/20', 'text-rose-400');
+            } else if (type === 'success') {
+                messageEl.classList.add('bg-emerald-500/20', 'text-emerald-400');
+            } else {
+                messageEl.classList.add('bg-blue-500/20', 'text-blue-400');
+            }
+            
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 3000);
+        }
+
+        stockSelect.addEventListener('change', updateUI);
+        
+        quantityInput.addEventListener('input', () => {
+            if (quantityInput.value < 1) quantityInput.value = 1;
+            updateUI();
+        });
+
+        btnBuy.addEventListener('click', () => {
+            currentAction = 'buy';
+            btnBuy.className = 'flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-bold text-sm shadow-md transition-all duration-200 transform scale-100';
+            btnSell.className = 'flex-1 bg-transparent text-slate-400 hover:text-white py-2.5 rounded-lg font-bold text-sm transition-all duration-200';
+            btnSubmit.className = 'w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_15px_rgba(5,150,105,0.4)] hover:shadow-[0_0_25px_rgba(5,150,105,0.6)] transform active:scale-[0.98]';
+            btnSubmit.textContent = 'Submit Buy Order';
+            updateUI();
+        });
+
+        btnSell.addEventListener('click', () => {
+            currentAction = 'sell';
+            btnSell.className = 'flex-1 bg-rose-600 text-white py-2.5 rounded-lg font-bold text-sm shadow-md transition-all duration-200 transform scale-100';
+            btnBuy.className = 'flex-1 bg-transparent text-slate-400 hover:text-white py-2.5 rounded-lg font-bold text-sm transition-all duration-200';
+            btnSubmit.className = 'w-full mt-6 bg-rose-600 hover:bg-rose-500 text-white py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_15px_rgba(225,29,72,0.4)] hover:shadow-[0_0_25px_rgba(225,29,72,0.6)] transform active:scale-[0.98]';
+            btnSubmit.textContent = 'Submit Sell Order';
+            updateUI();
+        });
+
+        btnSubmit.addEventListener('click', () => {
+            const sym = stockSelect.value;
+            const price = parseFloat(stockSelect.options[stockSelect.selectedIndex].getAttribute('data-price'));
+            const qty = parseInt(quantityInput.value);
+            const cost = price * qty;
+
+            if (isNaN(qty) || qty <= 0) {
+                showMessage('Please enter a valid quantity', 'error');
+                return;
+            }
+
+            if (currentAction === 'buy') {
+                if (cost > balance) {
+                    showMessage('Insufficient buying power', 'error');
+                    return;
+                }
+                balance -= cost;
+                if (!portfolio[sym]) {
+                    portfolio[sym] = { shares: 0, avgPrice: 0 };
+                }
+                const oldTotal = portfolio[sym].shares * portfolio[sym].avgPrice;
+                portfolio[sym].shares += qty;
+                portfolio[sym].avgPrice = (oldTotal + cost) / portfolio[sym].shares;
+                showMessage(`Filled: Bought ${qty} ${sym} @ $${formatMoney(price)}`, 'success');
+            } else {
+                if (!portfolio[sym] || portfolio[sym].shares < qty) {
+                    showMessage(`Insufficient shares of ${sym} to sell`, 'error');
+                    return;
+                }
+                portfolio[sym].shares -= qty;
+                balance += cost;
+                if (portfolio[sym].shares === 0) {
+                    delete portfolio[sym];
+                }
+                showMessage(`Filled: Sold ${qty} ${sym} @ $${formatMoney(price)}`, 'success');
+            }
+            updateUI();
+        });
+
+        setInterval(() => {
+            for(let i = 0; i < stockSelect.options.length; i++) {
+                let p = parseFloat(stockSelect.options[i].getAttribute('data-price'));
+                let volatility = p > 200 ? 0.003 : 0.0015;
+                let change = p * (Math.random() * volatility - (volatility / 2));
+                let newPrice = Math.max(1, p + change).toFixed(2);
+                stockSelect.options[i].setAttribute('data-price', newPrice);
+                
+                if (stockSelect.selectedIndex === i) {
+                    const priceElement = document.getElementById('stockPrice');
+                    priceElement.classList.remove('text-emerald-400', 'text-rose-400');
+                    if (change > 0) {
+                        priceElement.classList.add('text-emerald-400');
+                    } else if (change < 0) {
+                        priceElement.classList.add('text-rose-400');
+                    }
+                    setTimeout(() => {
+                        priceElement.classList.remove('text-emerald-400', 'text-rose-400');
+                        priceElement.classList.add('text-white');
+                    }, 500);
+                }
+            }
+            updateUI();
+        }, 2000);
+
+        updateUI();
+    </script>
+</body>
+</html>
